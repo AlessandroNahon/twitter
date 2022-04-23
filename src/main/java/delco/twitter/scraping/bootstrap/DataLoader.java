@@ -37,7 +37,7 @@ import java.util.Map;
     public void run(String... args) throws Exception {
         try {
 //            tweetRepository.deleteAll();
-//            Date fechaLimite = new Date(2022-1900,3,21);
+//            Date fechaLimite = new Date(2022-1900,3,10);
 //            twitterAPIService.getTweets("Greenpeace",fechaLimite);
             System.out.println("Tweets cargados");
         } catch (Exception e) {

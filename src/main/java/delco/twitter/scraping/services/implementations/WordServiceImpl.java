@@ -22,12 +22,12 @@ public class WordServiceImpl implements WordService {
 
     private Map<String, Integer> wordList = new HashMap<>();
     private final WordRepository wordRepository;
-    private final StanfordCoreNLP stanfordCoreNLP;
+    private StanfordCoreNLP stanfordCoreNLP;
 
     public WordServiceImpl(WordRepository wordRepository){
         this.wordRepository = wordRepository;
-        this.stanfordCoreNLP = Pipeline.getPipeline();
-       // wordRepository.findAll().forEach(word -> wordList.put(word.getWord(),word.getCount()));
+        stanfordCoreNLP = Pipeline.getPipeline();
+
     }
 
 
@@ -41,35 +41,23 @@ public class WordServiceImpl implements WordService {
                         .replace("&gt","");
                 SyntaxEnum syntaxEnum = getTypeOfWord(word);
                 if (syntaxEnum != SyntaxEnum.NONE) {
-                    Word newWord = isWordPresent(word);
-                    if (newWord != null) {
-                        newWord.setCount(newWord.getCount()+1);
+                    try{
+                        Word newWord = isWordPresent(word);
+                        if (newWord != null) {
+                            newWord.setCount(newWord.getCount()+1);
+                        } else {
+                            newWord = new Word(word, 1, syntaxEnum);
+                        }
                         wordRepository.save(newWord);
-                    }else {
-                        newWord = new Word(word, 1, syntaxEnum);
-                        wordRepository.save(newWord);
+                    }catch (Exception e){
+                        System.out.println(e.getMessage());
                     }
+
                 }
             }
         }
     }
 
-    @Override
-    public Map<String, Integer> sortWords() {
-        List<Map.Entry<String, Integer>> list =
-                new LinkedList<Map.Entry<String, Integer>>(wordList.entrySet());
-        Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
-            public int compare(Map.Entry<String, Integer> o1,
-                               Map.Entry<String, Integer> o2) {
-                return (o2.getValue()).compareTo(o1.getValue());
-            }
-        });
-        Map<String, Integer> sortedMap = new LinkedHashMap<String, Integer>();
-        for (Map.Entry<String, Integer> entry : list) {
-            sortedMap.put(entry.getKey(), entry.getValue());
-        }
-        return sortedMap;
-    }
 
 
     @Override

@@ -129,16 +129,16 @@
             </script>
             <div class="row float-right text">
               <nav aria-label="Page navigation example">
-                <ul class="pagination">
-                  <li class="page-item" th:with="value = ${actualPage-1}">
+                <ul class="pagination" th:if="${actualPage} <= ${numberOfPages}">
+                  <li class="page-item" th:with="value = ${actualPage-1}" th:if="${actualPage} != 1">
                     <a class="page-link" href="#" th:href="@{/index(page=${value})}" aria-label="Previous">
                       <i class="fas fa-arrow-left" style="font-size: 20px;"></i>
                     </a>
                   </li>
-                  <li class="page-item">
+                  <li class="page-item" >
                     <div th:text="'Page '+${actualPage}+' of '+${numberOfPages}" class="pl-3 pr-3 mt-1" style="font-size: 17px;">yes</div>
                   </li>
-                  <li class="page-item" th:with="value = ${actualPage+1}">
+                  <li class="page-item" th:with="value = ${actualPage+1}" th:if="${actualPage} < ${numberOfPages}">
                     <a class="page-link" href="#" th:href="@{/index(page=${value})}" aria-label="Next">
                       <i class="fas fa-arrow-right" style="font-size: 20px;"></i>
                     </a>
