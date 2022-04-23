@@ -19,40 +19,35 @@ import java.util.List;
 public class SentimentServiceImpl implements SentimentService {
 
     private final SentimentRepository sentimentRepository;
+    private final LanguageServiceClient languageServiceClient;
 
     @SneakyThrows
     public SentimentServiceImpl(SentimentRepository sentimentRepository){
         this.sentimentRepository = sentimentRepository;
+        this.languageServiceClient = LanguageServiceClient.create();
         TransformerFactory.newInstance().setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
     }
 
     @Override
     public SentimentEnum getSentiment(String texto) {
-        try {
-            LanguageServiceClient language = LanguageServiceClient.create();
-            Document doc = Document.newBuilder().setContent(texto).setType(Document.Type.PLAIN_TEXT).build();
-            Sentiment sentiment = language.analyzeSentiment(doc).getDocumentSentiment();
-            if(sentiment.getScore() > 0.1 && sentiment.getScore() < 0.5) {
-                addAppearance(1L);
-                return SentimentEnum.POSITIVE;
-            }else if (sentiment.getScore() > 0.5 && sentiment.getScore() < 0.9) {
-                addAppearance(2L);
-                return SentimentEnum.VERY_POSITIVE;
-            }else if(sentiment.getScore() < -0.1 && sentiment.getScore() > -0.5) {
-                addAppearance(4L);
-                return SentimentEnum.NEGATIVE;
-            }else if(sentiment.getScore() > -0.5 && sentiment.getScore() < -0.9) {
-                addAppearance(5L);
-                return SentimentEnum.VERY_NEGATIVE;
-            }else{
-                addAppearance(3L);
-                return SentimentEnum.NEUTRAL;
-            }
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
+        Document doc = Document.newBuilder().setContent(texto).setType(Document.Type.PLAIN_TEXT).build();
+        Sentiment sentiment = languageServiceClient.analyzeSentiment(doc).getDocumentSentiment();
+        if(sentiment.getScore() > 0.1 && sentiment.getScore() < 0.5) {
+            addAppearance(1L);
+            return SentimentEnum.POSITIVE;
+        }else if (sentiment.getScore() > 0.5 && sentiment.getScore() < 0.9) {
+            addAppearance(2L);
+            return SentimentEnum.VERY_POSITIVE;
+        }else if(sentiment.getScore() < -0.1 && sentiment.getScore() > -0.5) {
+            addAppearance(4L);
+            return SentimentEnum.NEGATIVE;
+        }else if(sentiment.getScore() > -0.5 && sentiment.getScore() < -0.9) {
+            addAppearance(5L);
+            return SentimentEnum.VERY_NEGATIVE;
+        }else{
+            addAppearance(3L);
+            return SentimentEnum.NEUTRAL;
         }
-        addAppearance(3L);
-        return SentimentEnum.NEUTRAL;
     }
 
     @Override
