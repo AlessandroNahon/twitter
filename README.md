@@ -1,4 +1,4 @@
-# Nature & Animals
+# Nature & Animals (CURRENTLY WORKING)
 This project will collect tweets from the specified users using the Twitter API. After that, Google Cloud Vision API, Google Cloud NLP and Stanford Core NLP will analyze both text and images from those Tweets and classify them into a Database
 
 ## How does it work?
