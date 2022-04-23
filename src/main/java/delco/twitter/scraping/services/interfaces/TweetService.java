@@ -21,7 +21,6 @@ public interface TweetService {
 
     Tweet deleteById(Long id);
 
-    Iterable<Tweet> findPaginated(Pageable pageable);
 
 
 

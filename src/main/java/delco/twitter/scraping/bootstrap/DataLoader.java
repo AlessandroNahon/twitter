@@ -39,9 +39,8 @@ import java.util.Map;
     public void run(String... args) throws Exception {
         try {
             tweetRepository.deleteAll();
-            Date fechaLimite = new Date(2022-1900,3,21);
+            Date fechaLimite = new Date(2022-1900,3,19);
             twitterAPIService.getTweets("Greenpeace",fechaLimite);
-            generateWords();
             System.out.println("Tweets cargados");
         } catch (Exception e) {
             e.printStackTrace();
@@ -53,18 +52,7 @@ import java.util.Map;
 
 
 
-    public void generateWords() {
-        for (Map.Entry entry : thesaurusService.sortWords().entrySet()) {
-            if (Integer.parseInt(entry.getValue().toString()) > 1) {
-                Word word = new Word();
-                word.setWord(String.valueOf(entry.getKey()));
-                word.setCount(Integer.parseInt(entry.getValue().toString()));
-                wordRepository.save(word);
-            } else {
-                return;
-            }
-        }
-    }
+
 }
 
 

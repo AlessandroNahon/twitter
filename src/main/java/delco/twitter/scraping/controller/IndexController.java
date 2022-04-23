@@ -40,9 +40,9 @@ public class IndexController {
     @RequestMapping(value = {"/", "/index" }, method = {RequestMethod.GET})
     public String listTweets(Model model, @RequestParam("page") Optional<Integer> page){
         int currentPage = page.orElse(1) == 0 ? 1 : page.orElse(1);
-        model.addAttribute("numberOfPages",tweetRepository.count()/10);
+        model.addAttribute("numberOfPages",(tweetRepository.count()/10)+1);
         model.addAttribute("actualPage",currentPage);
-        model.addAttribute("tweets", tweetService.findPaginated(PageRequest.of(currentPage, 10)));
+        model.addAttribute("tweets", tweetRepository.findAll(PageRequest.of(currentPage-1,10)));
         model.addAttribute("sentiment_values", sentimentService.getAppearances());
         Object[] thesaurusValues = wordService. getFiveWords();
         model.addAttribute("imgUtil",new ImageUtil());

@@ -64,21 +64,5 @@ public class TweetServiceImpl implements TweetService {
         return tweetRepository.findById(id).map(tweet -> {tweetRepository.delete(tweet); return tweet;}).orElse(null);
     }
 
-    @Override
-    public Page<Tweet> findPaginated(Pageable pageable) {
-        int currentPage = pageable.getPageNumber();
-        int pageSize = pageable.getPageSize();
-        int startItem = currentPage * pageSize;
-        List<Tweet> tweets = new ArrayList<>();
-        List<Tweet> actualTweets = (List<Tweet>) tweetRepository.findAll();
-        int size = ((Collection<?>) tweetRepository.findAll()).size();
-        if (size < startItem) {
-            tweets = Collections.emptyList();
-        } else {
-            int toIndex = Math.min(startItem + pageSize, size);
-            tweets = actualTweets.subList(startItem, toIndex);
-        }
 
-        return new PageImpl<>(tweets, PageRequest.of(currentPage, pageSize), size);
-    }
 }
