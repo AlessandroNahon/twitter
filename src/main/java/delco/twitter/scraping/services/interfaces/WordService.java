@@ -1,6 +1,7 @@
 package delco.twitter.scraping.services.interfaces;
 
 import delco.twitter.scraping.model.Word;
+import delco.twitter.scraping.model.enumerations.SyntaxEnum;
 
 import java.util.Map;
 
@@ -12,9 +13,9 @@ public interface WordService {
 
     Map<String, Integer> sortWords();
 
-    boolean isImportantWord(String word);
+    SyntaxEnum getTypeOfWord(String word);
 
-    Object[] getFiveWords();
+    Object[] getWordAndCount(int numberOfWords);
 
     Word isWordPresent(String word);
 

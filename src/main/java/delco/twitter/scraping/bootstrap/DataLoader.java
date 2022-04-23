@@ -16,14 +16,12 @@ import java.util.Map;
 
 @Component class DataLoader implements CommandLineRunner {
 
-    public int maxResults = 20;
     private final TweetRepository tweetRepository;
     private final WordRepository wordRepository;
 
     private final SentimentServiceImpl sentimentService;
     private final TwitterAPIServiceImpl twitterAPIService;
     private final WordServiceImpl thesaurusService;
-    private final ArrayList<Tweet> tweetSet = new ArrayList<>();
 
     DataLoader(TweetRepository tweetRepository, WordRepository wordRepository, SentimentServiceImpl sentimentService,
                TwitterAPIServiceImpl twitterAPIService, WordServiceImpl thesaurusService) {
@@ -38,9 +36,9 @@ import java.util.Map;
     @Override
     public void run(String... args) throws Exception {
         try {
-            tweetRepository.deleteAll();
-            Date fechaLimite = new Date(2022-1900,3,19);
-            twitterAPIService.getTweets("Greenpeace",fechaLimite);
+//            tweetRepository.deleteAll();
+//            Date fechaLimite = new Date(2022-1900,3,21);
+//            twitterAPIService.getTweets("Greenpeace",fechaLimite);
             System.out.println("Tweets cargados");
         } catch (Exception e) {
             e.printStackTrace();
