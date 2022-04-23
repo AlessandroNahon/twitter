@@ -13,7 +13,7 @@ import delco.twitter.scraping.model.model_content.Medium;
 import delco.twitter.scraping.model.model_content.Root;
 import delco.twitter.scraping.model.user_model_content.UserRoot;
 import delco.twitter.scraping.repositories.ImageRepository;
-import delco.twitter.scraping.repositories.ThesaurusRepository;
+import delco.twitter.scraping.repositories.WordRepository;
 import delco.twitter.scraping.repositories.TweetRepository;
 import delco.twitter.scraping.services.interfaces.TwitterAPIService;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,19 +31,19 @@ public class TwitterAPIServiceImpl implements TwitterAPIService {
 
     private final String BEARER_TOKEN;
     private final ImageRepository imageRepository;
-    private final ThesaurusRepository thesaurusRepository;
+    private final WordRepository wordRepository;
     private final SentimentServiceImpl sentimentService;
     private final TweetRepository tweetRepository;
-    private final ThesaurusServiceImpl thesaurusService;
+    private final WordServiceImpl thesaurusService;
     private Date maxDate;
     boolean alcanzaFecha = false;
 
     public TwitterAPIServiceImpl(@Value("${BEARER_TOKEN}") String bearer_token, ImageRepository imageRepository,
-                                 ThesaurusRepository wordRepository, SentimentServiceImpl sentimentService,
-                                 TweetRepository tweetRepository, ThesaurusServiceImpl thesaurusService) {
+                                 WordRepository wordRepository, SentimentServiceImpl sentimentService,
+                                 TweetRepository tweetRepository, WordServiceImpl thesaurusService) {
         BEARER_TOKEN = bearer_token;
         this.imageRepository = imageRepository;
-        this.thesaurusRepository = wordRepository;
+        this.wordRepository = wordRepository;
         this.sentimentService = sentimentService;
         this.tweetRepository = tweetRepository;
         this.thesaurusService = thesaurusService;
@@ -234,9 +234,9 @@ public class TwitterAPIServiceImpl implements TwitterAPIService {
                     tweet.setConversationId(datum.getConversation_id());
                     tweet.setTextSentiment(sentimentService.getSentiment(datum.getText()));
                     setTweetImage(root.getIncludes(), datum, tweet);
-                            getReplies(datum.getConversation_id(), tweet);
-                            tweetRepository.save(tweet);
-                    thesaurusService.addText(datum.getText());
+                    getReplies(datum.getConversation_id(), tweet);
+                    tweetRepository.save(tweet);
+                    thesaurusService.analyzeText(datum.getText());
                 }else{
                     alcanzaFecha = true;
                     return;
@@ -257,7 +257,7 @@ public class TwitterAPIServiceImpl implements TwitterAPIService {
                         reply.setTextSentiment(sentimentService.getSentiment(dt.getText()));
                         setReplyImage(datum.getIncludes(), dt, reply);
                         originalTweet.addReply(reply);
-                        thesaurusService.addText(dt.getText());
+                        thesaurusService.analyzeText(dt.getText());
                 } catch (ArrayIndexOutOfBoundsException e) {
                     System.out.println(e.getMessage());
                     return;

@@ -5,7 +5,7 @@ import delco.twitter.scraping.repositories.ImageRepository;
 import delco.twitter.scraping.repositories.TweetRepository;
 import delco.twitter.scraping.services.interfaces.ImageService;
 import delco.twitter.scraping.services.interfaces.SentimentService;
-import delco.twitter.scraping.services.interfaces.ThesaurusService;
+import delco.twitter.scraping.services.interfaces.WordService;
 import delco.twitter.scraping.services.interfaces.TweetService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
@@ -23,17 +23,17 @@ public class IndexController {
     private final TweetRepository tweetRepository;
     private final ImageRepository imageRepository;
     private final SentimentService sentimentService;
-    private final ThesaurusService thesaurusService;
+    private final WordService wordService;
     private final ImageService imageService;
 
     public IndexController(TweetService tweetService, TweetRepository tweetRepository,
                            ImageRepository imageRepository, SentimentService sentimentService,
-                           ThesaurusService thesaurusService, ImageService imageService) {
+                           WordService wordService, ImageService imageService) {
         this.tweetService = tweetService;
         this.tweetRepository = tweetRepository;
         this.imageRepository = imageRepository;
         this.sentimentService = sentimentService;
-        this.thesaurusService = thesaurusService;
+        this.wordService = wordService;
         this.imageService = imageService;
     }
 
@@ -44,7 +44,7 @@ public class IndexController {
         model.addAttribute("actualPage",currentPage);
         model.addAttribute("tweets", tweetService.findPaginated(PageRequest.of(currentPage, 10)));
         model.addAttribute("sentiment_values", sentimentService.getAppearances());
-        Object[] thesaurusValues = thesaurusService. getFiveWords();
+        Object[] thesaurusValues = wordService. getFiveWords();
         model.addAttribute("imgUtil",new ImageUtil());
         model.addAttribute("images", imageRepository.findAll(PageRequest.of(1, 10)));
         model.addAttribute("t_words", thesaurusValues[0]);
