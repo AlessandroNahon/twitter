@@ -1,7 +1,7 @@
 package delco.twitter.scraping.controller;
 
+import delco.twitter.scraping.repositories.TweetRepository;
 import delco.twitter.scraping.services.interfaces.RepliesService;
-import delco.twitter.scraping.services.interfaces.TweetService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ReplyController {
 
     private final RepliesService replyService;
-    private final TweetService tweetService;
+    private final TweetRepository tweetService;
 
-    public ReplyController(RepliesService replyService, TweetService tweetService) {
+    public ReplyController(RepliesService replyService, TweetRepository tweetService) {
         this.replyService = replyService;
         this.tweetService = tweetService;
     }

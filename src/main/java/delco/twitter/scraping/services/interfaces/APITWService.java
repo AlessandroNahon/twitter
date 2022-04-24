@@ -6,11 +6,18 @@ import delco.twitter.scraping.model.model_content.Datum;
 import delco.twitter.scraping.model.model_content.Includes;
 import delco.twitter.scraping.model.model_content.Root;
 
-public interface RepliesService {
+import java.util.Date;
 
-    Iterable<Reply> findByTweetId(Long tweetId);
+public interface APITWService {
 
-    void parseReplyFromTweet(Root datum, Tweet originalTweet);
+    Root getTweets(String userName, Date limitDate);
 
+    Root getNextTweets(String username, Root lastSearch);
+
+    Root getReplies(String conversationId, Tweet originalTweet);
+
+
+
+    String getUserId(String username);
 
 }

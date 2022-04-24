@@ -8,9 +8,15 @@ import lombok.EqualsAndHashCode;
 import javax.persistence.*;
 import java.util.*;
 
+@Entity(name="tweet")
+@NamedNativeQueries({
+        @NamedNativeQuery(name = "Tweet.findLastTweet",
+                query = "SELECT id,conversation_id,created_at,image_content,text," +
+                        "text_sentiment,username FROM tweets t ORDER BY t.id DESC",
+                resultClass = Tweet.class)
+})
 @Data
 @EqualsAndHashCode(exclude = {"replies","image"})
-@Entity(name="tweet")
 @Table(name = "tweets")
 public class Tweet{
 

@@ -1,26 +1,20 @@
 package delco.twitter.scraping.services.interfaces;
 
-import delco.twitter.scraping.model.Tweet;
-import org.springframework.data.domain.Pageable;
+import delco.twitter.scraping.model.model_content.Datum;
+import delco.twitter.scraping.model.model_content.Root;
+
+import java.util.Date;
+
 
 public interface TweetService {
 
-    Tweet saveTweet(Tweet tweet);
+    void parseTweetDatumFromRoot(Root root, Date maxDate, String username);
 
-    Iterable<Tweet> saveTweets(Iterable<Tweet> tweets);
+    void getUserTimeline(String username, Date maxDate);
 
-    Iterable<Tweet> findAll();
+    boolean isRetweet(String tweet);
 
-    Tweet findById(Long id);
-
-    void delete(Tweet tweet);
-
-    void deleteTweets();
-
-    void deleteTweets(Iterable<Tweet> tweets);
-
-    Tweet deleteById(Long id);
-
+    boolean containsMedia(Datum datum);
 
 
 

@@ -3,7 +3,6 @@ package delco.twitter.scraping.controller;
 import delco.twitter.scraping.model.ImageUtil;
 import delco.twitter.scraping.repositories.ImageRepository;
 import delco.twitter.scraping.repositories.TweetRepository;
-import delco.twitter.scraping.services.interfaces.ImageService;
 import delco.twitter.scraping.services.interfaces.SentimentService;
 import delco.twitter.scraping.services.interfaces.WordService;
 import delco.twitter.scraping.services.interfaces.TweetService;
@@ -24,17 +23,15 @@ public class IndexController {
     private final ImageRepository imageRepository;
     private final SentimentService sentimentService;
     private final WordService wordService;
-    private final ImageService imageService;
 
     public IndexController(TweetService tweetService, TweetRepository tweetRepository,
                            ImageRepository imageRepository, SentimentService sentimentService,
-                           WordService wordService, ImageService imageService) {
+                           WordService wordService) {
         this.tweetService = tweetService;
         this.tweetRepository = tweetRepository;
         this.imageRepository = imageRepository;
         this.sentimentService = sentimentService;
         this.wordService = wordService;
-        this.imageService = imageService;
     }
 
     @RequestMapping(value = {"/", "/index" }, method = {RequestMethod.GET})
