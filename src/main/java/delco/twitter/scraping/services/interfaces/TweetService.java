@@ -8,7 +8,7 @@ import java.util.Date;
 
 public interface TweetService {
 
-    void parseTweetDatumFromRoot(Root root, Date maxDate, String username);
+    void parseTweetDatumFromRoot(Root root, String username);
 
     void getUserTimeline(String username, Date maxDate);
 

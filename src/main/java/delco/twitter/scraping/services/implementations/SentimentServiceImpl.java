@@ -28,17 +28,24 @@ public class SentimentServiceImpl implements SentimentService {
         TransformerFactory.newInstance().setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
     }
 
+    /**
+     * Receiving a text, this method calls the Google Cloud NLP and analize the sentiment of the text. Depending
+     * on the Score, this methods determine the correct SentimentEnum and gives it back so you can assign in to a
+     * tweet/reply.
+     * @param texto Text to be analyzed
+     * @return SentimentEnum
+     */
     @Override
     public SentimentEnum getSentiment(String texto) {
         Document doc = Document.newBuilder().setContent(texto).setType(Document.Type.PLAIN_TEXT).build();
         Sentiment sentiment = languageServiceClient.analyzeSentiment(doc).getDocumentSentiment();
-        if(sentiment.getScore() > 0.1 && sentiment.getScore() < 0.5) {
+        if(sentiment.getScore() > 0.1 && sentiment.getScore() <= 0.5) {
             addAppearance(1L);
             return SentimentEnum.POSITIVE;
         }else if (sentiment.getScore() > 0.5 && sentiment.getScore() < 0.9) {
             addAppearance(2L);
             return SentimentEnum.VERY_POSITIVE;
-        }else if(sentiment.getScore() < -0.1 && sentiment.getScore() > -0.5) {
+        }else if(sentiment.getScore() < -0.1 && sentiment.getScore() >= -0.5) {
             addAppearance(4L);
             return SentimentEnum.NEGATIVE;
         }else if(sentiment.getScore() > -0.5 && sentiment.getScore() < -0.9) {
@@ -50,6 +57,10 @@ public class SentimentServiceImpl implements SentimentService {
         }
     }
 
+    /**
+     * This method is called to add 1 to the appearances of the sentiment.
+     * @param id Id of the sentiment
+     */
     @Override
     public void addAppearance(Long id) {
         delco.twitter.scraping.model.Sentiment s = sentimentRepository.findById(id).orElse(null);
@@ -57,6 +68,10 @@ public class SentimentServiceImpl implements SentimentService {
         sentimentRepository.save(s);
     }
 
+    /**
+     * This method is called to get all the apparecnes of the different sentiments sentiment.
+     * @return List of Integer, correspondiing to each sentiment.
+     */
     @Override
     public List<Integer> getAppearances() {
         List<Integer> appearances = new ArrayList<>();

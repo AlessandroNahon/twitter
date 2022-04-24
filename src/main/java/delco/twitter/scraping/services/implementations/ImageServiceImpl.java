@@ -18,6 +18,14 @@ import java.net.URL;
 @Service
 public class ImageServiceImpl implements ImageService {
 
+    /**
+     * This method is used to recover the images from internet and save them in the database
+     * @param include The object includes, from root, where you find the URL of the Tweet image
+     * @param datum The object datum, from root, where you find the media keys of the tweet. The program
+     *              search for the coincidence between the media keys and the media keys of the tweet and
+     *              assign the image to the tweet.
+     * @param originalTweet The tweet where you want to assign the image
+     */
     @Override
     public void setImages(Includes include, Datum datum, Tweet originalTweet) {
         BufferedImage image = null;
@@ -51,6 +59,14 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
+    /**
+     * Overload of the previous method, but using replies instead of tweets
+     * @param include The object includes, from root, where you find the URL of the Tweet image
+     * @param datum The object datum, from root, where you find the media keys of the tweet. The program
+     *              search for the coincidence between the media keys and the media keys of the tweet and
+     *              assign the image to the tweet.
+     * @param originalTweet The tweet where you want to assign the image
+     */
     @Override
     public void setImages(Includes include, Datum datum, Reply originalTweet) {
         BufferedImage image = null;

@@ -35,9 +35,14 @@ public class TweetServiceImpl implements TweetService {
     }
 
 
-
+    /**
+     * This method is used to parse the Root object that comes from the Twitter API and create different
+     * tweet objects with the corresponding information about images, replies, sentiment and words.
+     * @param root Root object that comes from the Twitter API
+     * @param username Username of the user that is being scraped, to set it to the created tweet
+     */
     @Override
-    public void parseTweetDatumFromRoot(Root root, Date maxDate, String username) {
+    public void parseTweetDatumFromRoot(Root root,String username) {
         root.getData().forEach(datum -> {
             if (!isRetweet(datum.getText()) && containsMedia(datum)) {
                 System.out.println("Analiza tweet: " + datum.getText());
@@ -56,17 +61,23 @@ public class TweetServiceImpl implements TweetService {
         });
     }
 
+    /**
+     * This method is used to wrap the logic of getting tweets until a certain date. Once the last stored tweet
+     * in the database is older than the maxDate, it will stop getting tweets.
+     * @param username Username of the user that is being scraped, to set it to the created tweet
+     * @param maxDate Date that limits the tweets that will be saved
+     */
     @Override
     public void getUserTimeline(String username, Date maxDate) {
         Root raiz = twitterAPIService.getTweets(username, maxDate);
-        parseTweetDatumFromRoot(raiz, maxDate, username);
+        parseTweetDatumFromRoot(raiz, username);
         boolean fechaLimite = false;
         while (!fechaLimite) {
             try {
                 Tweet lastTweet = (Tweet) em.createNamedQuery("Tweet.findLastTweet").getResultList().get(0);
                 if (lastTweet.getCreatedAt().before(maxDate)) {
                     raiz = twitterAPIService.getNextTweets(username, raiz);
-                    parseTweetDatumFromRoot(raiz, maxDate, username);
+                    parseTweetDatumFromRoot(raiz, username);
                 } else {
                     fechaLimite = true;
                 }
@@ -78,11 +89,22 @@ public class TweetServiceImpl implements TweetService {
         }
     }
 
+    /**
+     * This method is used to check if a tweet is a retweet.
+     * @param tweet Tweet to be checked
+     * @return True if the tweet contains RT @, which is the standart for a retweet. False otherwise.
+     */
     @Override
     public boolean isRetweet(String tweet) {
         return tweet.contains("RT @");
     }
 
+    /**
+     * This method is used to check if a tweet contains media.
+     * @param datum Tweet to be checked
+     * @return True if the specific tweet's list of media is not empty, which means it has
+     * media keys attached. False otherwise.
+     */
     @Override
     public boolean containsMedia(Datum datum) {
         return datum.getAttachments().getMedia_keys().size() != 0;

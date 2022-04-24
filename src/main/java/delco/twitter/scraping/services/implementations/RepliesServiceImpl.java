@@ -34,6 +34,11 @@ public class RepliesServiceImpl implements RepliesService {
         this.wordService = wordService;
     }
 
+    /**
+     * This method is used find all the replies gathered from an original tweet, passing the Id of the original tweet
+     * @param tweetId Id of the original tweet
+     * @return Set of replies
+     */
     @Override
     public Iterable<Reply> findByTweetId(Long tweetId) {
         Set<Reply> replies = new HashSet<>();
@@ -45,16 +50,21 @@ public class RepliesServiceImpl implements RepliesService {
         return replies;
     }
 
+    /**
+     * This method is used to parse the Root element from the Twitter API, and set the replies to an original tweet
+     * @param root Root element from the Twitter API
+     * @param originalTweet Original tweet
+     */
     @Override
-    public void parseReplyFromTweet(Root datum, Tweet originalTweet) {
-        if (datum.getData().size() != 0) {
-            for (int i = 0; i < Math.min(datum.getData().size(), 10); i++) {
+    public void parseReplyFromTweet(Root root, Tweet originalTweet) {
+        if (root.getData().size() != 0) {
+            for (int i = 0; i < Math.min(root.getData().size(), 10); i++) {
                 try {
-                    Datum dt = datum.getData().get(i);
+                    Datum dt = root.getData().get(i);
                     System.out.println("Analiza respuesta: " + dt.getText());
                     Reply reply = new Reply();
                     reply.setText(dt.getText());
-                    imageService.setImages(datum.getIncludes(), dt, reply);
+                    imageService.setImages(root.getIncludes(), dt, reply);
                     wordService.analyzeText(dt.getText());
                     originalTweet.addReply(reply);
                 } catch (ArrayIndexOutOfBoundsException e) {

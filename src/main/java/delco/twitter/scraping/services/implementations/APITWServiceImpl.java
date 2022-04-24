@@ -23,6 +23,12 @@ public class APITWServiceImpl implements APITWService {
         BEARER_TOKEN = bearer_token;
     }
 
+    /**
+     * This methods gather the Root file (JSON) from the Twitter API
+     * @param username The Screen name of the user that you want to get the tweets
+     * @param maxDate The date of the last tweet that you want to get
+     * @return The Root file (JSON) from the Twitter API
+     */
     @Override
     public Root getTweets(String username, Date maxDate) {
         Response response = null;
@@ -47,6 +53,13 @@ public class APITWServiceImpl implements APITWService {
         return null;
     }
 
+    /**
+     * This methods is used to recover the next page of the Root file (JSON) from the Twitter API
+     * @param username The Screen name of the user that you want to get the tweets
+     * @param lastSearch The last Root file (JSON) recovered, to get the PaginationToken and continue searching
+     *                   from the last recovered twet
+     * @return The Root file (JSON) from the Twitter API
+     */
     @Override
     public Root getNextTweets(String username,Root lastSearch) {
         Response response = null;
@@ -71,6 +84,13 @@ public class APITWServiceImpl implements APITWService {
         return null;
     }
 
+    /**
+     * This method is user to recover the first ten replies of a tweet
+     * @param conversationId Conversation ID of the tweet that you want to get the replies (You find this
+     *                       in the tweet.conversation_id field)
+     * @param originalTweet The tweet that you want to assign these replies to
+     * @return The Root file (JSON) from the Twitter API with the replies
+     */
     @Override
     public Root getReplies(String conversationId, Tweet originalTweet) {
         Response response = null;
@@ -92,7 +112,11 @@ public class APITWServiceImpl implements APITWService {
         return null;
     }
 
-
+    /**
+     * Calls the Twitter API to get the user ID from the screen name
+     * @param username The screen name of the user that you want to get the ID
+     * @return The user ID
+     */
     @Override
     public String getUserId(String username) {
         Response response = null;

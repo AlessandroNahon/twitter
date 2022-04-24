@@ -32,7 +32,15 @@ public class WordServiceImpl implements WordService {
 
     }
 
-
+    /**
+     * This method is used to do an analysis over the text of each tweet and save the words in the database.
+     * This method checks each words and if its length is longer than 3 (To avoid words like 'he', 'to', or 'yes',
+     * doesn't contains the word http or @ (Which means it is a link or a mention to another username) the word will
+     * be cleaned and analyzed by the StanfordCoreNLP, to determine if it is an important word. Also, this method checks
+     * if the word contains emojis, calling another method to do the same as with the words.
+     * See method getTypeOfWord to see the available types of words.
+     * @param text The text of the tweet
+     */
     @Override
     public void analyzeText(String text) {
         String[] words = text.split(" ");
@@ -54,7 +62,51 @@ public class WordServiceImpl implements WordService {
         }
     }
 
+    /**
+     * Once a word is anaylzed, this method will determine
+     * @param text
+     */
+    @Override
+    public void parseEmoji(String text) {
+        Pattern pattern = Pattern.compile(regex);
+        Matcher emojiMatcher = pattern.matcher(text);
+        if (emojiMatcher.find()) {
+            while(!emojiMatcher.hitEnd()){
+                Word newWord = isWordPresent(emojiMatcher.group());
+                if (newWord != null) {
+                    newWord.setCount(newWord.getCount() + 1);
+                } else {
+                    newWord = new Word(emojiMatcher.group(), 1, SyntaxEnum.EMOJI);
+                }
+                wordRepository.save(newWord);
+                emojiMatcher.find();
+            }
+        }
+    }
 
+    @Override
+    public void parseWord(String text){
+        SyntaxEnum syntaxEnum = getTypeOfWord(text);
+        if (syntaxEnum != SyntaxEnum.NONE) {
+            try {
+                Word newWord = isWordPresent(text);
+                if (newWord != null) {
+                    newWord.setCount(newWord.getCount() + 1);
+                } else {
+                    newWord = new Word(text, 1, syntaxEnum);
+                }
+                wordRepository.save(newWord);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * This method checks the type of word, using the StanfordCoreNLP.
+     * @param word The word to be analyzed
+     * @return The type of word, if it is one of the valids types of word, otherwise, it will return NONE
+     */
     @Override
     public SyntaxEnum getTypeOfWord(String word) {
         CoreDocument coreDocument = new CoreDocument(word);
@@ -92,7 +144,12 @@ public class WordServiceImpl implements WordService {
         return SyntaxEnum.NONE;
     }
 
-
+    /**
+     * This method is used by the controller to get N number of the most frequent words, sorting the list from
+     * the most used ones to the least used ones.
+     * @param numberOfWords number of words to be returned
+     * @return list of words
+     */
     @Override
     public Object[] getWordAndCount(int numberOfWords) {
         List<Word> wordList = wordRepository
@@ -107,12 +164,22 @@ public class WordServiceImpl implements WordService {
         return new Object[][]{palabras, contador};
     }
 
+    /**
+     * THis method is used to check if a word is present in the database
+     * @param word the word to be checked
+     * @return the word if it is present, null otherwise
+     */
     @Override
     public Word isWordPresent(String word) {
         return StreamSupport.stream(wordRepository.findAll().spliterator(), false)
                 .filter(w -> w.getWord().equals(word)).findAny().orElse(null);
     }
 
+    /**
+     * This method is used to determine if a word of the text is an emoji (Unicode Character I.E.: \uD83D\uDE00)
+     * @param word the word to be checked
+     * @return true if the word is an emoji, false otherwise
+     */
     @Override
     public boolean isEmoji(String word) {
         Pattern pattern = Pattern.compile(regex);
@@ -120,41 +187,7 @@ public class WordServiceImpl implements WordService {
 
     }
 
-    @Override
-    public void parseEmoji(String text) {
-        Pattern pattern = Pattern.compile(regex);
-        Matcher emojiMatcher = pattern.matcher(text);
-        if (emojiMatcher.find()) {
-            while(!emojiMatcher.hitEnd()){
-                Word newWord = isWordPresent(emojiMatcher.group());
-                if (newWord != null) {
-                    newWord.setCount(newWord.getCount() + 1);
-                } else {
-                    newWord = new Word(emojiMatcher.group(), 1, SyntaxEnum.EMOJI);
-                }
-                wordRepository.save(newWord);
-                emojiMatcher.find();
-            }
-        }
-    }
 
-    @Override
-    public void parseWord(String text){
-        SyntaxEnum syntaxEnum = getTypeOfWord(text);
-        if (syntaxEnum != SyntaxEnum.NONE) {
-            try {
-                Word newWord = isWordPresent(text);
-                if (newWord != null) {
-                    newWord.setCount(newWord.getCount() + 1);
-                } else {
-                    newWord = new Word(text, 1, syntaxEnum);
-                }
-                wordRepository.save(newWord);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        }
-    }
 
 
 }
