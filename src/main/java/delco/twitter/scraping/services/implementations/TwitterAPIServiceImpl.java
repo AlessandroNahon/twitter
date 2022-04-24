@@ -232,7 +232,7 @@ public class TwitterAPIServiceImpl implements TwitterAPIService {
                     tweet.setCreatedAt(datum.getCreated_at());
                     tweet.setUsername(username);
                     tweet.setConversationId(datum.getConversation_id());
-                    tweet.setTextSentiment(sentimentService.getSentiment(datum.getText()));
+                    //tweet.setTextSentiment(sentimentService.getSentiment(datum.getText()));
                     setTweetImage(root.getIncludes(), datum, tweet);
                     getReplies(datum.getConversation_id(), tweet);
                     tweetRepository.save(tweet);
@@ -254,7 +254,7 @@ public class TwitterAPIServiceImpl implements TwitterAPIService {
                         System.out.println("Analiza respuesta: " + dt.getText());
                         Reply reply = new Reply();
                         reply.setText(dt.getText());
-                        reply.setTextSentiment(sentimentService.getSentiment(dt.getText()));
+                        //reply.setTextSentiment(sentimentService.getSentiment(dt.getText()));
                         setReplyImage(datum.getIncludes(), dt, reply);
                         originalTweet.addReply(reply);
                         thesaurusService.analyzeText(dt.getText());

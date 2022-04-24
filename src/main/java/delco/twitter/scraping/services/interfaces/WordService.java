@@ -17,4 +17,10 @@ public interface WordService {
 
     Word isWordPresent(String word);
 
+    boolean isEmoji(String word);
+
+    void parseWord(String text);
+
+    void parseEmoji(String emoji);
+
 }
