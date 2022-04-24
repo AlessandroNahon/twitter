@@ -63,8 +63,11 @@ public class WordServiceImpl implements WordService {
     }
 
     /**
-     * Once a word is anaylzed, this method will determine
-     * @param text
+     * Thsi method is used to extract all the emojis from a word. When Splitting a text with the " " condition, there
+     * will be times when a couple of emojis comes togheter, that why this methods uses teh wile loop to extract all
+     * of them. Then, the method will call the database and check if it is present, to add one to the count of the emoji,
+     * or save the new emoji
+     * @param text The text of the tweet
      */
     @Override
     public void parseEmoji(String text) {
@@ -84,6 +87,11 @@ public class WordServiceImpl implements WordService {
         }
     }
 
+    /**
+     * This metod is used to save the words in the database. It checks if the word is present in the database, if it is
+     * it will add one to the count, if not it will save the new word.
+     * @param text The text of the tweet
+     */
     @Override
     public void parseWord(String text){
         SyntaxEnum syntaxEnum = getTypeOfWord(text);
