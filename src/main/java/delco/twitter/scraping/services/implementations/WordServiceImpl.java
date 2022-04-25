@@ -9,11 +9,11 @@ import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
+import javax.persistence.EntityManager;
 import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 
 @Service
-public class WordServiceImpl implements WordService {
+public class WordServiceImpl extends Thread  implements WordService {
 
     private Map<String, Integer> wordList = new HashMap<>();
     private final WordRepository wordRepository;
@@ -29,10 +29,21 @@ public class WordServiceImpl implements WordService {
     private final String regex = "[\\x{10000}-\\x{10FFFF}]";
     private final Set<String> kischcWords = readFiles("kische");
     private final Set<String> grotesqueWords = readFiles("grotesque");
+    @Autowired
+    private EntityManager em;
+    private boolean loadedPipeline = false;
+    private final Thread thread = this;
 
     public WordServiceImpl(WordRepository wordRepository) {
         this.wordRepository = wordRepository;
-        stanfordCoreNLP = Pipeline.getPipeline();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                stanfordCoreNLP = Pipeline.getPipeline();
+                loadedPipeline = true;
+            }
+        }).start();
+
     }
 
     /**
@@ -128,6 +139,16 @@ public class WordServiceImpl implements WordService {
         return grotesqueWords.contains(word);
     }
 
+    @Override
+    public List<Word> getTop20Words() {
+        return wordRepository.findTop20ByOrderByCountDesc();
+    }
+
+    @Override
+    public List<Word> getTop5Words() {
+        return wordRepository.findTop5ByOrderByCountDesc();
+    }
+
 
     /**
      * This metod is used to save the words in the database. It checks if the word is present in the database, if it is
@@ -158,61 +179,45 @@ public class WordServiceImpl implements WordService {
      * @return The type of word, if it is one of the valids types of word, otherwise, it will return NONE
      */
     @Override
-    public SyntaxEnum getTypeOfWord(String word) {
+    public synchronized SyntaxEnum getTypeOfWord(String word) {
         CoreDocument coreDocument = new CoreDocument(word);
+        if(!loadedPipeline){
+            try {
+                this.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         this.stanfordCoreNLP.annotate(coreDocument);
         List<CoreLabel> coreLabelList = coreDocument.tokens();
         for (CoreLabel coreLabel : coreLabelList) {
             String pos = coreLabel.get(CoreAnnotations.PartOfSpeechAnnotation.class);
             switch (pos) {
                 case "NN":
-                    return SyntaxEnum.NOUN_SINGULAR;
                 case "NNS":
-                    return SyntaxEnum.NOUN_PLURAL;
                 case "NNP":
-                    return SyntaxEnum.PROPER_NOUN_SINGULAR;
                 case "NNPS":
-                    return SyntaxEnum.PROPER_NOUN_PLURAL;
+                    return SyntaxEnum.NOUN;
                 case "JJ":
-                    return SyntaxEnum.ADJECTIVE;
                 case "JJR":
-                    return SyntaxEnum.ADJECTIVE_COMPARATIVE;
                 case "JJS":
-                    return SyntaxEnum.ADJECTIVE_SUPERLATIVE;
+                    return SyntaxEnum.ADJECTIVE;
+                case "VB":
+                case "VBG":
+                case "VBN":
+                case "VBP":
+                case "VBZ":
+                    return SyntaxEnum.VERB;
                 case "RB":
-                    return SyntaxEnum.ADVERB;
                 case "RBR":
-                    return SyntaxEnum.ADVERB_COMPARATIVE;
                 case "RBS":
-                    return SyntaxEnum.ADVERB_SUPERLATIVE;
                 case "WRB":
-                    return SyntaxEnum.WHADVERB;
-                default:
-                    return SyntaxEnum.NONE;
+                    return SyntaxEnum.ADVERB;
             }
         }
         return SyntaxEnum.NONE;
     }
 
-    /**
-     * This method is used by the controller to get N number of the most frequent words, sorting the list from
-     * the most used ones to the least used ones.
-     * @param numberOfWords number of words to be returned
-     * @return list of words
-     */
-    @Override
-    public Object[] getWordAndCount(int numberOfWords) {
-        List<Word> wordList = wordRepository
-                .findAll(PageRequest.of(0, numberOfWords, Sort.by("count")
-                        .descending())).getContent();
-        Object[] palabras = new Object[5];
-        Object[] contador = new Object[5];
-        for (int i = 0; i < 5; i++) {
-            palabras[i] = wordList.get(i).getWord();
-            contador[i] = wordList.get(i).getCount();
-        }
-        return new Object[][]{palabras, contador};
-    }
 
     /**
      * THis method is used to check if a word is present in the database
@@ -252,6 +257,14 @@ public class WordServiceImpl implements WordService {
             e.printStackTrace();
         }
         throw new RuntimeException("The file was not found");
+    }
+
+    public Word getTopSyntaxEnum(SyntaxEnum syntaxEnum) {
+        return wordRepository.findTop1BySyntaxOrderByCountDesc(syntaxEnum);
+    }
+
+    public List<Word> getTop10WordsBySyntax(SyntaxEnum syntaxEnum) {
+        return wordRepository.findTop10BySyntaxOrderByCountDesc(syntaxEnum);
     }
 
 

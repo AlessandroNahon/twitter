@@ -10,9 +10,7 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import javax.xml.XMLConstants;
 import javax.xml.transform.TransformerFactory;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -73,13 +71,8 @@ public class SentimentServiceImpl implements SentimentService {
      * @return List of Integer, correspondiing to each sentiment.
      */
     @Override
-    public List<Integer> getAppearances() {
-        List<Integer> appearances = new ArrayList<>();
-        Iterable<delco.twitter.scraping.model.Sentiment> sentiments = sentimentRepository.findAll();
-        for(delco.twitter.scraping.model.Sentiment s : sentiments){
-            appearances.add(s.getAppearances());
-        }
-        return appearances;
+    public Iterable<delco.twitter.scraping.model.Sentiment> findAllSentiment() {
+        return sentimentRepository.findAll();
     }
 
 

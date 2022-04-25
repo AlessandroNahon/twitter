@@ -10,9 +10,12 @@ spring:
   jpa:
     hibernate:
     ddl-auto: validate
+    naming:
+      physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     database-platform: org.hibernate.dialect.MySQL5Dialect
     database: mysql
     show-sql: false
+
 #    properties:
 #      javax:
 #        persistence.schema-generation:

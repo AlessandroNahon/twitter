@@ -89,7 +89,7 @@
             <div>
               <canvas id="myChart" width="300" height="300"></canvas>
               <script th:inline="javascript">
-                  printSentiment(/*[[${sentiment_values}]]*/);
+                  printSentiment(/*[[${sentiment_dataset}]]*/,'myChart');
               </script>
             </div>
           </div>
@@ -105,7 +105,7 @@
           <div class="card-body" style="height: 100">
             <canvas id="bar" width="300" height="100"></canvas>
             <script th:inline="javascript">
-                printThesaurus(/*[[${t_words}]]*/,/*[[${t_values}]]*/)
+                printThesaurus(/*[[${words_dataset}]]*/)
             </script>
           </div>
         </div>

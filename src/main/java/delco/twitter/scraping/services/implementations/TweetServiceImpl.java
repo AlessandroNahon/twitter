@@ -4,6 +4,7 @@ import delco.twitter.scraping.model.Tweet;
 import delco.twitter.scraping.model.model_content.Datum;
 import delco.twitter.scraping.model.model_content.Root;
 import delco.twitter.scraping.repositories.TweetRepository;
+import delco.twitter.scraping.services.interfaces.SentimentService;
 import delco.twitter.scraping.services.interfaces.TweetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,17 +22,19 @@ public class TweetServiceImpl implements TweetService {
     private final ImageServiceImpl imageService;
     private final APITWServiceImpl twitterAPIService;
     private final RepliesServiceImpl repliesService;
+    private final SentimentService sentimentService;
     @Autowired
     private EntityManager em;
 
     public TweetServiceImpl(APITWServiceImpl twitterAPIService, TweetRepository tweetRepository,
                             WordServiceImpl wordService, ImageServiceImpl imageService,
-                            RepliesServiceImpl repliesService) {
+                            RepliesServiceImpl repliesService, SentimentService sentimentService) {
         this.tweetRepository = tweetRepository;
         this.wordService = wordService;
         this.imageService = imageService;
         this.twitterAPIService = twitterAPIService;
         this.repliesService = repliesService;
+        this.sentimentService = sentimentService;
     }
 
 
@@ -51,7 +54,7 @@ public class TweetServiceImpl implements TweetService {
                 tweet.setCreatedAt(datum.getCreated_at());
                 tweet.setUsername(username);
                 tweet.setConversationId(datum.getConversation_id());
-                //tweet.setTextSentiment(sentimentService.getSentiment(datum.getText()));
+                tweet.setTextSentiment(sentimentService.getSentiment(datum.getText()));
                 imageService.setImages(root.getIncludes(), datum, tweet);
                 repliesService.parseReplyFromTweet(
                 twitterAPIService.getReplies(datum.getConversation_id(), tweet),tweet);

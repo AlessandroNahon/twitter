@@ -41,12 +41,10 @@ public class IndexController {
                 (tweetRepository.count()%10)==0?(tweetRepository.count()/10):(tweetRepository.count()/10)+1);
         model.addAttribute("actualPage",currentPage);
         model.addAttribute("tweets", tweetRepository.findAll(PageRequest.of(currentPage-1,10)));
-        model.addAttribute("sentiment_values", sentimentService.getAppearances());
-        Object[] thesaurusValues = wordService.getWordAndCount(5);
+        model.addAttribute("sentiment_dataset", sentimentService.findAllSentiment());
         model.addAttribute("imgUtil",new ImageUtil());
         model.addAttribute("images", imageRepository.findAll(PageRequest.of(1, 10)));
-        model.addAttribute("t_words", thesaurusValues[0]);
-        model.addAttribute("t_values", thesaurusValues[1]);
+        model.addAttribute("words_dataset",wordService.getTop5Words());
         return "index";
     }
 }

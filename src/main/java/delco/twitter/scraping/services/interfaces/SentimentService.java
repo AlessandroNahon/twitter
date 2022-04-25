@@ -1,5 +1,6 @@
 package delco.twitter.scraping.services.interfaces;
 
+import delco.twitter.scraping.model.Sentiment;
 import delco.twitter.scraping.model.enumerations.SentimentEnum;
 
 import java.util.List;
@@ -10,6 +11,6 @@ public interface SentimentService {
 
     void addAppearance(Long id);
 
-    List<Integer> getAppearances();
+    Iterable<Sentiment> findAllSentiment();
 
 }
