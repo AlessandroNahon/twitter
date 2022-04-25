@@ -28,8 +28,12 @@ public class WordServiceImpl implements WordService {
 
     public WordServiceImpl(WordRepository wordRepository) {
         this.wordRepository = wordRepository;
-        stanfordCoreNLP = Pipeline.getPipeline();
-
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                stanfordCoreNLP = Pipeline.getPipeline();
+            }
+        }).start();
     }
 
     /**

@@ -21,7 +21,7 @@ public class ReplyController {
     @RequestMapping("/replies/showReply/{id}")
     public String showById(@PathVariable String id, Model model) {
         model.addAttribute("replies", replyService.findByTweetId(Long.valueOf(id)));
-        model.addAttribute("tweet", tweetService.findById(Long.valueOf(id)));
+        model.addAttribute("tweet", tweetService.findById(Long.valueOf(id)).get());
         return "replies/showReply";
     }
 

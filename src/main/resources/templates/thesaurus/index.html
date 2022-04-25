@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Tweet Thesaurus</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link th:href="@{/css/thesaurusStyle.css}" rel="stylesheet" />
+        <link th:href="@{/css/generalStyle.css}" rel="stylesheet" />
+        <script type="text/javascript" th:src="@{/JS/index.js}"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+              integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.11.0/mdb.min.css" rel="stylesheet" />
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.11.0/mdb.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+                integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+                crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+                integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+                crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+                integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+                crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"
+                integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ=="
+                crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <link rel="stylesheet" href="thesarusuStyle.css">
+    </head>
+    <body class="bg-light" >
+        <div class="row">
+            <div class="col-md-12">
+                <nav class="navbar navbar-expand-lg navbar-light bg-info p-3">
+                    <div class="container-fluid">
+                        <a class="navbar-brand" href="#">
+                            <i class='fab fa-twitter pr-3' style='font-size:32px; color:white;'></i>
+                        </a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                                data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                                aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul class="navbar-nav mr-auto">
+                                <li class="nav-item">
+                                    <a class="nav-link text-white fs-5 pl-4 pr-4 border-right"
+                                       th:href="@{'/index'}" href="#">Overview</a>
+                                </li>
+                                <li class="nav-item active ">
+                                    <a class="nav-link text-white fs-5  pl-4 pr-4 border-right" href="#">Tweets</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-white fs-5 pl-4 pr-4 border-right " href="#">Sentiment</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-white fs-5  pl-4 pr-4 border-right text-opacity-50"
+                                       href="#">Thesaurus</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-white fs-5 pl-4 pr-4 "  href="#">Search</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        <div class="card-deck d-flex justify-content-center" >
+            <div class="row col-11" >
+                <div class="col-md-3 mt-4" >
+                    <div class="card" id="noun-card">
+                        <div class="card-header col-12 text-white ">
+                            <div class="row justify-content-between">
+                                <h5 class="col-4 mt-2">Nouns</h5>
+                                <h5 class="inline-block col-3 mt-2">total</h5>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row col-12 justify-content-between">
+                                <div class="col-6">
+                                    <h4 class="pt-4 pb-4 text-light">Most used</h4>
+                                </div>
+                                <div  class="col-5">
+                                    <div class="row pt-4">
+                                        <a href="#" class="" >
+                                            <h5>Lorem ipsuim</h5>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mt-4 " >
+                    <div class="card" id="adverbs-card">
+                        <div class="card-header col-12 text-white ">
+                            <div class="row justify-content-between">
+                                <h5 class="col-4 mt-2">Adverbs</h5>
+                                <h5 class="inline-block col-3 mt-2">total</h5>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row col-12 justify-content-between">
+                                <div class="col-6">
+                                    <h4 class="pt-4 pb-4 text-light">Most used</h4>
+                                </div>
+                                <div  class="col-5">
+                                    <div class="row pt-4">
+                                        <a href="#" class="" >
+                                            <h5>Lorem ipsuim</h5>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mt-4" >
+                    <div class="card" id="adjectives-card">
+                        <div class="card-header col-12 text-white">
+                            <div class="row justify-content-between">
+                                <h5 class="col-4 mt-2">Adjectives</h5>
+                                <h5 class="inline-block col-3 mt-2">total</h5>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row col-12 justify-content-between">
+                                <div class="col-6">
+                                    <h4 class="pt-4 pb-4 text-light">Most used</h4>
+                                </div>
+                                <div  class="col-5">
+                                    <div class="row pt-4">
+                                        <a href="#" class="" >
+                                            <h5>Lorem ipsuim</h5>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mt-4" >
+                    <div class="card" id="emojis-card">
+                        <div class="card-header col-12 text-white ">
+                            <div class="row justify-content-between" >
+                                <h5 class="col-4 mt-2">Emojis</h5>
+                                <h5 class="inline-block col-3 mt-2">total</h5>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row col-12 justify-content-between">
+                                <div class="col-6">
+                                    <h4 class="pt-4 pb-4 text-light">Most used</h4>
+                                </div>
+                                <div  class="col-5">
+                                    <div class="row pt-4">
+                                        <a href="#" class="" >
+                                            <h5>Lorem ipsuim</h5>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center mt-4 col-12" >
+            <div class="row col-11" >
+                <div class="card">
+                    <div class="card-header pt-4">
+                        <h5 class="card-title d-inline ">Thesaurus of words</h5>
+                    </div>
+                    <div class="card-body" >
+                        <canvas id="bar" width="300" height="65"></canvas>
+                        <script th:inline="javascript">
+                            printThesaurus(/*[[${t_words}]]*/,/*[[${t_values}]]*/)
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-deck d-flex justify-content-center mt-4" >
+            <div class="row col-11">
+                <div class="col-6">
+                  <div class="card">
+                    <div class="card-header pt-4">
+                        <h5>Quische words</h5>
+                    </div>
+                    <div class="card-body">
+                        <!--  Aquí va la lógica de la tabla Quische  -->
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                    <div class="card">
+                        <div class="card-header pt-4">
+                            <h5>Grotesque words</h5>
+                        </div>
+                        <div class="card-body">
+                            <!--  Aquí va la lógica de la tabla grotesque  -->
+                        </div>
+                      </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-deck d-flex justify-content-center mt-4" >
+            <div class="row col-11 ">
+                <div class="col-12">
+                  <div class="card bg-info">
+                    <div class="card-body align-content-center pb-2">
+                        <div class="row">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                  <button class="btn btn-outline-white rounded bg-white text-black font-weight-normal" type="button">Search words</button>
+                                </div>
+                                <input type="text" class="form-control ml-3 rounded" placeholder="Search for specific words into the database...">
+                              </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+        <div class="card- d-flex justify-content-center mt-4" >
+            <div class="row col-11 ">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive border rounded">
+                              <table class="table table-striped table-hover">
+                                <thead class="thead-inverse">
+                                <tr>
+                                  <th>Text</th>
+                                  <th>Sentiment</th>
+                                  <th>Replies</th>
+                                  <th>See...</th>
+                                </tr>
+                                </thead>
+                                <tr th:each="tw : ${tweets}">
+                                  <td th:text="${tw.text}">Text</td>
+                                  <td th:text="${tw.textSentiment}">Sentiment</td>
+                                  <td th:text="${#lists.size(tw.replies)}">Replies</td>
+                                  <td>
+                                    <a href="#" th:href="@{'/replies/showReply/'+${tw.id}}" class="text-dark">
+                                      <i class="fas fas fa-arrow-right"></i>
+                                    </a>
+                                  </td>
+                                </tr>
+                              </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

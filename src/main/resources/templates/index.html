@@ -7,6 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link th:href="@{/css/index.css}" rel="stylesheet" />
+  <link th:href="@{/css/generalStyle.css}" rel="stylesheet" />
   <script type="text/javascript" th:src="@{/JS/index.js}"></script>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -44,7 +45,7 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
               <li class="nav-item">
-                <a class="nav-link text-white fs-5 pl-4 pr-4 border-right" href="#">Overview</a>
+                <a class="nav-link text-white fs-5 pl-4 pr-4 border-right text-opacity-50" href="#">Overview</a>
               </li>
               <li class="nav-item active ">
                 <a class="nav-link text-white fs-5  pl-4 pr-4 border-right" href="#">Tweets</a>
@@ -53,7 +54,8 @@
                 <a class="nav-link text-white fs-5 pl-4 pr-4 border-right" href="#">Sentiment</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link text-white fs-5  pl-4 pr-4 border-right" href="#">Thesaurus</a>
+                <a class="nav-link text-white fs-5  pl-4 pr-4 border-right"
+                   th:href="@{'thesaurus/index'}" href="#">Thesaurus</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link text-white fs-5 pl-4 pr-4 "  href="#">Search</a>
@@ -110,7 +112,7 @@
       </div>
       <div class="card mt-3 pb-3">
         <div class="col-md-12">
-          <div class="card-header">
+          <div class="card-header pt-4">
             <h5 class="card-title d-inline pt-4">Images</h5>
             <a href="#" class="float-right" style="font-size: 20px;">
               <i class="fas fa-arrow-right"></i>
@@ -128,7 +130,7 @@
       </div>
       <div class="card mt-3 pb-3">
         <div class="col-md-12">
-          <div class="card-header mb-3">
+          <div class="card-header mb-3 pt-4">
             <h5 class="card-title d-inline pt-10">Tweets</h5>
             <script th:inline="javascript">
               scrollDown(/*[[${actualPage}]]*/);
@@ -154,7 +156,6 @@
             </div>
           </div>
           <div class="card-body">
-
             <div class="table-responsive border rounded">
               <table class="table table-striped table-hover">
                 <thead class="thead-inverse">
