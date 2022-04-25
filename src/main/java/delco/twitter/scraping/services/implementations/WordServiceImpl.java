@@ -12,7 +12,9 @@ import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 
+import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,15 +27,12 @@ public class WordServiceImpl implements WordService {
     private final WordRepository wordRepository;
     private StanfordCoreNLP stanfordCoreNLP;
     private final String regex = "[\\x{10000}-\\x{10FFFF}]";
+    private final Set<String> kischcWords = readFiles("kische");
+    private final Set<String> grotesqueWords = readFiles("grotesque");
 
     public WordServiceImpl(WordRepository wordRepository) {
         this.wordRepository = wordRepository;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                stanfordCoreNLP = Pipeline.getPipeline();
-            }
-        }).start();
+        stanfordCoreNLP = Pipeline.getPipeline();
     }
 
     /**
@@ -59,8 +58,14 @@ public class WordServiceImpl implements WordService {
                         .replace("!", "");
                 if (isEmoji(word)) {
                     parseEmoji(word);
-                } else {
-                    parseWord(word);
+                }else{
+                    if(isGrotesqueWord(word)){
+                        parseGrotesqueWord(word);
+                    } else if(isKischWord(word)) {
+                        parseKischWord(word);
+                    } else {
+                        parseWord(word);
+                    }
                 }
             }
         }
@@ -90,6 +95,39 @@ public class WordServiceImpl implements WordService {
             }
         }
     }
+
+    @Override
+    public void parseKischWord(String text) {
+        Word newWord = isWordPresent(text);
+        if (newWord != null) {
+            newWord.setCount(newWord.getCount() + 1);
+        } else {
+            newWord = new Word(text, 1, SyntaxEnum.KITSCH);
+            wordRepository.save(newWord);
+        }
+    }
+
+    @Override
+    public void parseGrotesqueWord(String text) {
+        Word newWord = isWordPresent(text);
+        if (newWord != null) {
+            newWord.setCount(newWord.getCount() + 1);
+        } else {
+            newWord = new Word(text, 1, SyntaxEnum.GROTESQUE);
+            wordRepository.save(newWord);
+        }
+    }
+
+    @Override
+    public boolean isKischWord(String words) {
+        return kischcWords.contains(words);
+    }
+
+    @Override
+    public boolean isGrotesqueWord(String word) {
+        return grotesqueWords.contains(word);
+    }
+
 
     /**
      * This metod is used to save the words in the database. It checks if the word is present in the database, if it is
@@ -197,6 +235,23 @@ public class WordServiceImpl implements WordService {
         Pattern pattern = Pattern.compile(regex);
         return pattern.matcher(word).find();
 
+    }
+
+
+    public HashSet<String> readFiles(String fileName) {
+        String path = System.getProperty("user.dir")+ File.separator+"src"+File.separator
+                +"main"+File.separator+"resources"+File.separator+"static"+File.separator+"files"+File.separator+fileName;
+        System.out.println(path);
+        try {
+            File fichero =  ResourceUtils.getFile("classpath:"+fileName+".dat");
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fichero));
+            return (HashSet<String>) ois.readObject();
+        } catch (IOException e) {
+            System.out.println("The file was not found");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        throw new RuntimeException("The file was not found");
     }
 
 

@@ -8,6 +8,7 @@
         <link th:href="@{/css/thesaurusStyle.css}" rel="stylesheet" />
         <link th:href="@{/css/generalStyle.css}" rel="stylesheet" />
         <script type="text/javascript" th:src="@{/JS/index.js}"></script>
+        <script type="text/javascript" th:src="@{/JS/thesaurus/thesaurusJS.js}"></script>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
               integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
@@ -17,6 +18,7 @@
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
                 integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
                 crossorigin="anonymous"></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js'></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
                 integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
                 crossorigin="anonymous"></script>
@@ -27,6 +29,7 @@
                 integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ=="
                 crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <link rel="stylesheet" href="thesarusuStyle.css">
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js'></script>
     </head>
     <body class="bg-light" >
         <div class="row">
@@ -175,7 +178,7 @@
                     <div class="card-body" >
                         <canvas id="bar" width="300" height="65"></canvas>
                         <script th:inline="javascript">
-                            printThesaurus(/*[[${t_words}]]*/,/*[[${t_values}]]*/)
+                            prueba();
                         </script>
                     </div>
                 </div>
@@ -189,7 +192,12 @@
                         <h5>Quische words</h5>
                     </div>
                     <div class="card-body">
-                        <!--  Aquí va la lógica de la tabla Quische  -->
+                        <div class="page-content page-container" id="page-content">
+                            <canvas id="chart-line" width="300" height="300"></canvas>
+                            <script th:inline="javascript">
+                                printHorizontal('chart-line');
+                            </script>
+                            </div>
                     </div>
                   </div>
                 </div>
@@ -199,7 +207,10 @@
                             <h5>Grotesque words</h5>
                         </div>
                         <div class="card-body">
-                            <!--  Aquí va la lógica de la tabla grotesque  -->
+                            <canvas id="chart2-line" width="300" height="300"></canvas>
+                            <script th:inline="javascript">
+                                printHorizontal('chart2-line');
+                            </script>
                         </div>
                       </div>
                 </div>

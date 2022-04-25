@@ -34,10 +34,10 @@ import java.util.regex.Pattern;
     @Override
     public void run(String... args) throws Exception {
         try {
-//            Date fechaLimite = new Date(2022-1900, Calendar.MARCH,20);
-//
-//            limpiarRegistros();
-//            tweetService.getUserTimeline("Greenpeace", fechaLimite);
+            Date fechaLimite = new Date(2022-1900, Calendar.MARCH,20);
+
+            limpiarRegistros();
+            tweetService.getUserTimeline("Greenpeace", fechaLimite);
             System.out.println("Tweets cargados");
         } catch (Exception e) {
             e.printStackTrace();

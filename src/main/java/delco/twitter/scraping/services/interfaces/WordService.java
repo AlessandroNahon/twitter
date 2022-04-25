@@ -23,4 +23,16 @@ public interface WordService {
 
     void parseEmoji(String emoji);
 
+
+
+    void parseKischWord(String text);
+
+    void parseGrotesqueWord(String text);
+
+    boolean isKischWord(String words);
+
+    boolean isGrotesqueWord(String word);
+
+
+
 }
