@@ -1,7 +1,7 @@
 package delco.twitter.scraping.services.implementations;
 
 import delco.twitter.scraping.model.Word;
-import delco.twitter.scraping.model.enumerations.SyntaxEnum;
+import delco.twitter.scraping.model.enumerations.TypeEnum;
 import delco.twitter.scraping.repositories.WordRepository;
 import delco.twitter.scraping.services.interfaces.WordService;
 import delco.twitter.scraping.services.pipelinenlp.Pipeline;
@@ -27,11 +27,13 @@ public class WordServiceImpl extends Thread  implements WordService {
     private final WordRepository wordRepository;
     private StanfordCoreNLP stanfordCoreNLP;
     private final String regex = "[\\x{10000}-\\x{10FFFF}]";
-    private final Set<String> kischcWords = readFiles("kische");
-    private final Set<String> grotesqueWords = readFiles("grotesque");
+    private Set<String> kischcWords;
+    private Set<String> grotesqueWords;
+
     @Autowired
     private EntityManager em;
     private boolean loadedPipeline = false;
+    private boolean loadedFiles = false;
     private final Thread thread = this;
 
     public WordServiceImpl(WordRepository wordRepository) {
@@ -41,6 +43,15 @@ public class WordServiceImpl extends Thread  implements WordService {
             public void run() {
                 stanfordCoreNLP = Pipeline.getPipeline();
                 loadedPipeline = true;
+                System.out.println("Pipeline loaded");
+            }
+        }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                kischcWords = readFiles("kische");
+                grotesqueWords = readFiles("grotesque");
+                loadedFiles = true;
             }
         }).start();
 
@@ -57,12 +68,12 @@ public class WordServiceImpl extends Thread  implements WordService {
      */
     @Override
     public void analyzeText(String text) {
-        String[] words = text.split(" ");
+        String[] words = text.split("\\s+");
         for (String word : words) {
-            if (word.length() > 3 && !word.contains("@") && !word.contains("http")) {
+            if (word.length() > 2 && !word.contains("@") && !word.contains("http")) {
                 word = word.replace(",", "")
-                        .replace("&gt;&gt", "")
-                        .replace("&gt", "")
+                        .replace("&gt;&gt+", "")
+                        .replace("&gt+", "")
                         .replace("\n"," ")
                         .replace(".", "")
                         .replace("?", "")
@@ -99,7 +110,7 @@ public class WordServiceImpl extends Thread  implements WordService {
                 if (newWord != null) {
                     newWord.setCount(newWord.getCount() + 1);
                 } else {
-                    newWord = new Word(emojiMatcher.group(), 1, SyntaxEnum.EMOJI);
+                    newWord = Word.builder().word(text).count(1).syntax(TypeEnum.EMOJI).build();
                 }
                 wordRepository.save(newWord);
                 emojiMatcher.find();
@@ -113,7 +124,7 @@ public class WordServiceImpl extends Thread  implements WordService {
         if (newWord != null) {
             newWord.setCount(newWord.getCount() + 1);
         } else {
-            newWord = new Word(text, 1, SyntaxEnum.KITSCH);
+            newWord = Word.builder().word(text).count(1).syntax(TypeEnum.KITSCH).build();
             wordRepository.save(newWord);
         }
     }
@@ -124,7 +135,7 @@ public class WordServiceImpl extends Thread  implements WordService {
         if (newWord != null) {
             newWord.setCount(newWord.getCount() + 1);
         } else {
-            newWord = new Word(text, 1, SyntaxEnum.GROTESQUE);
+            newWord = Word.builder().word(text).count(1).syntax(TypeEnum.GROTESQUE).build();
             wordRepository.save(newWord);
         }
     }
@@ -157,14 +168,14 @@ public class WordServiceImpl extends Thread  implements WordService {
      */
     @Override
     public void parseWord(String text){
-        SyntaxEnum syntaxEnum = getTypeOfWord(text);
-        if (syntaxEnum != SyntaxEnum.NONE) {
+        TypeEnum typeEnum = getTypeOfWord(text);
+        if (typeEnum != TypeEnum.NONE) {
             try {
                 Word newWord = isWordPresent(text);
                 if (newWord != null) {
                     newWord.setCount(newWord.getCount() + 1);
                 } else {
-                    newWord = new Word(text, 1, syntaxEnum);
+                    newWord = Word.builder().word(text).count(1).syntax(typeEnum).build();
                 }
                 wordRepository.save(newWord);
             } catch (Exception e) {
@@ -179,11 +190,11 @@ public class WordServiceImpl extends Thread  implements WordService {
      * @return The type of word, if it is one of the valids types of word, otherwise, it will return NONE
      */
     @Override
-    public synchronized SyntaxEnum getTypeOfWord(String word) {
+    public synchronized TypeEnum getTypeOfWord(String word) {
         CoreDocument coreDocument = new CoreDocument(word);
-        if(!loadedPipeline){
+        while(!loadedPipeline || !loadedFiles){
             try {
-                this.sleep(1000);
+                this.sleep(200);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -197,25 +208,25 @@ public class WordServiceImpl extends Thread  implements WordService {
                 case "NNS":
                 case "NNP":
                 case "NNPS":
-                    return SyntaxEnum.NOUN;
+                    return TypeEnum.NOUN;
                 case "JJ":
                 case "JJR":
                 case "JJS":
-                    return SyntaxEnum.ADJECTIVE;
+                    return TypeEnum.ADJECTIVE;
                 case "VB":
                 case "VBG":
                 case "VBN":
                 case "VBP":
                 case "VBZ":
-                    return SyntaxEnum.VERB;
+                    return TypeEnum.VERB;
                 case "RB":
                 case "RBR":
                 case "RBS":
                 case "WRB":
-                    return SyntaxEnum.ADVERB;
+                    return TypeEnum.ADVERB;
             }
         }
-        return SyntaxEnum.NONE;
+        return TypeEnum.NONE;
     }
 
 
@@ -244,9 +255,6 @@ public class WordServiceImpl extends Thread  implements WordService {
 
 
     public HashSet<String> readFiles(String fileName) {
-        String path = System.getProperty("user.dir")+ File.separator+"src"+File.separator
-                +"main"+File.separator+"resources"+File.separator+"static"+File.separator+"files"+File.separator+fileName;
-        System.out.println(path);
         try {
             File fichero =  ResourceUtils.getFile("classpath:"+fileName+".dat");
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fichero));
@@ -259,12 +267,12 @@ public class WordServiceImpl extends Thread  implements WordService {
         throw new RuntimeException("The file was not found");
     }
 
-    public Word getTopSyntaxEnum(SyntaxEnum syntaxEnum) {
-        return wordRepository.findTop1BySyntaxOrderByCountDesc(syntaxEnum);
+    public Word getTopSyntaxEnum(TypeEnum typeEnum) {
+        return wordRepository.findTop1BySyntaxOrderByCountDesc(typeEnum);
     }
 
-    public List<Word> getTop10WordsBySyntax(SyntaxEnum syntaxEnum) {
-        return wordRepository.findTop10BySyntaxOrderByCountDesc(syntaxEnum);
+    public List<Word> getTop10WordsBySyntax(TypeEnum typeEnum) {
+        return wordRepository.findTop10BySyntaxOrderByCountDesc(typeEnum);
     }
 
 

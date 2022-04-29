@@ -121,8 +121,9 @@
           <div class="card-body scrolling-wrapper" id="scrollingWp">
             <div class="card d-inline-flex p-2 m-2" th:each="img : ${images}">
               <a href="#" th:href="@{'/images/showImage/'+${img.id}}">
-                <img class="p-2 hover-shadow imageStyle1" th:src="'data:image/jpeg;base64,' +
+                <img class="p-2 hover-shadow imageStyle1" th:src="'data:images/jpg;base64,' +
                 ${imgUtil.getImgData(img.image)}" />
+
               </a>
             </div>
           </div>
@@ -171,7 +172,7 @@
                   <td th:text="${tw.textSentiment}">Sentiment</td>
                   <td th:text="${#lists.size(tw.replies)}">Replies</td>
                   <td>
-                    <a href="#" th:href="@{'/replies/showReply/'+${tw.id}}" class="text-dark">
+                    <a href="#" th:href="@{'/replies/showReplies/'+${tw.id}}" class="text-dark">
                       <i class="fas fas fa-arrow-right"></i>
                     </a>
                   </td>

@@ -10,6 +10,7 @@ import delco.twitter.scraping.services.interfaces.SentimentService;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -59,7 +60,7 @@ public class RepliesServiceImpl implements RepliesService {
                     System.out.println("Analiza respuesta: " + dt.getText());
                     Reply reply = new Reply();
                     reply.setText(dt.getText());
-                    imageService.setImages(root.getIncludes(), dt, reply);
+                    imageService.getImages(root.getIncludes(), dt, reply);
                     reply.setTextSentiment(sentimentService.getSentiment(dt.getText()));
                     wordService.analyzeText(dt.getText());
                     originalTweet.addReply(reply);
@@ -72,6 +73,11 @@ public class RepliesServiceImpl implements RepliesService {
                 }
             }
         }
+    }
+
+    @Override
+    public List<Reply> findAllByTextContaining(String text) {
+        return repliesRepository.findAllByTextContaining(text);
     }
 
 

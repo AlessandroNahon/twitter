@@ -1,6 +1,5 @@
 package delco.twitter.scraping.model;
 
-import delco.twitter.scraping.model.enumerations.ContentEnum;
 import delco.twitter.scraping.model.enumerations.SentimentEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,24 +24,25 @@ public class Reply {
     private SentimentEnum textSentiment;
     //private Set<String> images_urls = new HashSet<String>();
 
-    @Enumerated(EnumType.STRING)
-    private ContentEnum imageContent;
 
     @ManyToOne
     @JoinColumn(name = "original_tweet_id")
     private Tweet originalTweet;
 
-    @OneToMany(mappedBy = "reply", cascade = CascadeType.ALL)
-    private Set<Image> image = new HashSet<>();
+    @OneToMany(mappedBy = "reply", cascade = CascadeType.REMOVE)
+    private Set<Images> images = new HashSet<>();
 
-    public Reply addImage(Image image){
-        this.image.add(image);
-        image.setReply(this);
+    public Reply addImage(Images images){
+        if(this.images == null){
+            this.images = new HashSet<>();
+        }
+        this.images.add(images);
+        images.setReply(this);
         return this;
     }
 
-    public Reply remove(Image image){
-        this.image.remove(image);
+    public Reply remove(Images images){
+        this.images.remove(images);
         return this;
     }
 

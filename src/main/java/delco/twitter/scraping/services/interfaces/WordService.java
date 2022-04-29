@@ -1,11 +1,9 @@
 package delco.twitter.scraping.services.interfaces;
 
-import delco.twitter.scraping.model.Tweet;
 import delco.twitter.scraping.model.Word;
-import delco.twitter.scraping.model.enumerations.SyntaxEnum;
+import delco.twitter.scraping.model.enumerations.TypeEnum;
 
 import java.util.List;
-import java.util.Map;
 
 public interface WordService {
 
@@ -13,7 +11,7 @@ public interface WordService {
 
     void analyzeText(String text);
 
-    SyntaxEnum getTypeOfWord(String word);
+    TypeEnum getTypeOfWord(String word);
 
     Word isWordPresent(String word);
 
@@ -22,8 +20,6 @@ public interface WordService {
     void parseWord(String text);
 
     void parseEmoji(String emoji);
-
-
 
     void parseKischWord(String text);
 

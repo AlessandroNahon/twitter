@@ -49,13 +49,14 @@ public class TweetServiceImpl implements TweetService {
         root.getData().forEach(datum -> {
             if (!isRetweet(datum.getText()) && containsMedia(datum)) {
                 System.out.println("Analiza tweet: " + datum.getText());
-                Tweet tweet = new Tweet();
-                tweet.setText(datum.getText());
-                tweet.setCreatedAt(datum.getCreated_at());
-                tweet.setUsername(username);
-                tweet.setConversationId(datum.getConversation_id());
+                Tweet tweet = Tweet.builder()
+                        .text(datum.getText())
+                        .username(username)
+                        .createdAt(datum.getCreated_at())
+                        .conversationId(datum.getConversation_id()).build();
+
                 tweet.setTextSentiment(sentimentService.getSentiment(datum.getText()));
-                imageService.setImages(root.getIncludes(), datum, tweet);
+                imageService.getImages(root.getIncludes(), datum, tweet);
                 repliesService.parseReplyFromTweet(
                 twitterAPIService.getReplies(datum.getConversation_id(), tweet),tweet);
                 tweetRepository.save(tweet);
@@ -77,7 +78,7 @@ public class TweetServiceImpl implements TweetService {
         boolean fechaLimite = false;
         while (!fechaLimite) {
             try {
-                Tweet lastTweet = (Tweet) em.createNamedQuery("Tweet.findLastTweet").getResultList().get(0);
+                Tweet lastTweet = tweetRepository.findTop1ByOrderByIdDesc();
                 if (lastTweet.getCreatedAt().before(maxDate)) {
                     raiz = twitterAPIService.getNextTweets(username, raiz);
                     parseTweetDatumFromRoot(raiz, username);
@@ -92,6 +93,7 @@ public class TweetServiceImpl implements TweetService {
         }
     }
 
+    
     /**
      * This method is used to check if a tweet is a retweet.
      * @param tweet Tweet to be checked
@@ -102,6 +104,7 @@ public class TweetServiceImpl implements TweetService {
         return tweet.contains("RT @");
     }
 
+    
     /**
      * This method is used to check if a tweet contains media.
      * @param datum Tweet to be checked
@@ -111,5 +114,33 @@ public class TweetServiceImpl implements TweetService {
     @Override
     public boolean containsMedia(Datum datum) {
         return datum.getAttachments().getMedia_keys().size() != 0;
+    }
+
+    
+    /**
+     * This method is used by the controller to call the repository and find all the tweets that contains
+     * the word passed by parameter
+     * @param text The word used in the search
+     * @return List with all the Tweets that contains the "text", empty list if there's no tweets containing that text
+     */
+    @Override
+    public List<Tweet> findByText(String text) {
+        try{
+            return tweetRepository.findAllByTextContaining(text);
+        }catch (IllegalArgumentException ex){
+            ex.printStackTrace();
+        }
+        return new ArrayList<Tweet>();
+    }
+
+    
+    /**
+     * This method is used by the controller to find the last 5 tweets stored in the database. Since the ID is 
+     * autoincremental, the query sort by this field and returns the 5 larger ID's 
+     * @return List of the last 5 tweets added
+     */
+    @Override
+    public List<Tweet> findTop5ByOrderByIdDesc() {
+        return tweetRepository.findTop5ByOrderByIdDesc();
     }
 }

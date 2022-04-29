@@ -1,22 +1,20 @@
 package delco.twitter.scraping.model;
 
-import delco.twitter.scraping.model.enumerations.ContentEnum;
 import delco.twitter.scraping.model.enumerations.SentimentEnum;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.*;
 
 @Entity(name="tweet")
-@NamedNativeQueries({
-        @NamedNativeQuery(name = "Tweet.findLastTweet",
-                query = "SELECT id,conversation_id,created_at,image_content,text," +
-                        "text_sentiment,username FROM tweets t ORDER BY t.id DESC",
-                resultClass = Tweet.class)
-})
+
 @Data
 @EqualsAndHashCode(exclude = {"replies","image"})
+@Builder(toBuilder = true)
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
+@Getter
 @Table(name = "tweets")
 public class Tweet{
 
@@ -31,18 +29,20 @@ public class Tweet{
     @Enumerated(EnumType.STRING)
     private SentimentEnum textSentiment;
 
-    @Enumerated(EnumType.STRING)
-    private ContentEnum imageContent;
+
     private Date createdAt;
     private String conversationId;
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "originalTweet")
     private Set<Reply> replies = new HashSet<>();
 
-    @OneToMany(mappedBy = "tweet", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Image> image = new HashSet<>();
+    @OneToMany(mappedBy = "tweet", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<Images> images = new HashSet<>();
 
     public Tweet addReply(Reply reply){
+        if(this.replies == null){
+            this.replies = new HashSet<>();
+        }
         this.replies.add(reply);
         reply.setOriginalTweet(this);
         return this;
@@ -53,16 +53,46 @@ public class Tweet{
         return this;
     }
 
-    public Tweet addImage(Image image){
-        this.image.add(image);
-        image.setTweet(this);
+    public Tweet addImage(Images images){
+        if(this.images == null){
+            this.images = new HashSet<>();
+        }
+        this.images.add(images);
+        images.setTweet(this);
         return this;
     }
 
-    public Tweet removeImage(Image image){
-        this.image.remove(image);
+    public Tweet removeImage(Images images){
+        this.images.remove(images);
         return this;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        Tweet tweet = (Tweet) o;
+
+        return id != null ? id.equals(tweet.id) : tweet.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "Tweet{" +
+                "id=" + id +
+                ", text='" + text + '\'' +
+                ", username='" + username + '\'' +
+                ", textSentiment=" + textSentiment +
+                ", createdAt=" + createdAt +
+                ", conversationId='" + conversationId + '\'' +
+                ", replies=" + replies +
+                ", images=" + images +
+                '}';
+    }
 }

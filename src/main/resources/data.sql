@@ -1,5 +1,0 @@
-insert into SENTIMENT (id,sentiment,appearances) values (1,'POSITIVE',0)
-insert into SENTIMENT (id,sentiment,appearances) values (2,'VERY_POSITIVE',0)
-insert into SENTIMENT (id,sentiment,appearances) values (3,'NEUTRAL',0)
-insert into SENTIMENT (id,sentiment,appearances) values (4,'NEGATIVE',0)
-insert into SENTIMENT (id,sentiment,appearances) values (5,'VERY_NEGATIVE',0)

@@ -4,34 +4,42 @@ import delco.twitter.scraping.model.enumerations.TypeEnum;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Arrays;
 
 @Data
-@Entity(name = "words")
-@Table(name = "words")
+@EqualsAndHashCode(exclude = {"tweet","reply"})
+@Entity
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
-public class Word {
+@Table(name = "image")
+public class Images {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String word;
-    private int count;
+    @Lob
+    private byte[] image;
+
+    @ManyToOne
+    private Tweet tweet;
 
     @Enumerated(EnumType.STRING)
-    private TypeEnum syntax;
+    private TypeEnum imageContent;
+
+    @ManyToOne
+    private Reply reply;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Word word = (Word) o;
+        Images images = (Images) o;
 
-        return id != null ? id.equals(word.id) : word.id == null;
+        return id != null ? id.equals(images.id) : images.id == null;
     }
 
     @Override
@@ -39,13 +47,5 @@ public class Word {
         return id != null ? id.hashCode() : 0;
     }
 
-    @Override
-    public String toString() {
-        return "Word{" +
-                "id=" + id +
-                ", word='" + word + '\'' +
-                ", count=" + count +
-                ", syntax=" + syntax +
-                '}';
-    }
+
 }
