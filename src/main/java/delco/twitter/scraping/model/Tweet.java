@@ -36,7 +36,7 @@ public class Tweet{
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "originalTweet")
     private Set<Reply> replies = new HashSet<>();
 
-    @OneToMany(mappedBy = "tweet", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "tweet", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Images> images = new HashSet<>();
 
     public Tweet addReply(Reply reply){

@@ -41,7 +41,7 @@ import java.util.Calendar;
 //            probarApiImages();
 //
 //            probarApiImages();
-//            Date fechaLimite = new Date(2022-1900, Calendar.MARCH,18);
+//            Date fechaLimite = new Date(2022-1900, Calendar.MARCH,15);
 //            limpiarRegistros();
 //            tweetService.getUserTimeline("Greenpeace", fechaLimite);
             System.out.println("Tweets cargados");

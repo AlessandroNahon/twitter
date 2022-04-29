@@ -43,7 +43,7 @@ public class IndexController {
         model.addAttribute("tweets", tweetRepository.findAll(PageRequest.of(currentPage-1,10)));
         model.addAttribute("sentiment_dataset", sentimentService.findAllSentiment());
         model.addAttribute("imgUtil",new ImageUtil());
-        model.addAttribute("images", imageRepository.findAll(PageRequest.of(1, 10)));
+        model.addAttribute("images", imageRepository.findAll());
 //        model.addAttribute("images", imageRepository.findAll());
         model.addAttribute("words_dataset",wordService.getTop5Words());
         return "index";
