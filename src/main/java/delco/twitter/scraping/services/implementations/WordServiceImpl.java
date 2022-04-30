@@ -1,7 +1,12 @@
 package delco.twitter.scraping.services.implementations;
 
+import com.vdurmont.emoji.Emoji;
+import com.vdurmont.emoji.EmojiManager;
+import com.vdurmont.emoji.EmojiParser;
+import com.vdurmont.emoji.EmojiTrie;
 import delco.twitter.scraping.model.Word;
 import delco.twitter.scraping.model.enumerations.TypeEnum;
+import delco.twitter.scraping.model.model_content.Emojis;
 import delco.twitter.scraping.repositories.WordRepository;
 import delco.twitter.scraping.services.interfaces.WordService;
 import delco.twitter.scraping.services.pipelinenlp.Pipeline;
@@ -68,19 +73,22 @@ public class WordServiceImpl extends Thread  implements WordService {
      */
     @Override
     public void analyzeText(String text) {
-        String[] words = text.split("\\s+");
+        List<String> emojisList = getAllEmojisFromText(text);
+        if(emojisList.size() != 0){
+            for(String s : emojisList){
+                parseEmoji(s);
+            }
+        }
+        String textWithoutEmojis = EmojiParser.removeAllEmojis(text);
+        String[] words = textWithoutEmojis.split("\\s+");
         for (String word : words) {
             if (word.length() > 2 && !word.contains("@") && !word.contains("http")) {
-                word = word.replace(",", "")
-                        .replace("&gt;&gt+", "")
-                        .replace("&gt+", "")
+                word = word.replace(",", "").replaceAll("(?s)(?<=&lt;).*?(?=&gt;)", "")
                         .replace("\n"," ")
                         .replace(".", "")
                         .replace("?", "")
-                        .replace("!", "");
-                if (isEmoji(word)) {
-                    parseEmoji(word);
-                }else{
+                        .replace("!", "")
+                        .replace("\"","");
                     if(isGrotesqueWord(word)){
                         parseGrotesqueWord(word);
                     } else if(isKischWord(word)) {
@@ -91,7 +99,6 @@ public class WordServiceImpl extends Thread  implements WordService {
                 }
             }
         }
-    }
 
     /**
      * Thsi method is used to extract all the emojis from a word. When Splitting a text with the " " condition, there
@@ -102,20 +109,13 @@ public class WordServiceImpl extends Thread  implements WordService {
      */
     @Override
     public void parseEmoji(String text) {
-        Pattern pattern = Pattern.compile(regex);
-        Matcher emojiMatcher = pattern.matcher(text);
-        if (emojiMatcher.find()) {
-            while(!emojiMatcher.hitEnd()){
-                Word newWord = isWordPresent(emojiMatcher.group());
-                if (newWord != null) {
-                    newWord.setCount(newWord.getCount() + 1);
-                } else {
-                    newWord = Word.builder().word(text).count(1).syntax(TypeEnum.EMOJI).build();
-                }
-                wordRepository.save(newWord);
-                emojiMatcher.find();
-            }
+        Word newWord = isWordPresent(text);
+        if (newWord != null) {
+            newWord.setCount(newWord.getCount() + 1);
+        } else {
+            newWord = Word.builder().word(text).count(1).syntax(TypeEnum.EMOJI).build();
         }
+        wordRepository.save(newWord);
     }
 
     @Override
@@ -124,7 +124,7 @@ public class WordServiceImpl extends Thread  implements WordService {
         if (newWord != null) {
             newWord.setCount(newWord.getCount() + 1);
         } else {
-            newWord = Word.builder().word(text).count(1).syntax(TypeEnum.KITSCH).build();
+            newWord = Word.builder().word(text.toLowerCase()).count(1).syntax(TypeEnum.KITSCH).build();
             wordRepository.save(newWord);
         }
     }
@@ -135,7 +135,7 @@ public class WordServiceImpl extends Thread  implements WordService {
         if (newWord != null) {
             newWord.setCount(newWord.getCount() + 1);
         } else {
-            newWord = Word.builder().word(text).count(1).syntax(TypeEnum.GROTESQUE).build();
+            newWord = Word.builder().word(text.toLowerCase()).count(1).syntax(TypeEnum.GROTESQUE).build();
             wordRepository.save(newWord);
         }
     }
@@ -148,16 +148,6 @@ public class WordServiceImpl extends Thread  implements WordService {
     @Override
     public boolean isGrotesqueWord(String word) {
         return grotesqueWords.contains(word);
-    }
-
-    @Override
-    public List<Word> getTop20Words() {
-        return wordRepository.findTop20ByOrderByCountDesc();
-    }
-
-    @Override
-    public List<Word> getTop5Words() {
-        return wordRepository.findTop5ByOrderByCountDesc();
     }
 
 
@@ -175,7 +165,7 @@ public class WordServiceImpl extends Thread  implements WordService {
                 if (newWord != null) {
                     newWord.setCount(newWord.getCount() + 1);
                 } else {
-                    newWord = Word.builder().word(text).count(1).syntax(typeEnum).build();
+                    newWord = Word.builder().word(text.toLowerCase()).count(1).syntax(typeEnum).build();
                 }
                 wordRepository.save(newWord);
             } catch (Exception e) {
@@ -241,17 +231,46 @@ public class WordServiceImpl extends Thread  implements WordService {
                 .filter(w -> w.getWord().equals(word)).findAny().orElse(null);
     }
 
-    /**
-     * This method is used to determine if a word of the text is an emoji (Unicode Character I.E.: \uD83D\uDE00)
-     * @param word the word to be checked
-     * @return true if the word is an emoji, false otherwise
-     */
     @Override
-    public boolean isEmoji(String word) {
-        Pattern pattern = Pattern.compile(regex);
-        return pattern.matcher(word).find();
-
+    public List<String> getAllEmojisFromText(String text) {
+        char[] inputCharArray = text.toCharArray();
+        List<Emojis> candidates = new ArrayList();
+        for(int i = 0; i < text.length(); ++i) {
+            int emojiEnd = getEmojiEndPos(inputCharArray, i);
+            if (emojiEnd != -1) {
+                Emoji emoji = EmojiManager.getByUnicode(text.substring(i, emojiEnd));
+                String fitzpatrickString = emojiEnd + 2 <= text.length() ? new String(inputCharArray, emojiEnd, 2) : null;
+                Emojis candidate = new Emojis(emoji, fitzpatrickString, i);
+                candidates.add(candidate);
+                i = candidate.getFitzpatrickEndIndex() - 1;
+            }
+        }
+        List<String> emojis = new ArrayList<>();
+        for (Emojis c : candidates){
+            emojis.add(c.getEmoji().getUnicode());
+        }
+        return emojis;
     }
+
+
+    @Override
+    public int getEmojiEndPos(char[] text, int startPos) {
+        int best = -1;
+        for(int j = startPos + 1; j <= text.length; ++j) {
+            EmojiTrie.Matches status = EmojiManager.isEmoji(Arrays.copyOfRange(text, startPos, j));
+            if (status.exactMatch()) {
+                best = j;
+            } else if (status.impossibleMatch()) {
+                return best;
+            }
+        }
+        return best;
+    }
+
+
+
+
+
 
 
     public HashSet<String> readFiles(String fileName) {
@@ -274,6 +293,18 @@ public class WordServiceImpl extends Thread  implements WordService {
     public List<Word> getTop10WordsBySyntax(TypeEnum typeEnum) {
         return wordRepository.findTop10BySyntaxOrderByCountDesc(typeEnum);
     }
+
+
+    @Override
+    public List<Word> getTop20Words() {
+        return wordRepository.findTop20ByOrderByCountDesc();
+    }
+
+    @Override
+    public List<Word> getTop5Words() {
+        return wordRepository.findTop5ByOrderByCountDesc();
+    }
+
 
 
 

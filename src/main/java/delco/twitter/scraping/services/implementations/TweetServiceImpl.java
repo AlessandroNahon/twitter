@@ -50,17 +50,25 @@ public class TweetServiceImpl implements TweetService {
             if (!isRetweet(datum.getText()) && containsMedia(datum)) {
                 System.out.println("Analiza tweet: " + datum.getText());
                 Tweet tweet = Tweet.builder()
-                        .text(datum.getText())
+                        .text(datum.getText()
+                                .replace("&gt;&gt;", "")
+                                .replace("&gt+", "")
+                                .replace("&gt;",""))
                         .username(username)
                         .createdAt(datum.getCreated_at())
                         .conversationId(datum.getConversation_id()).build();
-
                 tweet.setTextSentiment(sentimentService.getSentiment(datum.getText()));
                 imageService.getImages(root.getIncludes(), datum, tweet);
                 repliesService.parseReplyFromTweet(
                 twitterAPIService.getReplies(datum.getConversation_id(), tweet),tweet);
                 tweetRepository.save(tweet);
-                wordService.analyzeText(datum.getText());
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        wordService.analyzeText(datum.getText());
+                    }
+                }).start();
+
             }
         });
     }
@@ -79,7 +87,7 @@ public class TweetServiceImpl implements TweetService {
         while (!fechaLimite) {
             try {
                 Tweet lastTweet = tweetRepository.findTop1ByOrderByIdDesc();
-                if (lastTweet.getCreatedAt().before(maxDate)) {
+                if (lastTweet.getCreatedAt().after(maxDate)) {
                     raiz = twitterAPIService.getNextTweets(username, raiz);
                     parseTweetDatumFromRoot(raiz, username);
                 } else {

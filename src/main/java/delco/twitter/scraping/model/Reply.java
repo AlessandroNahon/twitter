@@ -29,7 +29,7 @@ public class Reply {
     @JoinColumn(name = "original_tweet_id")
     private Tweet originalTweet;
 
-    @OneToMany(mappedBy = "reply", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "reply", cascade = CascadeType.ALL)
     private Set<Images> images = new HashSet<>();
 
     public Reply addImage(Images images){

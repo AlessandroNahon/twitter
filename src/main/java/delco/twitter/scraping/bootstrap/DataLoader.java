@@ -10,6 +10,7 @@ import delco.twitter.scraping.services.implementations.TweetServiceImpl;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.sql.Date;
 import java.util.Calendar;
 
@@ -35,15 +36,17 @@ import java.util.Calendar;
         this.imageService = imageService;
     }
 
+    @Transactional
     @Override
     public void run(String... args) throws Exception {
         try {
 //            probarApiImages();
 //
 //            probarApiImages();
-//            Date fechaLimite = new Date(2022-1900, Calendar.MARCH,15);
+//            Date fechaLimite = new Date(2022-1900, Calendar.APRIL,22);
 //            limpiarRegistros();
 //            tweetService.getUserTimeline("Greenpeace", fechaLimite);
+//            wordRepository.deleteByWord("&gt;&gt;");
             System.out.println("Tweets cargados");
         } catch (Exception e) {
             e.printStackTrace();

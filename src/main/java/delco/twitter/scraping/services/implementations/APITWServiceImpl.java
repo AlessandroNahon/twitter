@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.Date;
 
 @Service
-public class APITWServiceImpl implements APITWService {
+public class APITWServiceImpl  extends Thread implements APITWService{
 
     private final String BEARER_TOKEN;
 
@@ -37,7 +37,7 @@ public class APITWServiceImpl implements APITWService {
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
                     .url("https://api.twitter.com/2/users/"+getUserId(username)+"/tweets?tweet.fields=conversation_id,created_at&expansions=attachments.media_keys&" +
-                            "media.fields=media_key,preview_image_url,url&max_results=50")
+                            "media.fields=media_key,preview_image_url,url&max_results=100")
                     .method("GET", null)
                     .addHeader("Authorization", "Bearer "+BEARER_TOKEN)
                     .addHeader("Cookie", "guest_id=v1%3A164851793848590618")
@@ -77,8 +77,11 @@ public class APITWServiceImpl implements APITWService {
                     .execute()
                     .body()
                     .string(), Root.class);
+            Thread.sleep(500);
             return raiz;
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         return null;
@@ -105,8 +108,11 @@ public class APITWServiceImpl implements APITWService {
                     .build();
 
             response = client.newCall(request).execute();
+            Thread.sleep(500);
             return new Gson().fromJson(response.body().string(), Root.class);
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         return null;

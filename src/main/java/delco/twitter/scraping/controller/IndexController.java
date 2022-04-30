@@ -1,6 +1,6 @@
 package delco.twitter.scraping.controller;
 
-import delco.twitter.scraping.model.ImageUtil;
+import delco.twitter.scraping.model.utils.ImageUtil;
 import delco.twitter.scraping.repositories.ImageRepository;
 import delco.twitter.scraping.repositories.TweetRepository;
 import delco.twitter.scraping.services.interfaces.SentimentService;

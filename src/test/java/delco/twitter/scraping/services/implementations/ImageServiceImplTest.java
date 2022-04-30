@@ -48,7 +48,7 @@ class ImageServiceImplTest {
     }
 
     public static Stream<String> generatePostivePaths(){
-        File directorioPositivo = new File("C:\\Users\\chris\\OneDrive\\Desktop\\Accepted");
+        File directorioPositivo = new File("C:\\Users\\chris\\OneDrive\\Desktop\\Thesaurus\\Images\\GrotesqueImages");
         List<String> pathList = new ArrayList<>();
         Arrays.stream(directorioPositivo.listFiles()).forEach(file -> pathList.add(file.getAbsolutePath()));
         return pathList.stream();

@@ -21,10 +21,18 @@ function printHorizontal(fullDataSet, name, title, color){
                         }]
                     },
                     options: {
+                     scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        },
                         title: {
                             display: true,
                             text: 'Appearances of ' + title + " words in your last search"
                         }
+
                     }
                 });
             });

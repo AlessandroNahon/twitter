@@ -137,11 +137,11 @@ public class ImageServiceImpl implements ImageService {
     public boolean getImageContent(String url) {
         List<AnnotateImageRequest> requests = new ArrayList<>();
         Feature feat = Feature.newBuilder().setType(Feature.Type.LABEL_DETECTION).build();
-        requests.add(
-                AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(
-                        Image.newBuilder().setSource(
-                                ImageSource.newBuilder().setImageUri(url).build()).build()).build());
-        
+//        requests.add(
+//                AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(
+//                        Image.newBuilder().setSource(
+//                                ImageSource.newBuilder().setImageUri(url).build()).build()).build());
+        Image img = Image.newBuilder().setSource
         BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
         List<AnnotateImageResponse> responses = response.getResponsesList();
         int counterPositive = 0;

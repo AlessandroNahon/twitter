@@ -18,6 +18,9 @@ public interface WordRepository extends PagingAndSortingRepository<Word, Long>, 
 
     List<Word> findTop10BySyntaxOrderByCountDesc (TypeEnum syntax);
 
+    Word findByWord(String word);
+
+    void deleteByWord(String text);
 
 
 

@@ -1,4 +1,4 @@
-package delco.twitter.scraping.model;
+package delco.twitter.scraping.model.utils;
 
 import java.util.Base64;
 

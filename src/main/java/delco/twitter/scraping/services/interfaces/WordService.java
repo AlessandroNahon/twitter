@@ -15,7 +15,10 @@ public interface WordService {
 
     Word isWordPresent(String word);
 
-    boolean isEmoji(String word);
+    List<String> getAllEmojisFromText(String text);
+
+
+    int getEmojiEndPos(char[] text, int startPos);
 
     void parseWord(String text);
 
