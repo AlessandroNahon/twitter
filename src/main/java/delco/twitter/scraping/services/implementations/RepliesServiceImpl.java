@@ -60,9 +60,14 @@ public class RepliesServiceImpl implements RepliesService {
                     System.out.println("Analiza respuesta: " + dt.getText());
                     Reply reply = new Reply();
                     reply.setText(dt.getText());
-                    imageService.getImages(root.getIncludes(), dt, reply);
+                    imageService.getImages(root.getIncludes(),dt).forEach(reply::addImage);
                     reply.setTextSentiment(sentimentService.getSentiment(dt.getText()));
-                    wordService.analyzeText(dt.getText());
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            wordService.analyzeText(dt.getText());
+                        }
+                    }).start();
                     originalTweet.addReply(reply);
                 } catch (ArrayIndexOutOfBoundsException e) {
                     System.out.println(e.getMessage());
@@ -75,6 +80,12 @@ public class RepliesServiceImpl implements RepliesService {
         }
     }
 
+    /**
+     * This method calls the repository in order to find all the replies that contains a String passed via
+     * parameter
+     * @param text The text to search into the replies objects
+     * @return The list of replies which contains that text
+     */
     @Override
     public List<Reply> findAllByTextContaining(String text) {
         return repliesRepository.findAllByTextContaining(text);

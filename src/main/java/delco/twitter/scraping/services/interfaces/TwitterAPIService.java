@@ -8,7 +8,7 @@ import delco.twitter.scraping.model.model_content.Root;
 
 import java.util.Date;
 
-public interface APITWService {
+public interface TwitterAPIService {
 
     Root getTweets(String userName, Date limitDate);
 

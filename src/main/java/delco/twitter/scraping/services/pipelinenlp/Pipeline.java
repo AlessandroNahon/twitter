@@ -8,6 +8,11 @@ import java.util.Properties;
 @Service
 public class Pipeline {
 
+    /**
+     * This class is used to initialize the StanfordNLP pipeline, in order to be able to analyze each individual
+     * word later in the WordServiceImpl
+     */
+
     private static Properties properties;
     private static String propertiesName = "tokenize, ssplit, pos, lemma, ner, parse, sentiment";
     private static StanfordCoreNLP stanfordCoreNLP;

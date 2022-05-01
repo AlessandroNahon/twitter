@@ -26,7 +26,12 @@ function printHorizontal(fullDataSet, name, title, color){
                                 ticks: {
                                     beginAtZero: true
                                 }
-                            }]
+                            }],
+                            xAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
                         },
                         title: {
                             display: true,

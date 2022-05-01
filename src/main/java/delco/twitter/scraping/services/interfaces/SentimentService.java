@@ -11,6 +11,11 @@ public interface SentimentService {
 
     void addAppearance(Long id);
 
+    /*
+    Methods that access directly to the repository, they do not contain bussiness logic, only works as intermediates
+    between the view and the model
+     */
+
     Iterable<Sentiment> findAllSentiment();
 
 }

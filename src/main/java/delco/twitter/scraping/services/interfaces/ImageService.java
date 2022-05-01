@@ -12,14 +12,11 @@ import java.util.Set;
 
 public interface ImageService {
 
-    void getImages(Includes include, Datum datum, Tweet originalTweet);
-
-    void getImages(Includes include, Datum datum, Reply originalTweet);
+    List<Images> getImages(Includes include, Datum datum);
 
     Images downloadImage(URL url);
 
-    boolean getImageContent(String url);
+    boolean containsValidImages(Includes include, Datum datum);
 
-    boolean detectAdult(String url);
 
 }

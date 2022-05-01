@@ -31,15 +31,10 @@ public class WordServiceImpl extends Thread  implements WordService {
     private Map<String, Integer> wordList = new HashMap<>();
     private final WordRepository wordRepository;
     private StanfordCoreNLP stanfordCoreNLP;
-    private final String regex = "[\\x{10000}-\\x{10FFFF}]";
     private Set<String> kischcWords;
     private Set<String> grotesqueWords;
-
-    @Autowired
-    private EntityManager em;
     private boolean loadedPipeline = false;
     private boolean loadedFiles = false;
-    private final Thread thread = this;
 
     public WordServiceImpl(WordRepository wordRepository) {
         this.wordRepository = wordRepository;
@@ -63,12 +58,31 @@ public class WordServiceImpl extends Thread  implements WordService {
     }
 
     /**
-     * This method is used to do an analysis over the text of each tweet and save the words in the database.
-     * This method checks each words and if its length is longer than 3 (To avoid words like 'he', 'to', or 'yes',
-     * doesn't contains the word http or @ (Which means it is a link or a mention to another username) the word will
-     * be cleaned and analyzed by the StanfordCoreNLP, to determine if it is an important word. Also, this method checks
-     * if the word contains emojis, calling another method to do the same as with the words.
-     * See method getTypeOfWord to see the available types of words.
+     * This method is used to read the files from the resources folder that contains all the Kistch/Grotesque
+     * words, in order to find them later in the Tweet search
+     * @param fileName Name of the file into the resource folder, without the .dat extension
+     * @return HashSet of String with al the words
+     */
+    public HashSet<String> readFiles(String fileName) {
+        try {
+            File fichero =  ResourceUtils.getFile("classpath:wordsList"+File.separator+fileName+".dat");
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fichero));
+            return (HashSet<String>) ois.readObject();
+        } catch (IOException e) {
+            System.out.println("The file was not found");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        throw new RuntimeException("The file was not found");
+    }
+
+
+    /**
+     * This method is used to analyze the text of the Tweet. It first check if the text contains emojis. If it has,
+     * the algorithm store them into the database, and then delete all of them from the original text. Then, that text
+     * is analyzed once again, word by word, to check whether is a Grotesque/Kistch word or it is a valid Word
+     * (Noun, adverb, verb, adjective). Once each word is assigned to its corresponding syntax, it is stored into the
+     * database
      * @param text The text of the tweet
      */
     @Override
@@ -76,75 +90,51 @@ public class WordServiceImpl extends Thread  implements WordService {
         List<String> emojisList = getAllEmojisFromText(text);
         if(emojisList.size() != 0){
             for(String s : emojisList){
-                parseEmoji(s);
+                if(isGrotesqueWord(s)){
+                    parseWord(s, TypeEnum.GROTESQUE_EMOJI);
+                }else{
+                    parseWord(s, TypeEnum.KITSCH_EMOJI);
+                }
             }
         }
         String textWithoutEmojis = EmojiParser.removeAllEmojis(text);
         String[] words = textWithoutEmojis.split("\\s+");
         for (String word : words) {
-            if (word.length() > 2 && !word.contains("@") && !word.contains("http")) {
+            if (word.length() > 2 && !word.contains("@") && !word.contains("http") && !word.contains("#")) {
                 word = word.replace(",", "").replaceAll("(?s)(?<=&lt;).*?(?=&gt;)", "")
                         .replace("\n"," ")
                         .replace(".", "")
                         .replace("?", "")
                         .replace("!", "")
-                        .replace("\"","");
+                        .replace("\"","")
+                        .replace("'","")
+                        .replace(":","");
                     if(isGrotesqueWord(word)){
-                        parseGrotesqueWord(word);
+                        parseWord(word, TypeEnum.GROTESQUE);
                     } else if(isKischWord(word)) {
-                        parseKischWord(word);
+                        parseWord(word, TypeEnum.KITSCH);
                     } else {
-                        parseWord(word);
+                        parseWord(word,getTypeOfWord(word));
                     }
                 }
             }
         }
 
     /**
-     * Thsi method is used to extract all the emojis from a word. When Splitting a text with the " " condition, there
-     * will be times when a couple of emojis comes togheter, that why this methods uses teh wile loop to extract all
-     * of them. Then, the method will call the database and check if it is present, to add one to the count of the emoji,
-     * or save the new emoji
-     * @param text The text of the tweet
+     * This method is used to check if a word is stored into the HashSet of Kitsch words
+     * @param word The word to check
+     * @return True if the word exists into the Kitsch file, false otherwise
      */
     @Override
-    public void parseEmoji(String text) {
-        Word newWord = isWordPresent(text);
-        if (newWord != null) {
-            newWord.setCount(newWord.getCount() + 1);
-        } else {
-            newWord = Word.builder().word(text).count(1).syntax(TypeEnum.EMOJI).build();
-        }
-        wordRepository.save(newWord);
+    public boolean isKischWord(String word) {
+        return kischcWords.contains(word);
     }
 
-    @Override
-    public void parseKischWord(String text) {
-        Word newWord = isWordPresent(text);
-        if (newWord != null) {
-            newWord.setCount(newWord.getCount() + 1);
-        } else {
-            newWord = Word.builder().word(text.toLowerCase()).count(1).syntax(TypeEnum.KITSCH).build();
-            wordRepository.save(newWord);
-        }
-    }
-
-    @Override
-    public void parseGrotesqueWord(String text) {
-        Word newWord = isWordPresent(text);
-        if (newWord != null) {
-            newWord.setCount(newWord.getCount() + 1);
-        } else {
-            newWord = Word.builder().word(text.toLowerCase()).count(1).syntax(TypeEnum.GROTESQUE).build();
-            wordRepository.save(newWord);
-        }
-    }
-
-    @Override
-    public boolean isKischWord(String words) {
-        return kischcWords.contains(words);
-    }
-
+    /**
+     * This method is used to check if a word is stored into the HashSet of Grotesque words
+     * @param word The word to check
+     * @return True if the word exists into the Grotesque file, false otherwise
+     */
     @Override
     public boolean isGrotesqueWord(String word) {
         return grotesqueWords.contains(word);
@@ -157,15 +147,18 @@ public class WordServiceImpl extends Thread  implements WordService {
      * @param text The text of the tweet
      */
     @Override
-    public void parseWord(String text){
-        TypeEnum typeEnum = getTypeOfWord(text);
-        if (typeEnum != TypeEnum.NONE) {
+    public synchronized void parseWord(String text, TypeEnum syntax){
+        if(syntax != TypeEnum.GROTESQUE_EMOJI && syntax != TypeEnum.KITSCH_EMOJI
+        && syntax != TypeEnum.GROTESQUE && syntax != TypeEnum.KITSCH){
+            syntax = getTypeOfWord(text);
+        }
+        if (syntax != TypeEnum.NONE) {
             try {
                 Word newWord = isWordPresent(text);
                 if (newWord != null) {
                     newWord.setCount(newWord.getCount() + 1);
                 } else {
-                    newWord = Word.builder().word(text.toLowerCase()).count(1).syntax(typeEnum).build();
+                    newWord = Word.builder().word(text.toLowerCase()).count(1).syntax(syntax).build();
                 }
                 wordRepository.save(newWord);
             } catch (Exception e) {
@@ -231,6 +224,14 @@ public class WordServiceImpl extends Thread  implements WordService {
                 .filter(w -> w.getWord().equals(word)).findAny().orElse(null);
     }
 
+    /**
+     * This method is copied from the EmojiParser library. It is used to detect all the emojis in a String. The difference
+     * between the original method and this one, is that this method returns a list with all the unicode characteres
+     * to be treated like a common word into the database
+     * @param text The text to analyze
+     * @return List of Strings, each string is a different emoji. Returns an empty list if there's no emojis in
+     * the text
+     */
     @Override
     public List<String> getAllEmojisFromText(String text) {
         char[] inputCharArray = text.toCharArray();
@@ -239,7 +240,8 @@ public class WordServiceImpl extends Thread  implements WordService {
             int emojiEnd = getEmojiEndPos(inputCharArray, i);
             if (emojiEnd != -1) {
                 Emoji emoji = EmojiManager.getByUnicode(text.substring(i, emojiEnd));
-                String fitzpatrickString = emojiEnd + 2 <= text.length() ? new String(inputCharArray, emojiEnd, 2) : null;
+                String fitzpatrickString = emojiEnd + 2 <= text.length() ?
+                        new String(inputCharArray, emojiEnd, 2) : null;
                 Emojis candidate = new Emojis(emoji, fitzpatrickString, i);
                 candidates.add(candidate);
                 i = candidate.getFitzpatrickEndIndex() - 1;
@@ -252,7 +254,12 @@ public class WordServiceImpl extends Thread  implements WordService {
         return emojis;
     }
 
-
+    /**
+     * This method is used by the getAllEmojisFromText to get the position of the emoji in the String
+     * @param text The piece of the text that we're analyzing
+     * @param startPos The starting position of the unicode character
+     * @return The last position of the unicodeCharacter
+     */
     @Override
     public int getEmojiEndPos(char[] text, int startPos) {
         int best = -1;
@@ -268,38 +275,37 @@ public class WordServiceImpl extends Thread  implements WordService {
     }
 
 
-
-
-
-
-
-    public HashSet<String> readFiles(String fileName) {
-        try {
-            File fichero =  ResourceUtils.getFile("classpath:"+fileName+".dat");
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fichero));
-            return (HashSet<String>) ois.readObject();
-        } catch (IOException e) {
-            System.out.println("The file was not found");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        throw new RuntimeException("The file was not found");
-    }
-
+    /**
+     * This method is used to find the mos used word corresponding to a certain TypeEnum
+     * @param typeEnum The TypeEnum to do the search
+     * @return The word that appears the most within that group
+     */
     public Word getTopSyntaxEnum(TypeEnum typeEnum) {
         return wordRepository.findTop1BySyntaxOrderByCountDesc(typeEnum);
     }
 
+    /**
+     * This method is used to find the 10 most used words corresponding to a certain TypeEnum
+     * @param typeEnum The TypeEnum to do the search
+     * @return List<Word> that appears the most within that group
+     */
     public List<Word> getTop10WordsBySyntax(TypeEnum typeEnum) {
         return wordRepository.findTop10BySyntaxOrderByCountDesc(typeEnum);
     }
 
-
+    /**
+     * This method is used to get a list of the 20 most used words
+     * @return List of Word object that has the biggest value "count" in te database
+     */
     @Override
     public List<Word> getTop20Words() {
         return wordRepository.findTop20ByOrderByCountDesc();
     }
 
+    /**
+     * This method is used to get a list of the 5 most used words
+     * @return List of Word object that has the biggest value "count" in te database
+     */
     @Override
     public List<Word> getTop5Words() {
         return wordRepository.findTop5ByOrderByCountDesc();

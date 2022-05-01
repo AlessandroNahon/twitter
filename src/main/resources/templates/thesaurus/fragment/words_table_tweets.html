@@ -20,7 +20,7 @@
                 <td th:text="${tw.textSentiment}">Sentiment</td>
                 <td>Tweet</td>
                 <td>
-                    <a href="#" th:href="@{'/replies/showReply/'+${tw.id}}" class="text-dark">
+                    <a href="#" th:href="@{'/tweet/showTweetInformation/'+${tw.id}}" class="text-dark">
                         See tweet
                     </a>
                 </td>
@@ -30,7 +30,7 @@
                 <td th:text="${rp.textSentiment}">Sentiment</td>
                 <td>Reply</td>
                 <td>
-                    <a href="#" th:href="@{'/replies/showReply/'+${rp.originalTweet.id}}" class="text-dark">
+                    <a href="#" th:href="@{'/tweet/showTweetInformation/'+${rp.originalTweet.id}}" class="text-dark">
                         See original
                     </a>
                 </td>

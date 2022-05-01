@@ -2,7 +2,6 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Title</title>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link th:href="@{/css/index.css}" rel="stylesheet" />
@@ -83,7 +82,7 @@
                     <div class="col">
                         <h4 class="card-title ">Original's tweet sentiment</h4>
                         <div class="d-flex justify-content-center col-12 pt-2">
-                            <p>Tweet sentiment here</p>
+                            <h5 th:text="${tweet.textSentiment}" class="pt-3"></h5>
                         </div>
                     </div>
                 </div>
@@ -93,21 +92,26 @@
               <div class="card-header">
                   <h6>Images</h6>
               </div>
-              <div class="card-body">
-                  aquí van las imagenes inline con un modal que lleva a los detalles
+              <div class="card-body d-flex justify-content-center">
+                  <div th:each="img : ${tweet.images}">
+                      <img class="p-2 hover-shadow imageStyle1" th:src="'data:images/jpg;base64,' +
+                        ${imgUtil.getImgData(img.image)}" />
+                  </div>
+
               </div>
           </div>
-          <div class="card  mt-3 ">
+          <div class="card  mt-3" th:if="${#lists.size(emojis)} != 0">
               <div class="card-header  d-flex">
                 <h6 class="inline">Emojis</h6>
               </div>
               <div class="card-body">
-                  <div class="inline ml-5 w-100  d-flex justify-content-center" >
-                    <p class="ml-4 mr-4">
-                        <!-- Esta parte va con un th:each para todos los emojis hacerlo con el controlador-->
-                        🎵
-                    </p>
-                </div>
+                  <div class="inline ml-5 w-100  d-flex justify-content-center">
+                     
+                    <div th:each="emoji : ${emojis}">
+                        <p class="ml-4 mr-4" th:text="${emoji}">
+                        </p>
+                    </div>
+                  </div>
               </div>
           </div>
         <div class="card-deck">
@@ -129,11 +133,17 @@
                                 <tr th:each="tw : ${replies}">
                                     <td th:text="${tw.text}">Text</td>
                                     <td th:text="${tw.textSentiment}">Sentiment</td>
-                                    <td> Here there'll be a link to a gragment to render images
-                                        <a href="">
-                                            <i class="fas fa-arrow-right"></i>
-                                        </a>
-                                    </td>
+                                    <div th:switch="${#lists.size(tw.images )} == 0">
+                                        <td th:case="${true}">
+                                            No images attached
+                                        </td>
+                                        <td th:case="${false}">
+                                            <a href="">
+                                                <i class="fas fa-arrow-right"></i>
+                                            </a>
+                                        </td>
+                                    </div>
+
                                 </tr>
                             </table>
                         </div>
@@ -176,7 +186,7 @@
             <div class="card col-6 mt-3 pb-3">
                 <div class="card-header" >
                     <h6 class="card-title d-flex justify-content-around pt-3">
-                        <p class="d-inline-block" >
+                        <p class="d-inline-block">
                             Kitsch/Sentimental
                         </p>
                         <p class="d-inline-block" >
@@ -191,8 +201,6 @@
         </div>
         
     </div>
-</div>
-</div>
 </body>
 
 </html>

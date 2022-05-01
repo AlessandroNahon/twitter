@@ -1,5 +1,6 @@
 package delco.twitter.scraping.services.implementations;
 
+import delco.twitter.scraping.model.Reply;
 import delco.twitter.scraping.model.Tweet;
 import delco.twitter.scraping.model.model_content.Datum;
 import delco.twitter.scraping.model.model_content.Root;
@@ -15,18 +16,18 @@ import java.util.*;
 
 
 @Service
-public class TweetServiceImpl implements TweetService {
+public class TweetServiceImpl extends Thread implements TweetService {
 
     private final TweetRepository tweetRepository;
     private final WordServiceImpl wordService;
     private final ImageServiceImpl imageService;
-    private final APITWServiceImpl twitterAPIService;
+    private final TwitterAPIServiceImpl twitterAPIService;
     private final RepliesServiceImpl repliesService;
     private final SentimentService sentimentService;
     @Autowired
     private EntityManager em;
 
-    public TweetServiceImpl(APITWServiceImpl twitterAPIService, TweetRepository tweetRepository,
+    public TweetServiceImpl(TwitterAPIServiceImpl twitterAPIService, TweetRepository tweetRepository,
                             WordServiceImpl wordService, ImageServiceImpl imageService,
                             RepliesServiceImpl repliesService, SentimentService sentimentService) {
         this.tweetRepository = tweetRepository;
@@ -47,8 +48,10 @@ public class TweetServiceImpl implements TweetService {
     @Override
     public void parseTweetDatumFromRoot(Root root,String username) {
         root.getData().forEach(datum -> {
-            if (!isRetweet(datum.getText()) && containsMedia(datum)) {
-                System.out.println("Analiza tweet: " + datum.getText());
+            if (!isRetweet(datum.getText())
+                    && containsMedia(datum)
+                    && imageService.containsValidImages(root.getIncludes(),datum)) {
+                System.out.println("Hay un tweet que es válido");
                 Tweet tweet = Tweet.builder()
                         .text(datum.getText()
                                 .replace("&gt;&gt;", "")
@@ -58,9 +61,9 @@ public class TweetServiceImpl implements TweetService {
                         .createdAt(datum.getCreated_at())
                         .conversationId(datum.getConversation_id()).build();
                 tweet.setTextSentiment(sentimentService.getSentiment(datum.getText()));
-                imageService.getImages(root.getIncludes(), datum, tweet);
+                imageService.getImages(root.getIncludes(),datum).forEach(tweet::addImage);
                 repliesService.parseReplyFromTweet(
-                twitterAPIService.getReplies(datum.getConversation_id(), tweet),tweet);
+                        twitterAPIService.getReplies(datum.getConversation_id(), tweet),tweet);
                 tweetRepository.save(tweet);
                 new Thread(new Runnable() {
                     @Override
@@ -68,8 +71,8 @@ public class TweetServiceImpl implements TweetService {
                         wordService.analyzeText(datum.getText());
                     }
                 }).start();
-
             }
+            System.out.println("parece q no hay na");
         });
     }
 
@@ -88,6 +91,7 @@ public class TweetServiceImpl implements TweetService {
             try {
                 Tweet lastTweet = tweetRepository.findTop1ByOrderByIdDesc();
                 if (lastTweet.getCreatedAt().after(maxDate)) {
+                    this.sleep(250);
                     raiz = twitterAPIService.getNextTweets(username, raiz);
                     parseTweetDatumFromRoot(raiz, username);
                 } else {
@@ -97,8 +101,21 @@ public class TweetServiceImpl implements TweetService {
                 System.out.println(e.getCause());
                 System.out.println(e.getLocalizedMessage());
                 System.out.println("No se ha guardado todavía ningún tweet");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (NullPointerException ex){
+                raiz = twitterAPIService.getNextTweets(username, raiz);
+                parseTweetDatumFromRoot(raiz, username);
             }
         }
+    }
+
+    public Set<String> getAllEmojisFromTweets(Tweet t){
+        Set<String> emojisList = new HashSet<>(new HashSet<>(wordService.getAllEmojisFromText(t.getText())));
+        for(Reply r : t.getReplies()){
+            emojisList.addAll(new HashSet<>(wordService.getAllEmojisFromText(r.getText())));
+        }
+        return emojisList;
     }
 
     

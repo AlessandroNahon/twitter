@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+  <div class="card-body" th:fragment="tweet_table" id="tweet_table">
+    <div class="table-responsive border rounded" >
+      <table class="table table-striped table-hover">
+        <thead class="thead-inverse">
+        <tr>
+          <th>Text</th>
+          <th>Sentiment</th>
+          <th>Replies</th>
+          <th>See...</th>
+        </tr>
+        </thead>
+        <tr th:each="tw : ${tweets}">
+          <td th:text="${tw.text}">Text</td>
+          <td th:text="${tw.textSentiment}">Sentiment</td>
+          <td th:text="${#lists.size(tw.replies)}">Replies</td>
+          <td>
+            <a href="#" th:href="@{'/tweet/showTweetInformation/'+${tw.id}}" class="text-dark">
+              <i class="fas fas fa-arrow-right"></i>
+            </a>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

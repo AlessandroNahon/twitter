@@ -6,6 +6,7 @@ import delco.twitter.scraping.model.model_content.Root;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 
 public interface TweetService {
@@ -17,6 +18,13 @@ public interface TweetService {
     boolean isRetweet(String tweet);
 
     boolean containsMedia(Datum datum);
+
+    Set<String> getAllEmojisFromTweets(Tweet t);
+
+    /*
+    Methods that access directly to the repository, they do not contain bussiness logic, only works as intermediates
+    between the view and the model
+     */
 
     List<Tweet> findByText(String text);
 

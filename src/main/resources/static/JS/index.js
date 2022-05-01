@@ -92,9 +92,56 @@ function scrollDown(paginationNumber){
     }
 }
 
+function printTweetTable(pageNumber, maxPageNumber){
+    console.log('Actual page: '+pageNumber+', taget page: '+maxPageNumber)
+
+    console.log("Page " + pageNumber + " of " + maxPageNumber)
+        $("#previous").show()
+        $("#next").show()
+        $.ajax({
+                type: 'get',
+                url: '/indexFragments/tweet_table',
+                data : {
+                    page: parseInt(pageNumber)-1,
+                    totalPages: maxPageNumber
+                },
+                success: function(data){
+                  /*<![CDATA[*/
+                  $('#tweet_table').html(data);
+                  /*]]>*/
+                },
+            })
+    document.getElementById('currentPageText').innerHTML = "Page " + pageNumber + " of " + maxPageNumber
+    if(pageNumber == maxPageNumber){
+            $("#next").hide()
+    }else if(pageNumber == 1){
+            $("#previous").hide()
+        }
+    }
 
 
-function generateRandomPastelColors(){
-    var hue = Math.floor(Math.random() * 360);
-    return 'hsl(' + hue + ', 100%, 80%)'
+function loadComponents(){
+    var buttonNext = document.getElementById('next')
+    var buttonPrevious = document.getElementById('previous')
+
+
+    buttonNext.addEventListener("click", function() {
+        var actualPage = document.getElementById('actualPage').value
+        var maxPageNumber = document.getElementById('maxPageNumber').value
+        var nextPage = parseInt(actualPage) + 1
+
+        printTweetTable(nextPage, maxPageNumber, '#tweetTable')
+        document.getElementById('actualPage').value = nextPage
+    });
+
+    buttonPrevious.addEventListener("click", function() {
+        var actualPage = document.getElementById('actualPage').value
+        var maxPageNumber = document.getElementById('maxPageNumber').value
+        var previousPage = parseInt(actualPage) - 1
+
+        printTweetTable(previousPage, maxPageNumber, '#tweetTable')
+        document.getElementById('actualPage').value = previousPage
+    });
 }
+
+

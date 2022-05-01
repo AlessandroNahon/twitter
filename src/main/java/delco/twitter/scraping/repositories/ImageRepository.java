@@ -8,4 +8,7 @@ import java.util.List;
 public interface ImageRepository extends PagingAndSortingRepository<Images, Long> {
 
 
+    List<Images> findByReplyIsNull();
+
+
 }

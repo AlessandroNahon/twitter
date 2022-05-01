@@ -7,7 +7,7 @@ import com.squareup.okhttp.Response;
 import delco.twitter.scraping.model.Tweet;
 import delco.twitter.scraping.model.model_content.Root;
 import delco.twitter.scraping.model.user_model_content.UserRoot;
-import delco.twitter.scraping.services.interfaces.APITWService;
+import delco.twitter.scraping.services.interfaces.TwitterAPIService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +15,11 @@ import java.io.IOException;
 import java.util.Date;
 
 @Service
-public class APITWServiceImpl  extends Thread implements APITWService{
+public class TwitterAPIServiceImpl extends Thread implements TwitterAPIService {
 
     private final String BEARER_TOKEN;
 
-    public APITWServiceImpl(@Value("${BEARER_TOKEN}") String bearer_token) {
+    public TwitterAPIServiceImpl(@Value("${BEARER_TOKEN}") String bearer_token) {
         BEARER_TOKEN = bearer_token;
     }
 

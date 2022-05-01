@@ -14,6 +14,11 @@ public interface RepliesService {
 
     void parseReplyFromTweet(Root datum, Tweet originalTweet);
 
+    /*
+    Methods that access directly to the repository, they do not contain bussiness logic, only works as intermediates
+    between the view and the model
+     */
+
     List<Reply> findAllByTextContaining(String text);
 
 }
