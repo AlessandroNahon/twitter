@@ -7,6 +7,7 @@ import delco.twitter.scraping.model.enumerations.SentimentEnum;
 import delco.twitter.scraping.repositories.SentimentRepository;
 import delco.twitter.scraping.services.interfaces.SentimentService;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.xml.XMLConstants;
 import javax.xml.transform.TransformerFactory;
@@ -16,12 +17,12 @@ import java.util.List;
 @Service
 public class SentimentServiceImpl implements SentimentService {
 
-    private final SentimentRepository sentimentRepository;
+    @Autowired
+    private SentimentRepository sentimentRepository;
     private final LanguageServiceClient languageServiceClient;
 
     @SneakyThrows
-    public SentimentServiceImpl(SentimentRepository sentimentRepository){
-        this.sentimentRepository = sentimentRepository;
+    public SentimentServiceImpl(){
         this.languageServiceClient = LanguageServiceClient.create();
         TransformerFactory.newInstance().setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
     }

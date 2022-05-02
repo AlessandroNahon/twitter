@@ -1,0 +1,26 @@
+body{
+    background-image: url("/background.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.imageStyle1{
+    float:left;
+    width:200px;
+    height:200px;
+    object-fit:cover;
+}
+
+#scrollingWp{
+    overflow-x: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
+}
+
+.imageStyle1{
+    float:left;
+    width:200px;
+    height:200px;
+    object-fit:cover;
+}
+

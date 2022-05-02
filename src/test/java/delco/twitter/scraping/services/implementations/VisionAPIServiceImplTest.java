@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @RunWith(Parameterized.class)
 class VisionAPIServiceImplTest extends Thread{
 
+    @Autowired
     private VisionAPIServiceImpl visionAPIService;
 
     @BeforeEach

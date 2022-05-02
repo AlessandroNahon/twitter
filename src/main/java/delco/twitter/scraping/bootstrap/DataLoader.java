@@ -7,6 +7,7 @@ import delco.twitter.scraping.repositories.TweetRepository;
 import delco.twitter.scraping.repositories.WordRepository;
 import delco.twitter.scraping.services.implementations.TweetServiceImpl;
 import delco.twitter.scraping.services.implementations.VisionAPIServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -28,25 +29,26 @@ import java.util.Calendar;
     private final ImageRepository imageRepository;
     private final WordRepository wordRepository;
     private final SentimentRepository sentimentRepository;
-    private final VisionAPIServiceImpl visionAPIService;
+
+    @Autowired
+    private  VisionAPIServiceImpl visionAPIService;
 
 
     public DataLoader(TweetServiceImpl tweetService, TweetRepository tweetRepository, ImageRepository imageRepository,
-                      WordRepository wordRepository, SentimentRepository sentimentRepository, VisionAPIServiceImpl visionAPIService) {
+                      WordRepository wordRepository, SentimentRepository sentimentRepository) {
         this.tweetService = tweetService;
         this.tweetRepository = tweetRepository;
         this.imageRepository = imageRepository;
         this.wordRepository = wordRepository;
         this.sentimentRepository = sentimentRepository;
-        this.visionAPIService = visionAPIService;
     }
 
     @Transactional
     @Override
     public void run(String... args) throws Exception {
         try {
-//            boolean result = visionAPIService.getPictureType("https://pbs.twimg.com/media/FRm6FuZVgAETTes?format=jpg&name=small");
-//            System.out.println(result);
+            boolean result = visionAPIService.getPictureType("https://pbs.twimg.com/media/FRm6FuZVgAETTes?format=jpg&name=small");
+            System.out.println(result);
 //            limpiarRegistros();
 //            executeSearch();
         } catch (Exception e) {

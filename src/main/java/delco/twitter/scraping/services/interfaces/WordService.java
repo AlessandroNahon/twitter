@@ -3,6 +3,7 @@ package delco.twitter.scraping.services.interfaces;
 import delco.twitter.scraping.model.Word;
 import delco.twitter.scraping.model.enumerations.TypeEnum;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 public interface WordService {
@@ -22,6 +23,8 @@ public interface WordService {
 
     void parseWord(String text, TypeEnum syntax);
 
+    List<Word> getWordsFromText(String text);
+
 
     /*
     Methods that access directly to the repository, they do not contain bussiness logic, only works as intermediates
@@ -33,6 +36,10 @@ public interface WordService {
     List<Word> getTop5Words();
 
     List<String> getAllEmojisFromText(String text);
+
+    Word getTopSyntaxEnum(TypeEnum Syntax);
+
+    List<Word> getTop10WordsBySyntax(TypeEnum Syntax);
 
 
 

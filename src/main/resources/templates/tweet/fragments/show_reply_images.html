@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+
+<body>
+  <div class="h-100 w-100 d-flex justify-content-center align-items-center" th:fragment="show_reply_images">
+    <div th:each="img : ${pictures}">
+      <button type="button" class="btn" th:id="${img.id}" data-toggle="modal" data-target="#seeModal">
+        <img class="rounded img-fluid" th:src="'data:images/jpg;base64,' +
+                        ${imgUtil.getImgData(img.image)}" />
+        <script type="text/javascript">
+          addEventToButton('[[${img.id}]]');
+        </script>
+      </button>
+    </div>
+  </div>
+</body>
+
+</html>

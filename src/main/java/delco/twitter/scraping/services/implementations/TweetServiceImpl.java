@@ -5,8 +5,7 @@ import delco.twitter.scraping.model.Tweet;
 import delco.twitter.scraping.model.model_content.Datum;
 import delco.twitter.scraping.model.model_content.Root;
 import delco.twitter.scraping.repositories.TweetRepository;
-import delco.twitter.scraping.services.interfaces.SentimentService;
-import delco.twitter.scraping.services.interfaces.TweetService;
+import delco.twitter.scraping.services.interfaces.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,25 +17,28 @@ import java.util.*;
 @Service
 public class TweetServiceImpl extends Thread implements TweetService {
 
-    private final TweetRepository tweetRepository;
-    private final WordServiceImpl wordService;
-    private final ImageServiceImpl imageService;
-    private final TwitterAPIServiceImpl twitterAPIService;
-    private final RepliesServiceImpl repliesService;
-    private final SentimentService sentimentService;
+    @Autowired
+    private TweetRepository tweetRepository;
+
+    @Autowired
+    private WordService wordService;
+
+    @Autowired
+    private ImageService imageService;
+
+    @Autowired
+    private TwitterAPIService twitterAPIService;
+
+    @Autowired
+    private RepliesService repliesService;
+
+    @Autowired
+    private SentimentService sentimentService;
+
     @Autowired
     private EntityManager em;
 
-    public TweetServiceImpl(TwitterAPIServiceImpl twitterAPIService, TweetRepository tweetRepository,
-                            WordServiceImpl wordService, ImageServiceImpl imageService,
-                            RepliesServiceImpl repliesService, SentimentService sentimentService) {
-        this.tweetRepository = tweetRepository;
-        this.wordService = wordService;
-        this.imageService = imageService;
-        this.twitterAPIService = twitterAPIService;
-        this.repliesService = repliesService;
-        this.sentimentService = sentimentService;
-    }
+    public TweetServiceImpl() { }
 
 
     /**

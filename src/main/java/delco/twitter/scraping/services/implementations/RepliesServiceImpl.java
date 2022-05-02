@@ -5,8 +5,11 @@ import delco.twitter.scraping.model.Tweet;
 import delco.twitter.scraping.model.model_content.Datum;
 import delco.twitter.scraping.model.model_content.Root;
 import delco.twitter.scraping.repositories.RepliesRepository;
+import delco.twitter.scraping.services.interfaces.ImageService;
 import delco.twitter.scraping.services.interfaces.RepliesService;
 import delco.twitter.scraping.services.interfaces.SentimentService;
+import delco.twitter.scraping.services.interfaces.WordService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -17,18 +20,19 @@ import java.util.Set;
 @Service
 public class RepliesServiceImpl implements RepliesService {
 
-    private final RepliesRepository repliesRepository;
-    private final ImageServiceImpl imageService;
-    private final WordServiceImpl wordService;
-    private final SentimentService sentimentService;
+    @Autowired
+    private RepliesRepository repliesRepository;
 
-    public RepliesServiceImpl(RepliesRepository repliesRepository, ImageServiceImpl imageService,
-                              WordServiceImpl wordService, SentimentService sentimentService) {
-        this.repliesRepository = repliesRepository;
-        this.imageService = imageService;
-        this.wordService = wordService;
-        this.sentimentService = sentimentService;
-    }
+    @Autowired
+    private ImageService imageService;
+
+    @Autowired
+    private WordService wordService;
+
+    @Autowired
+    private SentimentService sentimentService;
+
+    public RepliesServiceImpl() {}
 
     /**
      * This method is used find all the replies gathered from an original tweet, passing the Id of the original tweet

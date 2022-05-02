@@ -6,6 +6,7 @@ import delco.twitter.scraping.model.model_content.Datum;
 import delco.twitter.scraping.model.model_content.Includes;
 import delco.twitter.scraping.model.model_content.Medium;
 import delco.twitter.scraping.services.interfaces.ImageService;
+import delco.twitter.scraping.services.interfaces.VisionAPIService;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ import java.util.*;
 public class ImageServiceImpl implements ImageService {
 
     @Autowired
-    private VisionAPIServiceImpl visionAPIService;
+    private VisionAPIService visionAPIService;
 
     @SneakyThrows
     public ImageServiceImpl(){}

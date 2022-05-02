@@ -10,5 +10,7 @@ public interface ImageRepository extends PagingAndSortingRepository<Images, Long
 
     List<Images> findByReplyIsNull();
 
+    List<Images> findByReplyId(Long id);
+
 
 }

@@ -6,6 +6,7 @@ import delco.twitter.scraping.repositories.TweetRepository;
 import delco.twitter.scraping.services.interfaces.SentimentService;
 import delco.twitter.scraping.services.interfaces.WordService;
 import delco.twitter.scraping.services.interfaces.TweetService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,20 +20,23 @@ import java.util.Optional;
 @Controller
 public class IndexController {
 
-    private final TweetService tweetService;
-    private final TweetRepository tweetRepository;
-    private final ImageRepository imageRepository;
-    private final SentimentService sentimentService;
-    private final WordService wordService;
 
-    public IndexController(TweetService tweetService, TweetRepository tweetRepository,
-                           ImageRepository imageRepository, SentimentService sentimentService,
-                           WordService wordService) {
-        this.tweetService = tweetService;
-        this.tweetRepository = tweetRepository;
-        this.imageRepository = imageRepository;
-        this.sentimentService = sentimentService;
-        this.wordService = wordService;
+    @Autowired
+    private TweetService tweetService;
+
+    @Autowired
+    private SentimentService sentimentService;
+
+    @Autowired
+    private WordService wordService;
+
+    @Autowired
+    private TweetRepository tweetRepository;
+
+    @Autowired
+    private ImageRepository imageRepository;
+
+    public IndexController(){
     }
 
     @RequestMapping(value = {"/", "/index" })

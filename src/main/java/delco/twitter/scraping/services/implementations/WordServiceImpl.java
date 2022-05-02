@@ -28,16 +28,16 @@ import java.util.stream.StreamSupport;
 @Service
 public class WordServiceImpl extends Thread  implements WordService {
 
-    private Map<String, Integer> wordList = new HashMap<>();
-    private final WordRepository wordRepository;
+    @Autowired
+    private WordRepository wordRepository;
+
     private StanfordCoreNLP stanfordCoreNLP;
     private Set<String> kischcWords;
     private Set<String> grotesqueWords;
     private boolean loadedPipeline = false;
     private boolean loadedFiles = false;
 
-    public WordServiceImpl(WordRepository wordRepository) {
-        this.wordRepository = wordRepository;
+    public WordServiceImpl(){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -118,6 +118,7 @@ public class WordServiceImpl extends Thread  implements WordService {
                     }
                 }
             }
+
         }
 
     /**
@@ -166,6 +167,66 @@ public class WordServiceImpl extends Thread  implements WordService {
             }
         }
     }
+
+    @Override
+    public List<Word> getWordsFromText(String text) {
+        List<Word> finalListOfWords = new ArrayList<>();
+        Map<String, Integer> wordList = new HashMap<>();
+        for(String s : getAllEmojisFromText(text)){
+            if(wordList.containsKey(s)){
+                wordList.put(s, wordList.get(s)+1);
+            }else{
+                wordList.put(s, 1);
+            }
+        }
+        for(Map.Entry e : wordList.entrySet()){
+            finalListOfWords.add(Word.builder()
+                    .word(e.getKey().toString())
+                    .count(Integer.parseInt(e.getValue().toString()))
+                    .syntax(TypeEnum.EMOJI).build());
+        }
+        wordList.clear();
+        String textWithoutEmojis = EmojiParser.removeAllEmojis(text);
+        String[] words = textWithoutEmojis.split("\\s+");
+        for (String word : words) {
+            if (word.length() > 2 && !word.contains("@") && !word.contains("http") && !word.contains("#")) {
+                word = word.replace(",", "").replaceAll("(?s)(?<=&lt;).*?(?=&gt;)", "")
+                        .replace("\n"," ")
+                        .replace(".", "")
+                        .replace("?", "")
+                        .replace("!", "")
+                        .replace("\"","")
+                        .replace("'","")
+                        .replace(":","");
+                if(wordList.containsKey(word)){
+                    wordList.put(word.toLowerCase(), wordList.get(word.toLowerCase())+1);
+                }else{
+                    wordList.put(word.toLowerCase(), 1);
+                }
+            }
+        }
+        for(Map.Entry e : wordList.entrySet()){
+            if(isGrotesqueWord(e.getKey().toString())){
+                finalListOfWords.add(Word.builder()
+                        .word(e.getKey().toString())
+                        .count(Integer.parseInt(e.getValue().toString()))
+                        .syntax(TypeEnum.GROTESQUE).build());
+            }else if(isKischWord(e.getKey().toString())){
+                finalListOfWords.add(Word.builder()
+                        .word(e.getKey().toString())
+                        .count(Integer.parseInt(e.getValue().toString()))
+                        .syntax(TypeEnum.KITSCH).build());
+            }else{
+                finalListOfWords.add(Word.builder()
+                        .word(e.getKey().toString())
+                        .count(Integer.parseInt(e.getValue().toString()))
+                        .syntax(TypeEnum.NOUN).build());
+            }
+        }
+        wordList.clear();
+        return finalListOfWords;
+    }
+
 
     /**
      * This method checks the type of word, using the StanfordCoreNLP.
@@ -289,6 +350,7 @@ public class WordServiceImpl extends Thread  implements WordService {
      * @param typeEnum The TypeEnum to do the search
      * @return List<Word> that appears the most within that group
      */
+    @Override
     public List<Word> getTop10WordsBySyntax(TypeEnum typeEnum) {
         return wordRepository.findTop10BySyntaxOrderByCountDesc(typeEnum);
     }

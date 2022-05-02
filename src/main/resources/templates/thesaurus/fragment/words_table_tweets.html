@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
+
 <body>
     <table class="table table-striped table-hover" th:fragment="words_table_tweets">
         <thead class="thead-inverse">
-        <tr>
-            <th>Text</th>
-            <th>Sentiment</th>
-            <th>Replies</th>
-            <th>Type</th>
-        </tr>
+            <tr>
+                <th>Text</th>
+                <th>Sentiment</th>
+                <th>Replies</th>
+                <th>Type</th>
+            </tr>
         </thead>
         <tbody>
             <tr th:each="tw : ${tweets}">
@@ -39,4 +41,5 @@
 
     </table>
 </body>
+
 </html>

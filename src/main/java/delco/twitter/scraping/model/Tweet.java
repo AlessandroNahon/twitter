@@ -90,9 +90,6 @@ public class Tweet{
                 ", username='" + username + '\'' +
                 ", textSentiment=" + textSentiment +
                 ", createdAt=" + createdAt +
-                ", conversationId='" + conversationId + '\'' +
-                ", replies=" + replies +
-                ", images=" + images +
-                '}';
+                ", conversationId='" + conversationId;
     }
 }

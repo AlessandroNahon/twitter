@@ -4,7 +4,10 @@ import delco.twitter.scraping.model.Word;
 import delco.twitter.scraping.model.enumerations.TypeEnum;
 import delco.twitter.scraping.services.implementations.RepliesServiceImpl;
 import delco.twitter.scraping.services.implementations.WordServiceImpl;
+import delco.twitter.scraping.services.interfaces.RepliesService;
 import delco.twitter.scraping.services.interfaces.TweetService;
+import delco.twitter.scraping.services.interfaces.WordService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,14 +20,18 @@ import java.util.Optional;
 @RequestMapping("/thesaurus")
 public class ThesaurusController {
 
-    private final WordServiceImpl wordService;
-    private final RepliesServiceImpl repliesService;
-    private final TweetService tweetService;
+    @Autowired
+    private WordService wordService;
 
-    public ThesaurusController(WordServiceImpl wordService, RepliesServiceImpl repliesService, TweetService tweetService) {
-        this.wordService = wordService;
-        this.repliesService = repliesService;
-        this.tweetService = tweetService;
+    @Autowired
+    private RepliesService repliesService;
+
+    @Autowired
+    private TweetService tweetService;
+
+
+
+    public ThesaurusController(){
     }
 
     /**
