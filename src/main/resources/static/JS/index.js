@@ -23,6 +23,9 @@ function printTweetTable(pageNumber, maxPageNumber) {
         $("#next").hide()
     } else if (pageNumber == 1) {
         $("#previous").hide()
+    } else if(pageNumber == 1 && maxPageNumber == 1){
+        $("#previous").hide()
+        $("#next").hide()
     }
 }
 

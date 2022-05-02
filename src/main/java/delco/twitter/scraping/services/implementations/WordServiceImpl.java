@@ -4,6 +4,8 @@ import com.vdurmont.emoji.Emoji;
 import com.vdurmont.emoji.EmojiManager;
 import com.vdurmont.emoji.EmojiParser;
 import com.vdurmont.emoji.EmojiTrie;
+import delco.twitter.scraping.model.Reply;
+import delco.twitter.scraping.model.Tweet;
 import delco.twitter.scraping.model.Word;
 import delco.twitter.scraping.model.enumerations.TypeEnum;
 import delco.twitter.scraping.model.model_content.Emojis;
@@ -23,6 +25,7 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -36,6 +39,7 @@ public class WordServiceImpl extends Thread  implements WordService {
     private Set<String> grotesqueWords;
     private boolean loadedPipeline = false;
     private boolean loadedFiles = false;
+    long idHelper = 0;
 
     public WordServiceImpl(){
         new Thread(new Runnable() {
@@ -49,12 +53,12 @@ public class WordServiceImpl extends Thread  implements WordService {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                kischcWords = readFiles("kische");
-                grotesqueWords = readFiles("grotesque");
-                loadedFiles = true;
+
             }
         }).start();
-
+        kischcWords = readFiles("kische");
+        grotesqueWords = readFiles("grotesque");
+        loadedFiles = true;
     }
 
     /**
@@ -169,7 +173,16 @@ public class WordServiceImpl extends Thread  implements WordService {
     }
 
     @Override
-    public List<Word> getWordsFromText(String text) {
+    public List<Word> getAllWordsFromTweet(Tweet t) {
+        String text = t.getText();
+        for(Reply r : t.getReplies()) {
+            text = text.concat(" ").concat(r.getText());
+        }
+        return getCountOfWordsFromText(text);
+    }
+
+    @Override
+    public List<Word> getCountOfWordsFromText(String text) {
         List<Word> finalListOfWords = new ArrayList<>();
         Map<String, Integer> wordList = new HashMap<>();
         for(String s : getAllEmojisFromText(text)){
@@ -183,7 +196,9 @@ public class WordServiceImpl extends Thread  implements WordService {
             finalListOfWords.add(Word.builder()
                     .word(e.getKey().toString())
                     .count(Integer.parseInt(e.getValue().toString()))
-                    .syntax(TypeEnum.EMOJI).build());
+                    .syntax(TypeEnum.EMOJI)
+                    .id(idHelper).build());
+            idHelper++;
         }
         wordList.clear();
         String textWithoutEmojis = EmojiParser.removeAllEmojis(text);
@@ -210,21 +225,44 @@ public class WordServiceImpl extends Thread  implements WordService {
                 finalListOfWords.add(Word.builder()
                         .word(e.getKey().toString())
                         .count(Integer.parseInt(e.getValue().toString()))
-                        .syntax(TypeEnum.GROTESQUE).build());
+                        .syntax(TypeEnum.GROTESQUE)
+                        .id(idHelper).build());
             }else if(isKischWord(e.getKey().toString())){
                 finalListOfWords.add(Word.builder()
                         .word(e.getKey().toString())
                         .count(Integer.parseInt(e.getValue().toString()))
-                        .syntax(TypeEnum.KITSCH).build());
+                        .syntax(TypeEnum.KITSCH)
+                        .id(idHelper).build());
             }else{
                 finalListOfWords.add(Word.builder()
                         .word(e.getKey().toString())
                         .count(Integer.parseInt(e.getValue().toString()))
-                        .syntax(TypeEnum.NOUN).build());
+                        .syntax(TypeEnum.NOUN)
+                        .id(idHelper).build());
             }
+            idHelper++;
         }
         wordList.clear();
         return finalListOfWords;
+    }
+
+    @Override
+    public List<Word> sortByCountFilterBySyntax(List<Word> listOfWords, TypeEnum ... target) {
+        List<Word> sortedFilteredWords = new ArrayList<>();
+        if(target.length == 1){
+            sortedFilteredWords = listOfWords.stream().filter(word -> word.getSyntax() == target[0])
+                    .collect(Collectors.toList());
+        }else if(target.length == 2){
+            sortedFilteredWords = listOfWords.stream().filter(word -> word.getSyntax() == target[0]
+                    || word.getSyntax() == target[1]).collect(Collectors.toList());
+        }else if(target.length == 3){
+            sortedFilteredWords = listOfWords.stream().filter(word -> word.getSyntax() == target[0]
+                    || word.getSyntax() == target[1] || word.getSyntax() == target[2])
+                    .collect(Collectors.toList());
+        }else{
+            System.out.println("This method only support up to three TypeEnum. The list will be empty");
+        }
+        return sortedFilteredWords;
     }
 
 

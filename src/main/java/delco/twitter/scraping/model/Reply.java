@@ -1,14 +1,18 @@
 package delco.twitter.scraping.model;
 
 import delco.twitter.scraping.model.enumerations.SentimentEnum;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.*;
 
 @Data
 @EqualsAndHashCode(exclude = {"originalTweet","image"})
+@Builder(toBuilder = true)
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
+@Getter
 @Entity
 @Table(name = "responses")
 public class Reply {
@@ -46,8 +50,29 @@ public class Reply {
         return this;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        Reply reply = (Reply) o;
 
+        return id != null ? id.equals(reply.id) : reply.id == null;
+    }
 
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
 
+    @Override
+    public String toString() {
+        return "Reply{" +
+                "id=" + id +
+                ", text='" + text + '\'' +
+                ", textSentiment=" + textSentiment +
+                ", originalTweet=" + originalTweet +
+                ", images=" + images +
+                '}';
+    }
 }

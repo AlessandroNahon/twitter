@@ -195,18 +195,16 @@
             </div>
         </div>
         <div class="card-deck">
-            <div class="card mt-3 pb-3 col-6 ">
+            <div class="card mt-3 pb-3 col-6 d-flex align-items-center">
                 <div class="col-md-12">
                     <div class="panel-heading">
-                        <h6 class="panel-title pb-3 pt-3">Specific Thesaurus</h6>
+                        <h5 class="panel-title pt-3">Specific Thesaurus</h5>
                     </div>
-                    <div class="panel-body">
-                        <div class="table-responsive border rounded">
-                            <canvas id="bar" width="400" height="150"></canvas>
+                    <div class="panel-body d-flex align-items-center mt-5 pt-5">
+                            <canvas id="bar" width="400" height="250"></canvas>
                             <script th:inline="javascript">
-                                printThesaurus(/*[[${top20Words}]]*/)
+                                printThesaurus(/*[[${words}]]*/)
                             </script>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -225,7 +223,7 @@
                     <div class="page-content page-container" id="page-content">
                         <canvas id="chart-line" width="300" height="100"></canvas>
                         <script th:inline="javascript">
-                            printHorizontal(/*[[${topKicheWords}]]*/, 'chart-line', 'Quiche', '#9ACD32')
+                            printHorizontal([[${topKicheWords}]], 'chart-line', 'Quiche', '#9ACD32')
                         </script>
                     </div>
                     <div class="card-body">

@@ -1,5 +1,6 @@
 package delco.twitter.scraping.services.interfaces;
 
+import delco.twitter.scraping.model.Tweet;
 import delco.twitter.scraping.model.Word;
 import delco.twitter.scraping.model.enumerations.TypeEnum;
 
@@ -23,7 +24,11 @@ public interface WordService {
 
     void parseWord(String text, TypeEnum syntax);
 
-    List<Word> getWordsFromText(String text);
+    List<Word> getAllWordsFromTweet(Tweet t);
+
+    List<Word> getCountOfWordsFromText(String text);
+
+    List<Word> sortByCountFilterBySyntax(List<Word> listOfWords, TypeEnum ... target);
 
 
     /*

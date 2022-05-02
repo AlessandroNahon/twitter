@@ -1,15 +1,11 @@
 package delco.twitter.scraping.controller;
 
-import delco.twitter.scraping.model.Reply;
 import delco.twitter.scraping.model.Tweet;
 import delco.twitter.scraping.model.Word;
 import delco.twitter.scraping.model.enumerations.TypeEnum;
 import delco.twitter.scraping.model.utils.ImageUtil;
 import delco.twitter.scraping.repositories.ImageRepository;
 import delco.twitter.scraping.repositories.TweetRepository;
-import delco.twitter.scraping.services.implementations.TweetServiceImpl;
-import delco.twitter.scraping.services.implementations.WordServiceImpl;
-import delco.twitter.scraping.services.interfaces.RepliesService;
 import delco.twitter.scraping.services.interfaces.TweetService;
 import delco.twitter.scraping.services.interfaces.WordService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +16,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/tweet")
@@ -48,18 +42,15 @@ public class TweetController {
     @RequestMapping("/showTweetInformation/{id}")
     public String showById(@PathVariable String id, Model model) {
         Tweet tweetInfo = tweetRepository.findById(Long.valueOf(id)).get();
-        List<Word> listOfWords  = getListOfWords(tweetInfo);
+        List<Word> listOfWords  = wordService.getAllWordsFromTweet(tweetInfo);
         model.addAttribute("replies", tweetInfo.getReplies());
         model.addAttribute("tweet", tweetInfo);
         model.addAttribute("imgUtil",new ImageUtil());
         model.addAttribute("emojis",tweetService.getAllEmojisFromTweets(tweetInfo));
-        model.addAttribute("words",listOfWords.stream().filter(word -> word.getSyntax() == TypeEnum.NOUN ||
-                word.getSyntax() == TypeEnum.EMOJI)
-                .collect(Collectors.toList()));
-        model.addAttribute("topKicheWords",listOfWords.stream().filter(word -> word.getSyntax() == TypeEnum.KITSCH)
-                .collect(Collectors.toList()));
-        model.addAttribute("topGrotesqueWords",listOfWords.stream().filter(word -> word.getSyntax() == TypeEnum.GROTESQUE)
-                .collect(Collectors.toList()));
+        model.addAttribute("words",wordService.sortByCountFilterBySyntax(listOfWords, TypeEnum.NOUN));
+        model.addAttribute("topKicheWords",wordService.sortByCountFilterBySyntax(listOfWords,TypeEnum.KITSCH));
+        model.addAttribute("topGrotesqueWords",wordService.sortByCountFilterBySyntax(listOfWords,TypeEnum.GROTESQUE));
+
         return "tweet/showTweetInformation";
     }
 
@@ -78,12 +69,5 @@ public class TweetController {
         return "tweet/fragments/show_reply_images :: show_reply_images";
     }
 
-    public List<Word> getListOfWords(Tweet t){
-        String text = t.getText();
-        for(Reply r : t.getReplies()) {
-            text = text.concat(" ").concat(r.getText());
-        }
-        return wordService.getWordsFromText(text);
-    }
 
 }
