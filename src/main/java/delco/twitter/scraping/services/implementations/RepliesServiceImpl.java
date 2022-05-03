@@ -1,9 +1,11 @@
 package delco.twitter.scraping.services.implementations;
 
+import delco.twitter.scraping.model.Converters.DatumConverters;
+import delco.twitter.scraping.model.Images;
 import delco.twitter.scraping.model.Reply;
 import delco.twitter.scraping.model.Tweet;
-import delco.twitter.scraping.model.model_content.Datum;
-import delco.twitter.scraping.model.model_content.Root;
+import delco.twitter.scraping.model.twitterapi.model_content.Datum;
+import delco.twitter.scraping.model.twitterapi.model_content.Root;
 import delco.twitter.scraping.repositories.RepliesRepository;
 import delco.twitter.scraping.services.interfaces.ImageService;
 import delco.twitter.scraping.services.interfaces.RepliesService;
@@ -12,13 +14,14 @@ import delco.twitter.scraping.services.interfaces.WordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 
 @Service
-public class RepliesServiceImpl implements RepliesService {
+public class RepliesServiceImpl extends Thread implements RepliesService {
 
     @Autowired
     private RepliesRepository repliesRepository;
@@ -31,6 +34,9 @@ public class RepliesServiceImpl implements RepliesService {
 
     @Autowired
     private SentimentService sentimentService;
+
+    @Autowired
+    private DatumConverters datumConverters;
 
     public RepliesServiceImpl() {}
 
@@ -56,31 +62,32 @@ public class RepliesServiceImpl implements RepliesService {
      * @param originalTweet Original tweet
      */
     @Override
-    public void parseReplyFromTweet(Root root, Tweet originalTweet) {
+    public synchronized void parseReplyFromTweet(Root root, Tweet originalTweet) {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         if (root.getData().size() != 0) {
-            for (int i = 0; i < Math.min(root.getData().size(), 10); i++) {
-                try {
-                    Datum dt = root.getData().get(i);
-                    System.out.println("Analiza respuesta: " + dt.getText());
-                    Reply reply = new Reply();
-                    reply.setText(dt.getText());
-                    imageService.getImages(root.getIncludes(),dt).forEach(reply::addImage);
-                    reply.setTextSentiment(sentimentService.getSentiment(dt.getText()));
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            wordService.analyzeText(dt.getText());
-                        }
-                    }).start();
-                    originalTweet.addReply(reply);
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    System.out.println(e.getMessage());
-                    return;
-                } catch (IndexOutOfBoundsException e) {
-                    System.out.println(e.getMessage());
-                    return;
+            root.getData().forEach(datum -> {
+                Reply reply = datumConverters.convertDatumToReply(datum);
+                reply.setOriginalTweet(originalTweet);
+                repliesRepository.save(reply);
+                if(!datum.getAttachments().getMedia_keys().isEmpty()){
+                    imageService.getImagesWithoutAnalysis(root.getIncludes(),datum).forEach(img -> {
+                        img.setReply(reply);
+                        imageService.saveImageWithTweet(img);
+                    });
                 }
-            }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        wordService.analyzeText(reply.getText());
+                    }
+                }).start();
+            });
+        } else {
+            System.out.println("No hay respuestas");
         }
     }
 

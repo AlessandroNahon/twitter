@@ -30,6 +30,9 @@ public class Tweet{
     private SentimentEnum textSentiment;
 
 
+    private boolean possibly_sensitive;
+
+
     private Date createdAt;
     private String conversationId;
 
@@ -39,13 +42,12 @@ public class Tweet{
     @OneToMany(mappedBy = "tweet", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Images> images = new HashSet<>();
 
-    public Tweet addReply(Reply reply){
+    public void addReply(Reply reply){
         if(this.replies == null){
             this.replies = new HashSet<>();
         }
         this.replies.add(reply);
         reply.setOriginalTweet(this);
-        return this;
     }
 
     public Tweet removeReply(Reply reply){

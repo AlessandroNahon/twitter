@@ -76,17 +76,13 @@ public class ThesaurusController {
      */
     @GetMapping("/fragment/words_table_tweets")
     public String getResultBySearchKey(Model model, @RequestParam("word") Optional<String> word) {
-        {
             if (word.isPresent()) {
-                System.out.println(word.get());
                 model.addAttribute("tweets", tweetService.findByText(word.get()));
                 model.addAttribute("replies", repliesService.findAllByTextContaining(word.get()));
             }else{
-                model.addAttribute("tweets", "yes");
+                model.addAttribute("tweets", "not present");
             }
-
             return "thesaurus/fragment/words_table_tweets :: words_table_tweets";
-        }
     }
 
     /**

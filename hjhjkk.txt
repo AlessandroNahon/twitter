@@ -1,0 +1,7 @@
+https://api.twitter.com/2/tweets/search/all?query=from:Peta -is:retweet -is:reply (has:media OR has:videos)
+AAAAAAAAAAAAAAAAAAAAAFelbAEAAAAA6BKWPBKmWTviEy2Pr1BPj1yhh3Q%3D8Kq8C7d0Vl9vOE0LwXroMtAiYriC5yq9FperLTjQBCNIXXndam
+
+
+
+
+https://api.twitter.com/2/tweets/search/all?tweet.fields=conversation_id,created_at,possibly_sensitive&expansions=attachments.media_keys&media.fields=preview_image_url,url&query=conversation_id:1467554520855052291&max_results=10

@@ -53,7 +53,7 @@ public class VisionAPIServiceImpl extends Thread implements VisionAPIService {
     }
 
     @Override
-    public Boolean getPictureType(String path) {
+    public List<AnnotateImageResponse> getValidPictureType(String path) {
         waitUntilWordsLoaded();
         List<AnnotateImageRequest> requests = new ArrayList<>();
         Image img = Image.newBuilder().setSource(ImageSource.newBuilder().setImageUri(path).build()).build();
@@ -67,27 +67,44 @@ public class VisionAPIServiceImpl extends Thread implements VisionAPIService {
             // Perform the request
             BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
             List<AnnotateImageResponse> responses = response.getResponsesList();
+            List<AnnotateImageResponse> resultsFromSearch = new ArrayList<>();
 
             // Display the results
             for (AnnotateImageResponse res : responses) {
                 for (LocalizedObjectAnnotation entity : res.getLocalizedObjectAnnotationsList()) {
-                    System.out.format("Object name: %s%n", entity.getName());
-                    System.out.format("Confidence: %s%n", entity.getScore());
-                    System.out.format("Normalized Vertices:%n");
-                    entity
-                            .getBoundingPoly()
-                            .getNormalizedVerticesList()
-                            .forEach(vertex -> System.out.format("- (%s, %s)%n", vertex.getX(), vertex.getY()));
-                    if(notAcceptedImages.contains(entity.getName().toLowerCase())){
-                        result = true;
-                    }
-                    if (acceptedImages.contains(entity.getName().toLowerCase())) {
-                        result =  true;
+                      if (acceptedImages.contains(entity.getName().toLowerCase())) {
+                        resultsFromSearch.add(res);
                     }
                 }
             }
-            return result;
+            return resultsFromSearch;
 
+    }
+
+    @Override
+    public List<AnnotateImageResponse> getContentOfThePicture(String path) {
+        waitUntilWordsLoaded();
+        List<AnnotateImageRequest> requests = new ArrayList<>();
+        Image img = Image.newBuilder().setSource(ImageSource.newBuilder().setImageUri(path).build()).build();
+        AnnotateImageRequest request =
+                AnnotateImageRequest.newBuilder()
+                        .addFeatures(Feature.newBuilder().setType(Feature.Type.OBJECT_LOCALIZATION))
+                        .setImage(img)
+                        .build();
+        requests.add(request);
+        boolean result = false;
+        // Perform the request
+        BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
+        List<AnnotateImageResponse> responses = response.getResponsesList();
+        List<AnnotateImageResponse> resultsFromSearch = new ArrayList<>();
+
+        // Display the results
+        for (AnnotateImageResponse res : responses) {
+            for (LocalizedObjectAnnotation entity : res.getLocalizedObjectAnnotationsList()) {
+                    resultsFromSearch.add(res);
+            }
+        }
+        return resultsFromSearch;
     }
 
     @SneakyThrows
@@ -103,9 +120,6 @@ public class VisionAPIServiceImpl extends Thread implements VisionAPIService {
         requests.add(request);
 
         try (ImageAnnotatorClient client = ImageAnnotatorClient.create()) {
-            // Initialize client that will be used to send requests. This client only needs to be created
-            // once, and can be reused for multiple requests. After completing all of your requests, call
-            // the "close" method on the client to safely clean up any remaining background resources.
             BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
             List<AnnotateImageResponse> responses = response.getResponsesList();
 
@@ -114,17 +128,7 @@ public class VisionAPIServiceImpl extends Thread implements VisionAPIService {
                     System.out.format("Error: %s%n", res.getError().getMessage());
                     return false;
                 }
-
-                // For full list of available annotations, see http://g.co/cloud/vision/docs
-
                 SafeSearchAnnotation annotation = res.getSafeSearchAnnotation();
-                System.out.format(
-                        "adult: %s%nmedical: %s%nspoofed: %s%nviolence: %s%nracy: %s%n",
-                        annotation.getAdult(),
-                        annotation.getMedical(),
-                        annotation.getSpoof(),
-                        annotation.getViolence(),
-                        annotation.getRacy());
                 if(getIfConditionMatches(annotation.getAdult(), annotation.getSpoof(), annotation.getViolence(),
                         annotation.getMedical(), annotation.getRacy())){
                     return true;

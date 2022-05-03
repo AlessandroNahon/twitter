@@ -1,31 +1,30 @@
 
 function printTweetTable(pageNumber, maxPageNumber) {
-    console.log('Actual page: ' + pageNumber + ', taget page: ' + maxPageNumber)
-
-    console.log("Page " + pageNumber + " of " + maxPageNumber)
-    $("#previous").show()
-    $("#next").show()
-    $.ajax({
-        type: 'get',
-        url: '/indexFragments/tweet_table',
-        data: {
-            page: parseInt(pageNumber) - 1,
-            totalPages: maxPageNumber
-        },
-        success: function (data) {
-            /*<![CDATA[*/
-            $('#tweet_table').html(data);
-            /*]]>*/
-        },
-    })
-    document.getElementById('currentPageText').innerHTML = "Page " + pageNumber + " of " + maxPageNumber
-    if (pageNumber == maxPageNumber) {
-        $("#next").hide()
-    } else if (pageNumber == 1) {
-        $("#previous").hide()
-    } else if(pageNumber == 1 && maxPageNumber == 1){
+    if(pageNumber == 1 && maxPageNumber == 1){
         $("#previous").hide()
         $("#next").hide()
+    }else{
+        $("#previous").show()
+        $("#next").show()
+        $.ajax({
+            type: 'get',
+            url: '/indexFragments/tweet_table',
+            data: {
+                page: parseInt(pageNumber) - 1,
+                totalPages: maxPageNumber
+            },
+            success: function (data) {
+                /*<![CDATA[*/
+                $('#tweet_table').html(data);
+                /*]]>*/
+            },
+        })
+        document.getElementById('currentPageText').innerHTML = "Page " + pageNumber + " of " + maxPageNumber
+        if (pageNumber == maxPageNumber) {
+            $("#next").hide()
+        } else if (pageNumber == 1) {
+            $("#previous").hide()
+        }
     }
 }
 

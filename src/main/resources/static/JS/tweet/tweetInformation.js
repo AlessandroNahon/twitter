@@ -26,7 +26,6 @@ function addEventToButtonReply(buttonid) {
 }
 
 function callFragmentReply() {
-    console.log("llama al m�todo con id: " + this.id);
     $.ajax({
         type: 'get',
         url: '/tweet/fragments/show_reply_images',

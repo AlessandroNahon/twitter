@@ -1,12 +1,14 @@
 package delco.twitter.scraping.bootstrap;
 
 import delco.twitter.scraping.model.Sentiment;
+import delco.twitter.scraping.model.twitterapi.model_content.Root;
 import delco.twitter.scraping.repositories.ImageRepository;
 import delco.twitter.scraping.repositories.SentimentRepository;
 import delco.twitter.scraping.repositories.TweetRepository;
 import delco.twitter.scraping.repositories.WordRepository;
 import delco.twitter.scraping.services.implementations.TweetServiceImpl;
 import delco.twitter.scraping.services.implementations.VisionAPIServiceImpl;
+import delco.twitter.scraping.services.interfaces.TwitterAPIService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -33,6 +35,9 @@ import java.util.Calendar;
     @Autowired
     private  VisionAPIServiceImpl visionAPIService;
 
+    @Autowired
+    private TwitterAPIService twitterAPIService;
+
 
     public DataLoader(TweetServiceImpl tweetService, TweetRepository tweetRepository, ImageRepository imageRepository,
                       WordRepository wordRepository, SentimentRepository sentimentRepository) {
@@ -47,10 +52,14 @@ import java.util.Calendar;
     @Override
     public void run(String... args) throws Exception {
         try {
-            boolean result = visionAPIService.getPictureType("https://pbs.twimg.com/media/FRm6FuZVgAETTes?format=jpg&name=small");
-            System.out.println(result);
-//            limpiarRegistros();
-//            executeSearch();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+//                    limpiarRegistros();
+//                    executeSearch();
+                }
+            }).start();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -69,9 +78,11 @@ import java.util.Calendar;
     }
 
     public void executeSearch(){
-        Date fechaLimite = new Date(2022-1900, Calendar.APRIL,25);
         limpiarRegistros();
-        tweetService.getUserTimeline("Greenpeace", fechaLimite);
+        String endDate = "2022-05-01"+"T00:00:00-00:00";
+        String startDate = "2022-01-01"+"T00:00:00-00:00";
+        Root r = twitterAPIService.getTweets("Peta",startDate,endDate);
+        tweetService.parseTweetDatumFromRoot(r, "Peta");
         wordRepository.deleteByWord("&gt;&gt;");
         System.out.println("Tweets cargados");
     }

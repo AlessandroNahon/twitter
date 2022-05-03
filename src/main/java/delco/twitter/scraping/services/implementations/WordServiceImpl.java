@@ -8,7 +8,7 @@ import delco.twitter.scraping.model.Reply;
 import delco.twitter.scraping.model.Tweet;
 import delco.twitter.scraping.model.Word;
 import delco.twitter.scraping.model.enumerations.TypeEnum;
-import delco.twitter.scraping.model.model_content.Emojis;
+import delco.twitter.scraping.model.twitterapi.model_content.Emojis;
 import delco.twitter.scraping.repositories.WordRepository;
 import delco.twitter.scraping.services.interfaces.WordService;
 import delco.twitter.scraping.services.pipelinenlp.Pipeline;
@@ -20,11 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
-import javax.persistence.EntityManager;
 import java.io.*;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -154,7 +151,7 @@ public class WordServiceImpl extends Thread  implements WordService {
     @Override
     public synchronized void parseWord(String text, TypeEnum syntax){
         if(syntax != TypeEnum.GROTESQUE_EMOJI && syntax != TypeEnum.KITSCH_EMOJI
-        && syntax != TypeEnum.GROTESQUE && syntax != TypeEnum.KITSCH){
+                && syntax != TypeEnum.GROTESQUE && syntax != TypeEnum.KITSCH){
             syntax = getTypeOfWord(text);
         }
         if (syntax != TypeEnum.NONE) {
@@ -167,7 +164,7 @@ public class WordServiceImpl extends Thread  implements WordService {
                 }
                 wordRepository.save(newWord);
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                e.printStackTrace();
             }
         }
     }

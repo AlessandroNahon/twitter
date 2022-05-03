@@ -1,22 +1,26 @@
 package delco.twitter.scraping.services.interfaces;
 
+import com.google.cloud.vision.v1.AnnotateImageResponse;
 import delco.twitter.scraping.model.Images;
-import delco.twitter.scraping.model.Reply;
-import delco.twitter.scraping.model.Tweet;
-import delco.twitter.scraping.model.model_content.Datum;
-import delco.twitter.scraping.model.model_content.Includes;
+import delco.twitter.scraping.model.twitterapi.model_content.Datum;
+import delco.twitter.scraping.model.twitterapi.model_content.Includes;
 
 import java.net.URL;
 import java.util.List;
-import java.util.Set;
 
 public interface ImageService {
 
+    void saveImageWithTweet(Images image);
+
     List<Images> getImages(Includes include, Datum datum);
 
-    Images downloadImage(URL url);
+    Images downloadImage(String url);
 
-    boolean containsValidImages(Includes include, Datum datum);
+    Images downloadImagesWithoutAnalysis(String url);
+
+    List<Images> getImagesWithoutAnalysis(Includes include, Datum datum);
+
+    void annotateImageWithObjects(List<AnnotateImageResponse> responses, Images image);
 
 
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/tweet")
@@ -47,7 +48,8 @@ public class TweetController {
         model.addAttribute("tweet", tweetInfo);
         model.addAttribute("imgUtil",new ImageUtil());
         model.addAttribute("emojis",tweetService.getAllEmojisFromTweets(tweetInfo));
-        model.addAttribute("words",wordService.sortByCountFilterBySyntax(listOfWords, TypeEnum.NOUN));
+        model.addAttribute("words",
+                wordService.sortByCountFilterBySyntax(listOfWords, TypeEnum.NOUN).stream().filter(w->w.getCount()>1).collect(Collectors.toList()));
         model.addAttribute("topKicheWords",wordService.sortByCountFilterBySyntax(listOfWords,TypeEnum.KITSCH));
         model.addAttribute("topGrotesqueWords",wordService.sortByCountFilterBySyntax(listOfWords,TypeEnum.GROTESQUE));
 

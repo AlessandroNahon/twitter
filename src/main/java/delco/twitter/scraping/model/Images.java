@@ -1,10 +1,13 @@
 package delco.twitter.scraping.model;
 
 import delco.twitter.scraping.model.enumerations.TypeEnum;
+import delco.twitter.scraping.model.utils.StringListConverter;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(exclude = {"tweet","reply"})
@@ -29,8 +32,21 @@ public class Images {
     @Enumerated(EnumType.STRING)
     private TypeEnum imageContent;
 
+    @Lob
+    @Convert(converter = StringListConverter.class)
+    private List<String> imageObjects = new ArrayList<>();
+
     @ManyToOne
     private Reply reply;
+
+    public void addImageObject(String object){
+        if(imageObjects == null){
+            imageObjects = new ArrayList<>();
+            imageObjects.add(object);
+        }else{
+            imageObjects.add(object);
+        }
+    }
 
     @Override
     public boolean equals(Object o) {

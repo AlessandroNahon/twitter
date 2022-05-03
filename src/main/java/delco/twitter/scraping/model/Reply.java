@@ -36,13 +36,12 @@ public class Reply {
     @OneToMany(mappedBy = "reply", cascade = CascadeType.ALL)
     private Set<Images> images = new HashSet<>();
 
-    public Reply addImage(Images images){
+    public void addImage(Images images){
         if(this.images == null){
             this.images = new HashSet<>();
         }
         this.images.add(images);
         images.setReply(this);
-        return this;
     }
 
     public Reply remove(Images images){
@@ -71,8 +70,6 @@ public class Reply {
                 "id=" + id +
                 ", text='" + text + '\'' +
                 ", textSentiment=" + textSentiment +
-                ", originalTweet=" + originalTweet +
-                ", images=" + images +
                 '}';
     }
 }

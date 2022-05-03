@@ -1,4 +1,4 @@
-package delco.twitter.scraping.model.model_content;
+package delco.twitter.scraping.model.twitterapi.model_content;
 
 import com.vdurmont.emoji.Emoji;
 import com.vdurmont.emoji.Fitzpatrick;
