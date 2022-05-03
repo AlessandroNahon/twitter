@@ -18,6 +18,7 @@ import java.util.Date;
 public class TwitterAPIServiceImpl extends Thread implements TwitterAPIService {
 
     private final String BEARER_TOKEN;
+    private final String max_tweets = "10";
 
     public TwitterAPIServiceImpl(@Value("${BEARER_TOKEN}") String bearer_token) {
         BEARER_TOKEN = "AAAAAAAAAAAAAAAAAAAAAFelbAEAAAAA6BKWPBKmWTviEy2Pr1BPj1yhh3Q%3D8Kq8C7d0Vl9vOE0LwXroMtAiYriC5yq9FperLTjQBCNIXXndam";
@@ -38,7 +39,7 @@ public class TwitterAPIServiceImpl extends Thread implements TwitterAPIService {
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
                     .url("https://api.twitter.com/2/tweets/search/all?start_time=" +startDate+
-                            "&end_time="+endDate+"&max_results=100&tweet.fields=conversation_id,created_at," +
+                            "&end_time="+endDate+"&max_results="+max_tweets+"&tweet.fields=conversation_id,created_at," +
                             "possibly_sensitive&expansions=attachments.media_keys&media.fields=preview_image_url,url&" +
                             "user.fields=username&query=from:"+username+" -is:retweet -is:reply (has:media OR has:videos)")
                     .method("GET", null)
@@ -63,7 +64,7 @@ public class TwitterAPIServiceImpl extends Thread implements TwitterAPIService {
 
 
     @Override
-    public Root getNextTweets(String paginationToken, String startDate, String endDate) {
+    public Root getNextTweets( String paginationToken, String startDate, String endDate) {
         Response response = null;
         Root raiz = new Root();
         try {
@@ -72,7 +73,7 @@ public class TwitterAPIServiceImpl extends Thread implements TwitterAPIService {
                     .url("https://api.twitter.com/2/tweets/search/all?expansions=attachments.media_keys&media.fields=" +
                             "preview_image_url,url&user.fields=username&tweet.fields=conversation_id,created_at," +
                             "possibly_sensitive&query=from:Greenpeace -is:retweet -is:reply (has:media OR has:videos)" +
-                            "&max_results=100&start_time="+startDate+"&end_time=" + endDate +
+                            "&max_results="+max_tweets+"&start_time="+startDate+"&end_time=" + endDate +
                             "&next_token="+paginationToken)
                     .method("GET", null)
                     .addHeader("Authorization", "Bearer "+BEARER_TOKEN)

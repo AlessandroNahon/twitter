@@ -34,6 +34,8 @@ public class WordServiceImpl extends Thread  implements WordService {
     private StanfordCoreNLP stanfordCoreNLP;
     private Set<String> kischcWords;
     private Set<String> grotesqueWords;
+    private Set<String> kischEmoji;
+    private Set<String> grotesqueEmoji;
     private boolean loadedPipeline = false;
     private boolean loadedFiles = false;
     long idHelper = 0;
@@ -50,12 +52,14 @@ public class WordServiceImpl extends Thread  implements WordService {
         new Thread(new Runnable() {
             @Override
             public void run() {
-
+                kischcWords = readFiles("kische");
+                grotesqueWords = readFiles("grotesque");
+                kischEmoji = readFiles("kischtEmoji");
+                grotesqueEmoji = readFiles("grotesqueEmoji");
+                loadedFiles = true;
             }
         }).start();
-        kischcWords = readFiles("kische");
-        grotesqueWords = readFiles("grotesque");
-        loadedFiles = true;
+
     }
 
     /**
@@ -87,14 +91,14 @@ public class WordServiceImpl extends Thread  implements WordService {
      * @param text The text of the tweet
      */
     @Override
-    public void analyzeText(String text) {
+    public void analyzeText(String text, String belongs_to) {
         List<String> emojisList = getAllEmojisFromText(text);
         if(emojisList.size() != 0){
             for(String s : emojisList){
-                if(isGrotesqueWord(s)){
-                    parseWord(s, TypeEnum.GROTESQUE_EMOJI);
+                if(isGrotesqueEmoji(s)){
+                    parseWord(s, TypeEnum.GROTESQUE_EMOJI, belongs_to);
                 }else{
-                    parseWord(s, TypeEnum.KITSCH_EMOJI);
+                    parseWord(s, TypeEnum.KITSCH_EMOJI, belongs_to);
                 }
             }
         }
@@ -111,11 +115,11 @@ public class WordServiceImpl extends Thread  implements WordService {
                         .replace("'","")
                         .replace(":","");
                     if(isGrotesqueWord(word)){
-                        parseWord(word, TypeEnum.GROTESQUE);
+                        parseWord(word, TypeEnum.GROTESQUE,belongs_to);
                     } else if(isKischWord(word)) {
-                        parseWord(word, TypeEnum.KITSCH);
+                        parseWord(word, TypeEnum.KITSCH,belongs_to);
                     } else {
-                        parseWord(word,getTypeOfWord(word));
+                        parseWord(word,getTypeOfWord(word),belongs_to);
                     }
                 }
             }
@@ -142,6 +146,11 @@ public class WordServiceImpl extends Thread  implements WordService {
         return grotesqueWords.contains(word);
     }
 
+    @Override
+    public boolean isGrotesqueEmoji(String word) {
+        return grotesqueEmoji.contains(word);
+    }
+
 
     /**
      * This metod is used to save the words in the database. It checks if the word is present in the database, if it is
@@ -149,7 +158,7 @@ public class WordServiceImpl extends Thread  implements WordService {
      * @param text The text of the tweet
      */
     @Override
-    public synchronized void parseWord(String text, TypeEnum syntax){
+    public synchronized void parseWord(String text, TypeEnum syntax, String belongs_to){
         if(syntax != TypeEnum.GROTESQUE_EMOJI && syntax != TypeEnum.KITSCH_EMOJI
                 && syntax != TypeEnum.GROTESQUE && syntax != TypeEnum.KITSCH){
             syntax = getTypeOfWord(text);
@@ -160,7 +169,11 @@ public class WordServiceImpl extends Thread  implements WordService {
                 if (newWord != null) {
                     newWord.setCount(newWord.getCount() + 1);
                 } else {
-                    newWord = Word.builder().word(text.toLowerCase()).count(1).syntax(syntax).build();
+                    newWord = Word.builder().word(text.toLowerCase())
+                            .count(1)
+                            .syntax(syntax)
+                            .belongs_to(belongs_to)
+                            .build();
                 }
                 wordRepository.save(newWord);
             } catch (Exception e) {

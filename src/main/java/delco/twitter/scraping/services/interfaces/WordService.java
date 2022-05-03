@@ -10,7 +10,7 @@ import java.util.List;
 public interface WordService {
 
 
-    void analyzeText(String text);
+    void analyzeText(String text, String belongs_to);
 
     TypeEnum getTypeOfWord(String word);
 
@@ -20,9 +20,11 @@ public interface WordService {
 
     boolean isGrotesqueWord(String word);
 
+    boolean isGrotesqueEmoji(String word);
+
     int getEmojiEndPos(char[] text, int startPos);
 
-    void parseWord(String text, TypeEnum syntax);
+    void parseWord(String text, TypeEnum syntax, String belongs_to);
 
     List<Word> getAllWordsFromTweet(Tweet t);
 

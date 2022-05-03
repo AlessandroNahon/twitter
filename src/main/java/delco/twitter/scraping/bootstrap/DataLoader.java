@@ -55,8 +55,8 @@ import java.util.Calendar;
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-//                    limpiarRegistros();
-//                    executeSearch();
+                    limpiarRegistros();
+                    executeSearch();
                 }
             }).start();
 

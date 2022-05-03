@@ -34,6 +34,8 @@ public class Word {
         return id != null ? id.equals(word.id) : word.id == null;
     }
 
+    public String belongs_to;
+
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;

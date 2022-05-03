@@ -38,7 +38,8 @@ class TwitterAPIServiceImplTest {
 
     @Test
     void checkGetNextTweets(){
-        Root r = twitterAPIService.getTweets("Greenpeace",startDate,endDate);
+        String username = "Greenpeace";
+        Root r = twitterAPIService.getTweets(username,startDate,endDate);
         System.out.println(r.toString());
         Root r2 = twitterAPIService.
                 getNextTweets(r.getMeta().getNext_token(),startDate,endDate);

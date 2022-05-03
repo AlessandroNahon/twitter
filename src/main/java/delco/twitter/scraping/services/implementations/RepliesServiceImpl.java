@@ -38,6 +38,8 @@ public class RepliesServiceImpl extends Thread implements RepliesService {
     @Autowired
     private DatumConverters datumConverters;
 
+    private final String belongs_to_reply = "Reply";
+
     public RepliesServiceImpl() {}
 
     /**
@@ -82,7 +84,7 @@ public class RepliesServiceImpl extends Thread implements RepliesService {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        wordService.analyzeText(reply.getText());
+                        wordService.analyzeText(reply.getText(),belongs_to_reply);
                     }
                 }).start();
             });
