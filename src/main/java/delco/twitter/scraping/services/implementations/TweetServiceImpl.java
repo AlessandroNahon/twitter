@@ -54,13 +54,14 @@ public class TweetServiceImpl extends Thread implements TweetService {
      * @param username Username of the user that is being scraped, to set it to the created tweet
      */
     @Override
-    public void parseTweetDatumFromRoot(Root root,String username) {
+    public synchronized void parseTweetDatumFromRoot(Root root,String username) {
         System.out.println(root.toString());
         root.getData().forEach(datum -> {
                 List<Images> images = imageService.getImages(root.getIncludes(),datum);
                 if(!images.isEmpty()) {
                     System.out.println("Hay un tweet que es válido");
                     Tweet tweet = datumConverters.convertDatumToTweet(datum);
+                    tweet.setUsername(username);
                     tweetRepository.save(tweet);
                     images.forEach(img -> {
                         img.setTweet(tweet);

@@ -34,6 +34,9 @@ barge
 canoe
 catamaran
 craft
+font
+gesture
+happy
 dinghy
 gondola
 raft

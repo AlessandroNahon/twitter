@@ -55,9 +55,12 @@ public class WordServiceImpl extends Thread  implements WordService {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                kischcWords = readFiles("kische");
-                grotesqueWords = readFiles("grotesque");
-                grotesqueEmoji = readFiles("grotesqueEmoji");
+                kischcWords = readFiles("acceptedFilesDat"
+                        +File.separator+"kistchWords");
+                grotesqueWords = readFiles("notAcceptedFilesDat"
+                        +File.separator+"grotesqueWords");
+                grotesqueEmoji = readFiles("notAcceptedFilesDat"
+                        +File.separator+"grotesqueEmoji");
                 loadedFiles = true;
             }
         }).start();

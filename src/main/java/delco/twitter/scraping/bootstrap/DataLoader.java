@@ -58,8 +58,8 @@ import java.util.List;
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    limpiarRegistros();
-                    executeSearch();
+//                    limpiarRegistros();
+//                    executeSearch();
                 }
             }).start();
 
@@ -82,10 +82,14 @@ import java.util.List;
 
     public void executeSearch(){
         limpiarRegistros();
-        String endDate = "2022-05-01"+"T00:00:00-00:00";
-        String startDate = "2022-01-01"+"T00:00:00-00:00";
+        String endDate = "2021-06-30"+"T00:00:00-00:00";
+        String startDate = "2021-06-10"+"T00:00:00-00:00";
         Root r = twitterAPIService.getTweets("Peta",startDate,endDate);
         tweetService.parseTweetDatumFromRoot(r, "Peta");
+        while(r!=null){
+            r = twitterAPIService.getNextTweets(r.getMeta().getNext_token(),startDate,endDate);
+            tweetService.parseTweetDatumFromRoot(r, "Peta");
+        }
         System.out.println("Tweets cargados");
     }
 

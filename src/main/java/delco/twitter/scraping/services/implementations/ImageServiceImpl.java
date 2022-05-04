@@ -57,7 +57,7 @@ public class ImageServiceImpl implements ImageService {
                             String url = media.getType().equals("photo") ? media.getUrl()
                                     : media.getPreview_image_url();
 
-                            Images i = downloadImage(url);
+                            Images i = downloadImage(url, datum.isPossibly_sensitive());
                             if(!i.getImageObjects().isEmpty()){
                                 images.add(i);
                             }
@@ -83,40 +83,25 @@ public class ImageServiceImpl implements ImageService {
      * @return Objects images to be assigned to the tweet
      */
     @Override
-    public Images downloadImage(String url) {
+    public Images downloadImage(String url, boolean sensibleContent) {
         Images images = new Images();
         try{
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(ImageIO.read(new URL(url)), "jpg", baos);
-            images.setImage(baos.toByteArray());
-            annotateImageWithObjects(visionAPIService.getValidPictureType(url), images);
-            if(images.getImageObjects().isEmpty()){
-                if(visionAPIService.getSafeSearch(url)){
-                    images.setImageContent(TypeEnum.GROTESQUE);
-                }else{
-                    images.setImageContent(TypeEnum.KITSCH);
-                }
-                return images;
-            }
-        }  catch (IOException | NullPointerException e) {
-            e.printStackTrace();
-        }
-        return images;
-    }
-
-    @Override
-    public Images downloadImagesWithoutAnalysis(String url) {
-        Images images = new Images();
-        try{
-            List<AnnotateImageResponse> responses = visionAPIService.getContentOfThePicture(url);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(ensureOpaque(ImageIO.read(new URL(url))), "jpg", baos);
             images.setImage(baos.toByteArray());
-            annotateImageWithObjects(responses, images);
-            if(visionAPIService.getSafeSearch(url)){
-                images.setImageContent(TypeEnum.GROTESQUE);
-            }else{
-                images.setImageContent(TypeEnum.KITSCH);
+            List<String> responses = visionAPIService.getValidPictureType(url);
+            if(!responses.isEmpty()) {
+                annotateImageWithLabels(visionAPIService.getValidPictureType(url), images);
+                if(sensibleContent) {
+                    images.setImageContent(TypeEnum.GROTESQUE);
+                }else{
+                    if (visionAPIService.getSafeSearch(url)) {
+                        images.setImageContent(TypeEnum.GROTESQUE);
+                    } else {
+                        images.setImageContent(TypeEnum.KITSCH);
+                    }
+                }
+
             }
             return images;
         }  catch (IOException | NullPointerException e) {
@@ -125,7 +110,8 @@ public class ImageServiceImpl implements ImageService {
         return images;
     }
 
-    public BufferedImage ensureOpaque(BufferedImage image){
+
+    private BufferedImage ensureOpaque(BufferedImage image){
         if (image.getTransparency() == BufferedImage.OPAQUE)
             return image;
         int w = image.getWidth();
@@ -137,40 +123,13 @@ public class ImageServiceImpl implements ImageService {
         return bi2;
     }
 
-    @Override
-    public List<Images> getImagesWithoutAnalysis(Includes include, Datum datum) {
-        ArrayList<Images> images = new ArrayList<>();
-        BufferedImage image = null;
-        try{
-            for(String mediaKey : datum.getAttachments().getMedia_keys()){
-                for(Medium media : include.getMedia()){
-                    if(media.getMedia_key().equals(mediaKey)){
-                        try {
-                            String url = media.getType().equals("photo") ? media.getUrl()
-                                    : media.getPreview_image_url();
-                            Images i = downloadImagesWithoutAnalysis(url);
-                            images.add(i);
-                        }  catch (NullPointerException e) {
-                            System.out.println("ERROR EN LA IMAGEN "+e.getMessage());
-                        }
-                    }
-                }
-            }
-            return images;
-        }catch (NullPointerException e){
-            e.printStackTrace();
-        }
-        return images;
-    }
+
 
     @Override
-    public void annotateImageWithObjects(List<AnnotateImageResponse> responses, Images image){
-        for (AnnotateImageResponse res : responses) {
-            for (LocalizedObjectAnnotation entity : res.getLocalizedObjectAnnotationsList()) {
-                image.addImageObject(entity.getName());
-            }
+    public void annotateImageWithLabels(List<String> responses, Images image){
+        for (String res : responses) {
+            image.addImageObject(res);
         }
-
     }
 }
 

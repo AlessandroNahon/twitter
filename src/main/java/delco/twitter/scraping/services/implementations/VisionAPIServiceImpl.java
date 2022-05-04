@@ -13,8 +13,9 @@ import java.util.*;
 @Service
 public class VisionAPIServiceImpl extends Thread implements VisionAPIService {
 
-    private TreeSet<String> acceptedImages;
-    private TreeSet<String> notAcceptedImages;
+    private Set<String> acceptedImages;
+    private Set<String> acceptedLabels;
+    private Set<String> notAcceptedImages;
     boolean areWordsLoaded = false;
     private final ImageAnnotatorClient client;
 
@@ -25,8 +26,12 @@ public class VisionAPIServiceImpl extends Thread implements VisionAPIService {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                acceptedImages = readFiles("accepted");
-                notAcceptedImages = readFiles("not_accepted");
+                acceptedImages = readFiles(File.separator+"acceptedFilesDat"
+                        +File.separator+"acceptedObjectSearch");
+                notAcceptedImages = readFiles(File.separator+"notAcceptedFilesDat"
+                        +File.separator+"notAcceptedObjectSearch");
+                acceptedLabels = readFiles(File.separator+"acceptedFilesDat"
+                        +File.separator+"acceptedLabelSearch");
                 areWordsLoaded = true;
             }
         }).start();
@@ -39,11 +44,11 @@ public class VisionAPIServiceImpl extends Thread implements VisionAPIService {
      * @param fileName The name of the file, without the .dat
      * @return A tree set that is going to be assigned to the class variable acceptedImages/notAcceptedImages
      */
-    public TreeSet<String> readFiles(String fileName) {
+    public HashSet<String> readFiles(String fileName) {
         try {
             File fichero =  ResourceUtils.getFile("classpath:wordsList"+File.separator+fileName+".dat");
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fichero));
-            return (TreeSet<String>) ois.readObject();
+            return (HashSet<String>) ois.readObject();
         } catch (IOException e) {
             System.out.println("The file was not found");
         } catch (ClassNotFoundException e) {
@@ -52,8 +57,9 @@ public class VisionAPIServiceImpl extends Thread implements VisionAPIService {
         throw new RuntimeException("The file was not found");
     }
 
+    @SneakyThrows
     @Override
-    public List<AnnotateImageResponse> getValidPictureType(String path) {
+    public List<String> getValidPictureType(String path) {
         waitUntilWordsLoaded();
         List<AnnotateImageRequest> requests = new ArrayList<>();
         Image img = Image.newBuilder().setSource(ImageSource.newBuilder().setImageUri(path).build()).build();
@@ -63,49 +69,76 @@ public class VisionAPIServiceImpl extends Thread implements VisionAPIService {
                         .setImage(img)
                         .build();
         requests.add(request);
-            boolean result = false;
-            // Perform the request
-            BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
-            List<AnnotateImageResponse> responses = response.getResponsesList();
-            List<AnnotateImageResponse> resultsFromSearch = new ArrayList<>();
 
-            // Display the results
-            for (AnnotateImageResponse res : responses) {
-                for (LocalizedObjectAnnotation entity : res.getLocalizedObjectAnnotationsList()) {
-                      if (acceptedImages.contains(entity.getName().toLowerCase())) {
-                        resultsFromSearch.add(res);
-                    }
-                }
-            }
-            return resultsFromSearch;
-
-    }
-
-    @Override
-    public List<AnnotateImageResponse> getContentOfThePicture(String path) {
-        waitUntilWordsLoaded();
-        List<AnnotateImageRequest> requests = new ArrayList<>();
-        Image img = Image.newBuilder().setSource(ImageSource.newBuilder().setImageUri(path).build()).build();
-        AnnotateImageRequest request =
-                AnnotateImageRequest.newBuilder()
-                        .addFeatures(Feature.newBuilder().setType(Feature.Type.OBJECT_LOCALIZATION))
-                        .setImage(img)
-                        .build();
-        requests.add(request);
-        boolean result = false;
-        // Perform the request
-        BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
-        List<AnnotateImageResponse> responses = response.getResponsesList();
-        List<AnnotateImageResponse> resultsFromSearch = new ArrayList<>();
+        List<AnnotateImageResponse> responses = client.batchAnnotateImages(requests).getResponsesList();
+        List<String> resultsFromSearch = new ArrayList<>();
+        List<String> negativeResultFromSearch = new ArrayList<>();
 
         // Display the results
         for (AnnotateImageResponse res : responses) {
             for (LocalizedObjectAnnotation entity : res.getLocalizedObjectAnnotationsList()) {
-                    resultsFromSearch.add(res);
+                if (acceptedImages.contains(entity.getName().toLowerCase())) {
+                    resultsFromSearch.add(entity.getName());
+                }
+                if(notAcceptedImages.contains(entity.getName().toLowerCase())){
+                    negativeResultFromSearch.add(entity.getName());
+                }
             }
         }
-        return resultsFromSearch;
+        if(resultsFromSearch.isEmpty()){
+            List<String> secondFilter = detectLabels(img);
+            if(!secondFilter.isEmpty()){
+                return secondFilter;
+            }
+        }else{
+            if(resultsFromSearch.size() >= negativeResultFromSearch.size()){
+                return resultsFromSearch;
+            }else {
+                List<String> secondFilter = detectLabels(img);
+                if(!secondFilter.isEmpty()){
+                    return secondFilter;
+                }
+            }
+        }
+        return new ArrayList<>();
     }
+
+    @Override
+    public List<String> detectLabels(Image img) {
+        List<AnnotateImageRequest> requests = new ArrayList<>();
+        List<String> labels = new ArrayList<>();
+        List<String> negative = new ArrayList<>();
+
+        Feature feat = Feature.newBuilder().setType(Feature.Type.LABEL_DETECTION).build();
+        AnnotateImageRequest request =
+                AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(img).build();
+        requests.add(request);
+
+        BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
+        List<AnnotateImageResponse> responses = response.getResponsesList();
+
+        for (AnnotateImageResponse res : responses) {
+            if (res.hasError()) {
+                System.out.format("Error: %s%n", res.getError().getMessage());
+                return new ArrayList<>();
+            }
+
+            // For full list of available annotations, see http://g.co/cloud/vision/docs
+            for (EntityAnnotation annotation : res.getLabelAnnotationsList()) {
+                if(acceptedLabels.contains(annotation.getDescription().toLowerCase())){
+                    labels.add(annotation.getDescription());
+                }else if(notAcceptedImages.contains(annotation.getDescription().toLowerCase())){
+                    negative.add(annotation.getDescription());
+                }
+            }
+        }
+        if(acceptedLabels.size() >= negative.size()) {
+            return labels;
+        }else{
+            return new ArrayList<>();
+        }
+    }
+
 
     @SneakyThrows
     @Override
@@ -129,7 +162,7 @@ public class VisionAPIServiceImpl extends Thread implements VisionAPIService {
                     return false;
                 }
                 SafeSearchAnnotation annotation = res.getSafeSearchAnnotation();
-                if(getIfConditionMatches(annotation.getAdult(), annotation.getSpoof(), annotation.getViolence(),
+                if(getIfConditionMatches(annotation.getAdult(), annotation.getViolence(),
                         annotation.getMedical(), annotation.getRacy())){
                     return true;
                 }else{

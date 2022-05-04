@@ -20,20 +20,27 @@ import static org.junit.jupiter.api.Assertions.*;
 class TwitterAPIServiceImplTest {
 
     public static TwitterAPIService twitterAPIService;
-    public static String beare = "AAAAAAAAAAAAAAAAAAAAAFelbAEAAAAA6BKWPBKmWTviEy2Pr1BPj1yhh3Q%3D8Kq8C7d0Vl9vOE0LwXroMtAiYriC5yq9FperLTjQBCNIXXndam";
+
     public static String endDate = "2022-05-01"+"T00:00:00-00:00";
     public static String startDate = "2022-01-01"+"T00:00:00-00:00";
 
-    @BeforeEach
-    void setup(){
-        twitterAPIService = new TwitterAPIServiceImpl(beare);
-    }
+//    @BeforeEach
+//    void setup(){
+//        twitterAPIService = new TwitterAPIServiceImpl(beare);
+//    }
 
     @Test
     void checkGetTweets() {
         Root r = twitterAPIService.getTweets("Greenpeace",startDate,endDate);
         System.out.println(r.toString());
         assertNotNull(r);
+    }
+
+    @Test
+    void checkGetReplies(){
+        Root r = twitterAPIService.getReplies("1409648813820629000");
+        System.out.println(r.toString());
+        assertFalse(r.getData().isEmpty());
     }
 
     @Test
@@ -47,15 +54,15 @@ class TwitterAPIServiceImplTest {
         assertFalse(r2.getData().isEmpty());
     }
 
-    public static List<String> getConversationsId(){
-        twitterAPIService = new TwitterAPIServiceImpl(beare);
-        List<String> listOfConversationId = new ArrayList<>();
-        Root r = twitterAPIService.getTweets("Greenpeace",startDate,endDate);
-        System.out.println(r.toString());
-        r.getData().forEach(e -> listOfConversationId.add(e.getConversation_id()));
-        listOfConversationId.forEach(System.out::println);
-        return listOfConversationId;
-    }
+//    public static List<String> getConversationsId(){
+//        twitterAPIService = new TwitterAPIServiceImpl(beare);
+//        List<String> listOfConversationId = new ArrayList<>();
+//        Root r = twitterAPIService.getTweets("Greenpeace",startDate,endDate);
+//        System.out.println(r.toString());
+//        r.getData().forEach(e -> listOfConversationId.add(e.getConversation_id()));
+//        listOfConversationId.forEach(System.out::println);
+//        return listOfConversationId;
+//    }
 
     @ParameterizedTest
     @MethodSource("getConversationsId")

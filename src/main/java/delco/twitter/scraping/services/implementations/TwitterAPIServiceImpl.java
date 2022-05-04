@@ -21,7 +21,7 @@ public class TwitterAPIServiceImpl extends Thread implements TwitterAPIService {
     private final String max_tweets = "10";
 
     public TwitterAPIServiceImpl(@Value("${BEARER_TOKEN}") String bearer_token) {
-        BEARER_TOKEN = "AAAAAAAAAAAAAAAAAAAAAFelbAEAAAAA6BKWPBKmWTviEy2Pr1BPj1yhh3Q%3D8Kq8C7d0Vl9vOE0LwXroMtAiYriC5yq9FperLTjQBCNIXXndam";
+        BEARER_TOKEN = bearer_token;
     }
 
     /**
@@ -52,7 +52,7 @@ public class TwitterAPIServiceImpl extends Thread implements TwitterAPIService {
                             .string(), Root.class);
             System.out.println(raiz);
 
-            Thread.sleep(500);
+            Thread.sleep(400);
             return raiz;
         } catch (IOException e) {
             e.printStackTrace();
@@ -83,7 +83,10 @@ public class TwitterAPIServiceImpl extends Thread implements TwitterAPIService {
                     .execute()
                     .body()
                     .string(), Root.class);
-            Thread.sleep(500);
+            Thread.sleep(400);
+            if(raiz.getData().isEmpty()){
+                return null;
+            }
             return raiz;
         } catch (IOException e) {
             e.printStackTrace();

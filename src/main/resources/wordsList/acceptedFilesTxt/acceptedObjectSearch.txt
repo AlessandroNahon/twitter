@@ -8,7 +8,6 @@ Bird
 Penguin
 Sea turtle
 Cattle
-Food
 Dog
 Chicken
 Bear
@@ -185,6 +184,7 @@ Fowl
 Fox
 Frog
 Fruit bat
+Flower
 Gamefowl
 list
 Galliform
@@ -472,6 +472,25 @@ Warbler
 Water Boa
 Water buffalo
 Weasel
+Water
+Sky
+Snow
+Natural landscape
+Mountain
+Ice cap
+Polar ice cap
+Atmospheric phenomenon
+Grassland
+Plant
+Freezing
+Road surface
+Water resources
+Horizon
+Azure
+Island
+Headland
+Coastal and oceanic landforms
+Highland
 Whale
 Whippet
 Whitefish

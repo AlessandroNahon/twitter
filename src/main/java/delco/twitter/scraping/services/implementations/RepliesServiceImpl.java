@@ -75,18 +75,21 @@ public class RepliesServiceImpl extends Thread implements RepliesService {
                 Reply reply = datumConverters.convertDatumToReply(datum);
                 reply.setOriginalTweet(originalTweet);
                 repliesRepository.save(reply);
-                if(!datum.getAttachments().getMedia_keys().isEmpty()){
-                    imageService.getImagesWithoutAnalysis(root.getIncludes(),datum).forEach(img -> {
-                        img.setReply(reply);
-                        imageService.saveImageWithTweet(img);
-                    });
-                }
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         wordService.analyzeText(reply.getText(),WordServiceImpl.REPLY_BELONGS_TO);
                     }
                 }).start();
+                if(!datum.getAttachments().getMedia_keys().isEmpty()) {
+                    List<Images> images = imageService.getImages(root.getIncludes(),datum);
+                    if(!images.isEmpty()) {
+                        images.forEach(img -> {
+                            img.setReply(reply);
+                            imageService.saveImageWithTweet(img);
+                        });
+                    }
+                }
             });
         } else {
             System.out.println("No hay respuestas");

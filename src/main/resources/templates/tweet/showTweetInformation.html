@@ -196,25 +196,25 @@
                         <h5 class="card-title pt-3">Specific Thesaurus</h5>
                     </div>
                     <div class="card-body-body d-flex align-items-center mt-5 pt-5">
-                            <canvas id="bar" width="400" height="250"></canvas>
-                            <script th:inline="javascript">
-                                printThesaurus(/*[[${words}]]*/)
-                            </script>
+                        <canvas id="bar" width="400" height="250"></canvas>
+                        <script th:inline="javascript">
+                            printThesaurus(/*[[${words}]]*/)
+                        </script>
                     </div>
                 </div>
             </div>
             <div class="card col-6 mt-3 pb-3">
                 <div class="card-header">
-                        <h5 class="card-title pt-3">
-                            Kitsch/Sentimental & Grotesque/Disruptive
-                        </h5>
+                    <h5 class="card-title pt-3">
+                        Kitsch/Sentimental & Grotesque/Disruptive
+                    </h5>
                     </h6>
                 </div>
                 <div class="card-body">
                     <div class="page-content page-container" id="page-content">
                         <canvas id="chart-line" width="300" height="100"></canvas>
                         <script th:inline="javascript">
-                            printHorizontal([[${topKicheWords}]], 'chart-line', 'Quiche', '#9ACD32')
+                            printHorizontal([[${ topKicheWords }]], 'chart-line', 'Quiche', '#9ACD32')
                         </script>
                     </div>
                     <div class="card-body">

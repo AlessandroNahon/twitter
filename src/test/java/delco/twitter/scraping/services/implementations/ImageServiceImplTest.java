@@ -37,30 +37,30 @@ class ImageServiceImplTest {
         assertFalse(root.getData().isEmpty());
     }
 
-    @Test
-    void downloadImage(){
-        Images i = imageService.downloadImage(validImageURl);
-        System.out.println(i.toString());
-        assertNotEquals(i.getImage().length,0);
+//    @Test
+//    void downloadImage(){
+//        Images i = imageService.downloadImage(validImageURl);
+//        System.out.println(i.toString());
+//        assertNotEquals(i.getImage().length,0);
+//
+//    }
 
-    }
 
+//    @Test
+//    void checkAnnotateImageWithObjects(){
+//        Images image = new Images();
+//        imageService.annotateImageWithObjects(
+//                visionAPIService.getValidPictureType("https://pbs.twimg.com/media/FPW4peeVsAQVOtu?format=jpg&name=small"),image);
+//        System.out.println("\n-->\tCONTENT OF THE IMAGE\n"+image.getImageObjects());
+//        assertFalse(image.getImageObjects().isEmpty());
+//    }
 
-    @Test
-    void checkAnnotateImageWithObjects(){
-        Images image = new Images();
-        imageService.annotateImageWithObjects(
-                visionAPIService.getValidPictureType("https://pbs.twimg.com/media/FPW4peeVsAQVOtu?format=jpg&name=small"),image);
-        System.out.println("\n-->\tCONTENT OF THE IMAGE\n"+image.getImageObjects());
-        assertFalse(image.getImageObjects().isEmpty());
-    }
-
-    @Test
-    void checkDownloadImagesWithoutAnalysis(){
-        Images i = imageService.downloadImagesWithoutAnalysis(validImageURl);
-        System.out.println(i.toString());
-        assertFalse(i.getImageObjects().isEmpty());
-    }
+//    @Test
+//    void checkDownloadImagesWithoutAnalysis(){
+//        Images i = imageService.downloadImagesWithoutAnalysis(validImageURl);
+//        System.out.println(i.toString());
+//        assertFalse(i.getImageObjects().isEmpty());
+//    }
 
     @Test
     void checkGetImages(){

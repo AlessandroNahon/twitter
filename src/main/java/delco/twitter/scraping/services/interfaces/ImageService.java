@@ -14,13 +14,11 @@ public interface ImageService {
 
     List<Images> getImages(Includes include, Datum datum);
 
-    Images downloadImage(String url);
+    Images downloadImage(String url,boolean tweetHasSensibleContent);
 
-    Images downloadImagesWithoutAnalysis(String url);
 
-    List<Images> getImagesWithoutAnalysis(Includes include, Datum datum);
 
-    void annotateImageWithObjects(List<AnnotateImageResponse> responses, Images image);
+    void annotateImageWithLabels(List<String> responses, Images image);
 
 
 }
