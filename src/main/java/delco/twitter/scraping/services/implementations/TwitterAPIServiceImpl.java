@@ -21,7 +21,7 @@ public class TwitterAPIServiceImpl extends Thread implements TwitterAPIService {
     private final String max_tweets = "10";
 
     public TwitterAPIServiceImpl(@Value("${BEARER_TOKEN}") String bearer_token) {
-        BEARER_TOKEN = bearer_token;
+        BEARER_TOKEN = "AAAAAAAAAAAAAAAAAAAAAFelbAEAAAAA6BKWPBKmWTviEy2Pr1BPj1yhh3Q%3D8Kq8C7d0Vl9vOE0LwXroMtAiYriC5yq9FperLTjQBCNIXXndam";
     }
 
 

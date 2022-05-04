@@ -12,7 +12,7 @@ class TweetServiceImplTest {
 
     private TwitterAPIService twitterAPIService;
     private TweetService tweetService;
-    String brearerToken = "AAAAAAAAAAAAAAAAAAAAAFelbAEAAAAA6BKWPBKmWTviEy2Pr1BPj1yhh3Q%3D8Kq8C7d0Vl9vOE0LwXroMtAiYriC5yq9FperLTjQBCNIXXndam";
+    String brearerToken = "bearerToken";
     String endDate = "2022-05-01"+"T00:00:00-00:00";
     String startDate = "2022-01-01"+"T00:00:00-00:00";
 
