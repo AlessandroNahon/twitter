@@ -24,10 +24,10 @@ public class TwitterAPIServiceImpl extends Thread implements TwitterAPIService {
         BEARER_TOKEN = bearer_token;
     }
 
+
     /**
      * This methods gather the Root file (JSON) from the Twitter API
      * @param username The Screen name of the user that you want to get the tweets
-
      * @return The Root file (JSON) from the Twitter API
      */
     @Override
@@ -62,7 +62,13 @@ public class TwitterAPIServiceImpl extends Thread implements TwitterAPIService {
         return null;
     }
 
-
+    /**
+     * This methods gather the next page of tweets that comes after the last tweet of the previous page
+     * @param paginationToken Token to the next page of tweets
+     * @param startDate Start date of the search
+     * @param endDate End date of the search
+     * @return The Root file (JSON) from the Twitter API
+     */
     @Override
     public Root getNextTweets( String paginationToken, String startDate, String endDate) {
         Response response = null;
