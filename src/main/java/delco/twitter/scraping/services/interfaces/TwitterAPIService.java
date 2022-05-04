@@ -14,7 +14,4 @@ public interface TwitterAPIService {
     Root getReplies(String conversationId);
 
 
-
-    String getUserId(String username);
-
 }

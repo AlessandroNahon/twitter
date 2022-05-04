@@ -134,31 +134,6 @@ public class TwitterAPIServiceImpl extends Thread implements TwitterAPIService {
         return null;
     }
 
-    /**
-     * Calls the Twitter API to get the user ID from the screen name
-     * @param username The screen name of the user that you want to get the ID
-     * @return The user ID
-     */
-    @Override
-    public String getUserId(String username) {
-        Response response = null;
-        try {
-            OkHttpClient client = new OkHttpClient();
-            Request request = new Request.Builder()
-                    .url("https://api.twitter.com/2/users/by/username/"+username)
-                    .method("GET", null)
-                    .addHeader("Authorization", "Bearer "+BEARER_TOKEN)
-                    .addHeader("Cookie", "guest_id=v1%3A164851793848590618")
-                    .build();
-
-            response = client.newCall(request).execute();
-            return new Gson().fromJson(response.body().string(), UserRoot.class).getData().getId();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
 
 
 
