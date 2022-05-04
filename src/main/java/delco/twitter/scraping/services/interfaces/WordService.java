@@ -10,6 +10,7 @@ import java.util.List;
 public interface WordService {
 
 
+
     void analyzeText(String text, String belongs_to);
 
     TypeEnum getTypeOfWord(String word);
@@ -38,15 +39,24 @@ public interface WordService {
     between the view and the model
      */
 
-    List<Word> getTop20Words();
+    List<String> getAllEmojisFromText(String text);
+
+    List<Word> getAllWordsByBelongTo(String belong_to);
+
+    List<Word> getTop20ByBelongsTo(String belongs_to);
 
     List<Word> getTop5Words();
 
-    List<String> getAllEmojisFromText(String text);
+    List<Word> getTop20WordsByBelongsToBySyntax (String belongs_to, TypeEnum syntax);
 
-    Word getTopSyntaxEnum(TypeEnum Syntax);
+    List<Word> getTop10ByBelongsToBySyntax (String belongs_to, TypeEnum syntax);
 
-    List<Word> getTop10WordsBySyntax(TypeEnum Syntax);
+    Word getTopByBelongsToBySyntax (String belongs_to, TypeEnum syntax);
+
+    Word getByWordAndBelongsTo(String word, String belongs_to);
+
+
+
 
 
 

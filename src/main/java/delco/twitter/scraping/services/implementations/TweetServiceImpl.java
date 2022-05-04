@@ -41,7 +41,6 @@ public class TweetServiceImpl extends Thread implements TweetService {
     @Autowired
     private DatumConverters datumConverters;
 
-    private final String belogs_to_tweet = "Tweet";
 
     public TweetServiceImpl() {
 
@@ -77,7 +76,7 @@ public class TweetServiceImpl extends Thread implements TweetService {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            wordService.analyzeText(datum.getText(),belogs_to_tweet);
+                            wordService.analyzeText(datum.getText(),WordServiceImpl.TWEET_BELONGS_TO);
                         }
                     }).start();
                     try {

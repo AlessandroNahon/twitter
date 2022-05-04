@@ -10,17 +10,21 @@ import java.util.List;
 public interface WordRepository extends PagingAndSortingRepository<Word, Long>, JpaRepository<Word, Long> {
 
 
-    Word findTop1BySyntaxOrderByCountDesc (TypeEnum syntax);
+    void deleteByWord(String text);
 
-    List<Word> findTop20ByOrderByCountDesc();
+    Word findByWordAndBelongsTo(String word, String belongs_to);
+
+    List<Word> findAllByBelongsTo(String belongs_to);
+
+    List<Word> findTop20ByBelongsToAndSyntaxOrderByCountDesc (String belongs_to, TypeEnum syntax);
+
+    List<Word> findTop10ByBelongsToAndSyntaxOrderByCountDesc (String belongs_to, TypeEnum syntax);
 
     List<Word> findTop5ByOrderByCountDesc();
 
-    List<Word> findTop10BySyntaxOrderByCountDesc (TypeEnum syntax);
+    Word findTop1ByBelongsToAndSyntaxOrderByCountDesc (String belongs_to, TypeEnum syntax);
 
-    Word findByWord(String word);
-
-    void deleteByWord(String text);
+    List<Word> findTop20ByBelongsToOrderByCountDesc (String belongs_to);
 
 
 

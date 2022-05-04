@@ -1,6 +1,8 @@
 package delco.twitter.scraping.bootstrap;
 
 import delco.twitter.scraping.model.Sentiment;
+import delco.twitter.scraping.model.Word;
+import delco.twitter.scraping.model.enumerations.TypeEnum;
 import delco.twitter.scraping.model.twitterapi.model_content.Root;
 import delco.twitter.scraping.repositories.ImageRepository;
 import delco.twitter.scraping.repositories.SentimentRepository;
@@ -20,6 +22,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Date;
 import java.util.Calendar;
+import java.util.List;
 
 
 @Component class DataLoader implements CommandLineRunner {
@@ -51,7 +54,7 @@ import java.util.Calendar;
     @Transactional
     @Override
     public void run(String... args) throws Exception {
-        try {
+         try {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -83,7 +86,6 @@ import java.util.Calendar;
         String startDate = "2022-01-01"+"T00:00:00-00:00";
         Root r = twitterAPIService.getTweets("Peta",startDate,endDate);
         tweetService.parseTweetDatumFromRoot(r, "Peta");
-        wordRepository.deleteByWord("&gt;&gt;");
         System.out.println("Tweets cargados");
     }
 

@@ -6,14 +6,17 @@ import delco.twitter.scraping.model.Word;
 import delco.twitter.scraping.model.enumerations.TypeEnum;
 import delco.twitter.scraping.repositories.WordRepository;
 import delco.twitter.scraping.services.interfaces.WordService;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,12 +25,19 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(Parameterized.class)
+@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
 class WordServiceImplTest {
 
 
     private WordService wordService;
+
+    @Autowired
+    private WordRepository wordRepository;
+
     private Tweet testTweet;
+
 
     @BeforeEach
     void setup(){
@@ -41,6 +51,13 @@ class WordServiceImplTest {
                 .replies(replies)
                 .build();
     }
+
+    @Test
+    public void checkFindAllBelongsTo(){
+        List<Word> listOfBelongs = wordService.getAllWordsByBelongTo("Tweet");
+        assertFalse(listOfBelongs.isEmpty());
+    }
+
 
     @Test
     void getAllWordsFromTweet() {
@@ -70,4 +87,28 @@ class WordServiceImplTest {
         typeEnums.add(TypeEnum.NOUN);
         return typeEnums;
     }
+
+
+
+    /*
+    Methods to check the GetByBelongsToAndSyntax
+     */
+
+    @Test
+    void getTop20WordsByBelongsToBySyntax(){
+        WordService wordsss = new WordServiceImpl();
+        assertNotNull(wordRepository.findAll());
+//        List<Word> words = ;
+//        words.forEach(System.out::println);
+//        assertFalse(words.isEmpty());
+    }
+
+
+    @Test
+    void checGetByWordAndBelongsTo(){
+        Word w = wordService.getByWordAndBelongsTo("like","Reply");
+        assertNotNull(w);
+    }
+
+
 }

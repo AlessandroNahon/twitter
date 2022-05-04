@@ -34,7 +34,8 @@ public class Word {
         return id != null ? id.equals(word.id) : word.id == null;
     }
 
-    public String belongs_to;
+    @Column(name = "belongs_to", nullable = false)
+    public String belongsTo;
 
     @Override
     public int hashCode() {

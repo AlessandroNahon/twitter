@@ -34,11 +34,14 @@ public class WordServiceImpl extends Thread  implements WordService {
     private StanfordCoreNLP stanfordCoreNLP;
     private Set<String> kischcWords;
     private Set<String> grotesqueWords;
-    private Set<String> kischEmoji;
     private Set<String> grotesqueEmoji;
     private boolean loadedPipeline = false;
     private boolean loadedFiles = false;
     long idHelper = 0;
+
+
+    public static final String TWEET_BELONGS_TO = "Tweet";
+    public static final String REPLY_BELONGS_TO = "Reply";
 
     public WordServiceImpl(){
         new Thread(new Runnable() {
@@ -54,7 +57,6 @@ public class WordServiceImpl extends Thread  implements WordService {
             public void run() {
                 kischcWords = readFiles("kische");
                 grotesqueWords = readFiles("grotesque");
-                kischEmoji = readFiles("kischtEmoji");
                 grotesqueEmoji = readFiles("grotesqueEmoji");
                 loadedFiles = true;
             }
@@ -165,14 +167,14 @@ public class WordServiceImpl extends Thread  implements WordService {
         }
         if (syntax != TypeEnum.NONE) {
             try {
-                Word newWord = isWordPresent(text);
+                Word newWord = getByWordAndBelongsTo(text,belongs_to);
                 if (newWord != null) {
                     newWord.setCount(newWord.getCount() + 1);
                 } else {
                     newWord = Word.builder().word(text.toLowerCase())
                             .count(1)
                             .syntax(syntax)
-                            .belongs_to(belongs_to)
+                            .belongsTo(belongs_to)
                             .build();
                 }
                 wordRepository.save(newWord);
@@ -274,6 +276,7 @@ public class WordServiceImpl extends Thread  implements WordService {
         }
         return sortedFilteredWords;
     }
+
 
 
     /**
@@ -384,45 +387,41 @@ public class WordServiceImpl extends Thread  implements WordService {
     }
 
 
-    /**
-     * This method is used to find the mos used word corresponding to a certain TypeEnum
-     * @param typeEnum The TypeEnum to do the search
-     * @return The word that appears the most within that group
-     */
-    public Word getTopSyntaxEnum(TypeEnum typeEnum) {
-        return wordRepository.findTop1BySyntaxOrderByCountDesc(typeEnum);
-    }
 
-    /**
-     * This method is used to find the 10 most used words corresponding to a certain TypeEnum
-     * @param typeEnum The TypeEnum to do the search
-     * @return List<Word> that appears the most within that group
-     */
     @Override
-    public List<Word> getTop10WordsBySyntax(TypeEnum typeEnum) {
-        return wordRepository.findTop10BySyntaxOrderByCountDesc(typeEnum);
+    public List<Word> getAllWordsByBelongTo(String belong_to) {
+        return wordRepository.findAllByBelongsTo("Tweet");
     }
 
-    /**
-     * This method is used to get a list of the 20 most used words
-     * @return List of Word object that has the biggest value "count" in te database
-     */
     @Override
-    public List<Word> getTop20Words() {
-        return wordRepository.findTop20ByOrderByCountDesc();
+    public List<Word> getTop20WordsByBelongsToBySyntax(String belongs_to, TypeEnum syntax) {
+        return wordRepository.findTop20ByBelongsToAndSyntaxOrderByCountDesc(belongs_to, TypeEnum.NOUN);
     }
 
-    /**
-     * This method is used to get a list of the 5 most used words
-     * @return List of Word object that has the biggest value "count" in te database
-     */
+    @Override
+    public List<Word> getTop10ByBelongsToBySyntax(String belongs_to, TypeEnum syntax) {
+        return wordRepository.findTop10ByBelongsToAndSyntaxOrderByCountDesc(belongs_to,syntax);
+    }
+
+    @Override
+    public Word getTopByBelongsToBySyntax(String belongs_to, TypeEnum syntax) {
+        return wordRepository.findTop1ByBelongsToAndSyntaxOrderByCountDesc(belongs_to,syntax);
+    }
+
+    @Override
+    public Word getByWordAndBelongsTo(String word, String belongs_to) {
+        return wordRepository.findByWordAndBelongsTo(word,belongs_to);
+    }
+
+    @Override
+    public List<Word> getTop20ByBelongsTo(String belongs_to) {
+        return wordRepository.findTop20ByBelongsToOrderByCountDesc(belongs_to);
+    }
+
     @Override
     public List<Word> getTop5Words() {
         return wordRepository.findTop5ByOrderByCountDesc();
     }
-
-
-
 
 
 }

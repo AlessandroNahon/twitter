@@ -84,7 +84,7 @@ public class RepliesServiceImpl extends Thread implements RepliesService {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        wordService.analyzeText(reply.getText(),belongs_to_reply);
+                        wordService.analyzeText(reply.getText(),WordServiceImpl.REPLY_BELONGS_TO);
                     }
                 }).start();
             });

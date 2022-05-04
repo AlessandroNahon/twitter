@@ -2,7 +2,6 @@ package delco.twitter.scraping.controller;
 
 import delco.twitter.scraping.model.Word;
 import delco.twitter.scraping.model.enumerations.TypeEnum;
-import delco.twitter.scraping.services.implementations.RepliesServiceImpl;
 import delco.twitter.scraping.services.implementations.WordServiceImpl;
 import delco.twitter.scraping.services.interfaces.RepliesService;
 import delco.twitter.scraping.services.interfaces.TweetService;
@@ -42,29 +41,33 @@ public class ThesaurusController {
      */
     @RequestMapping("/index")
     public String index(Model model) {
-        model.addAttribute("topNoun", wordService.getTopSyntaxEnum(TypeEnum.NOUN));
-        model.addAttribute("topAdverb", wordService.getTopSyntaxEnum(TypeEnum.ADVERB));
-        model.addAttribute("topAdjective", wordService.getTopSyntaxEnum(TypeEnum.ADJECTIVE));
-        model.addAttribute("topEmoji", getTopEmoji());
-        model.addAttribute("topKicheWords", wordService.getTop10WordsBySyntax(TypeEnum.KITSCH));
-        model.addAttribute("topGrotesqueWords", wordService.getTop10WordsBySyntax(TypeEnum.GROTESQUE));
-        model.addAttribute("top20Words", wordService.getTop20Words());
+        String searchType = WordServiceImpl.TWEET_BELONGS_TO;
+        model.addAttribute("topNoun", wordService.getTopByBelongsToBySyntax(searchType,TypeEnum.NOUN));
+        model.addAttribute("topAdverb", wordService.getTopByBelongsToBySyntax(searchType,TypeEnum.ADVERB));
+        model.addAttribute("topAdjective", wordService.getTopByBelongsToBySyntax(searchType,TypeEnum.ADJECTIVE));
+        model.addAttribute("topEmoji", getTopEmoji(searchType));
+        model.addAttribute("topKicheWords", wordService.getTop10ByBelongsToBySyntax(searchType,TypeEnum.KITSCH));
+        model.addAttribute("topGrotesqueWords", wordService.getTop10ByBelongsToBySyntax(searchType,TypeEnum.GROTESQUE));
+        model.addAttribute("top20Words", wordService.getTop20ByBelongsTo(searchType));
         return "thesaurus/index";
     }
 
-    public Word getTopEmoji(){
-        Word grotesque = wordService.getTopSyntaxEnum(TypeEnum.GROTESQUE_EMOJI);
-        Word kisch = wordService.getTopSyntaxEnum(TypeEnum.KITSCH_EMOJI);
-        if(grotesque == null){
-            return kisch;
-        }else if(kisch == null){
-            return grotesque;
-        }
-        if(grotesque.getCount() > kisch.getCount()){
-            return grotesque;
-        }else{
-            return kisch;
-        }
+    public Word getTopEmoji(String searchType) {
+        Word grotesque = wordService.getTopByBelongsToBySyntax(searchType, TypeEnum.GROTESQUE_EMOJI);
+        Word kisch = wordService.getTopByBelongsToBySyntax(searchType, TypeEnum.KITSCH_EMOJI);
+            if (grotesque == null && kisch == null) {
+                return new Word();
+            } else if (kisch == null) {
+                return grotesque;
+            } else if(grotesque == null) {
+                return kisch;
+            }else{
+                if (grotesque.getCount() > kisch.getCount()) {
+                    return grotesque;
+                } else {
+                    return kisch;
+                }
+            }
     }
 
     /**
@@ -94,14 +97,25 @@ public class ThesaurusController {
      */
     @GetMapping("/fragment/table_title")
     public String getTableTile(Model model, @RequestParam("word") Optional<String> word) {
-        {
             if (word.isPresent()) {
                 model.addAttribute("title", "Tweets containing " + word.get());
             }else{
                 model.addAttribute("title", "Search for a word");
             }
-
             return "thesaurus/fragment/table_title :: wordTitle";
-        }
+    }
+
+
+    @GetMapping("/fragment/whole_display_info")
+    public String getFullThesaurusBasedOnType(Model model, @RequestParam("type") String type){
+        System.out.println("\t\n\tTYPE TIENE COMO VALOR: "+type+"\n\n");
+        model.addAttribute("topNoun", wordService.getTopByBelongsToBySyntax(type,TypeEnum.NOUN));
+        model.addAttribute("topAdverb", wordService.getTopByBelongsToBySyntax(type,TypeEnum.ADVERB));
+        model.addAttribute("topAdjective", wordService.getTopByBelongsToBySyntax(type,TypeEnum.ADJECTIVE));
+        model.addAttribute("topEmoji", getTopEmoji(type));
+        model.addAttribute("topKicheWords", wordService.getTop10ByBelongsToBySyntax(type,TypeEnum.KITSCH));
+        model.addAttribute("topGrotesqueWords", wordService.getTop10ByBelongsToBySyntax(type,TypeEnum.GROTESQUE));
+        model.addAttribute("top20Words", wordService.getTop20ByBelongsTo(type));
+        return "thesaurus/fragment/whole_display_info :: whole_display_info";
     }
 }
