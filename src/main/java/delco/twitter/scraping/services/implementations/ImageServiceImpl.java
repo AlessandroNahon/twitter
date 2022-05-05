@@ -1,7 +1,5 @@
 package delco.twitter.scraping.services.implementations;
 
-import com.google.cloud.vision.v1.AnnotateImageResponse;
-import com.google.cloud.vision.v1.LocalizedObjectAnnotation;
 import delco.twitter.scraping.model.Images;
 import delco.twitter.scraping.model.enumerations.TypeEnum;
 import delco.twitter.scraping.model.twitterapi.model_content.Datum;
@@ -34,7 +32,8 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public void saveImageWithTweet(Images image) {
+    public void addLabelsAndSaveImage(Images image) {
+
         imageRepository.save(image);
     }
 
@@ -91,7 +90,8 @@ public class ImageServiceImpl implements ImageService {
             images.setImage(baos.toByteArray());
             List<String> responses = visionAPIService.getValidPictureType(url);
             if(!responses.isEmpty()) {
-                annotateImageWithLabels(visionAPIService.getValidPictureType(url), images);
+                responses.addAll(visionAPIService.detectLabels(url));
+                annotateImageWitObjects(responses, images);
                 if(sensibleContent) {
                     images.setImageContent(TypeEnum.GROTESQUE);
                 }else{
@@ -126,10 +126,23 @@ public class ImageServiceImpl implements ImageService {
 
 
     @Override
-    public void annotateImageWithLabels(List<String> responses, Images image){
+    public void annotateImageWitObjects(List<String> responses, Images image){
         for (String res : responses) {
             image.addImageObject(res);
         }
     }
+
+    @Override
+    public void changeImageClassification(String id, String actualClassification) {
+        Images image = imageRepository.findById(Long.parseLong(id)).get();
+        System.out.println(actualClassification);
+        System.out.println(image.toString());
+        TypeEnum newClassification = actualClassification.equals("GROTESQUE") ? TypeEnum.KITSCH : TypeEnum.GROTESQUE;
+        image.setImageContent(newClassification);
+        System.out.println(image.toString());
+        imageRepository.save(image);
+    }
+
+
 }
 

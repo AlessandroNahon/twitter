@@ -64,4 +64,14 @@ public class Images {
     }
 
 
+    @Override
+    public String toString() {
+        return "Images{" +
+                "id=" + id +
+                ", tweet=" + tweet +
+                ", imageContent=" + imageContent +
+                ", imageObjects=" + imageObjects +
+                ", reply=" + reply +
+                '}';
+    }
 }

@@ -4,7 +4,6 @@ import delco.twitter.scraping.model.Converters.DatumConverters;
 import delco.twitter.scraping.model.Images;
 import delco.twitter.scraping.model.Reply;
 import delco.twitter.scraping.model.Tweet;
-import delco.twitter.scraping.model.twitterapi.model_content.Datum;
 import delco.twitter.scraping.model.twitterapi.model_content.Root;
 import delco.twitter.scraping.repositories.RepliesRepository;
 import delco.twitter.scraping.services.interfaces.ImageService;
@@ -14,7 +13,6 @@ import delco.twitter.scraping.services.interfaces.WordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -86,7 +84,7 @@ public class RepliesServiceImpl extends Thread implements RepliesService {
                     if(!images.isEmpty()) {
                         images.forEach(img -> {
                             img.setReply(reply);
-                            imageService.saveImageWithTweet(img);
+                            imageService.addLabelsAndSaveImage(img);
                         });
                     }
                 }

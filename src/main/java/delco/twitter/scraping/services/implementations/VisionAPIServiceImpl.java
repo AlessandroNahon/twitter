@@ -72,7 +72,6 @@ public class VisionAPIServiceImpl extends Thread implements VisionAPIService {
 
         List<AnnotateImageResponse> responses = client.batchAnnotateImages(requests).getResponsesList();
         List<String> resultsFromSearch = new ArrayList<>();
-        List<String> negativeResultFromSearch = new ArrayList<>();
 
         // Display the results
         for (AnnotateImageResponse res : responses) {
@@ -80,35 +79,17 @@ public class VisionAPIServiceImpl extends Thread implements VisionAPIService {
                 if (acceptedImages.contains(entity.getName().toLowerCase())) {
                     resultsFromSearch.add(entity.getName());
                 }
-                if(notAcceptedImages.contains(entity.getName().toLowerCase())){
-                    negativeResultFromSearch.add(entity.getName());
-                }
             }
         }
-        if(resultsFromSearch.isEmpty()){
-            List<String> secondFilter = detectLabels(img);
-            if(!secondFilter.isEmpty()){
-                return secondFilter;
-            }
-        }else{
-            if(resultsFromSearch.size() >= negativeResultFromSearch.size()){
-                return resultsFromSearch;
-            }else {
-                List<String> secondFilter = detectLabels(img);
-                if(!secondFilter.isEmpty()){
-                    return secondFilter;
-                }
-            }
-        }
-        return new ArrayList<>();
+        return resultsFromSearch;
     }
 
     @Override
-    public List<String> detectLabels(Image img) {
+    public List<String> detectLabels(String url) {
         List<AnnotateImageRequest> requests = new ArrayList<>();
         List<String> labels = new ArrayList<>();
-        List<String> negative = new ArrayList<>();
 
+        Image img = Image.newBuilder().setSource(ImageSource.newBuilder().setImageUri(url).build()).build();
         Feature feat = Feature.newBuilder().setType(Feature.Type.LABEL_DETECTION).build();
         AnnotateImageRequest request =
                 AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(img).build();
@@ -125,18 +106,10 @@ public class VisionAPIServiceImpl extends Thread implements VisionAPIService {
 
             // For full list of available annotations, see http://g.co/cloud/vision/docs
             for (EntityAnnotation annotation : res.getLabelAnnotationsList()) {
-                if(acceptedLabels.contains(annotation.getDescription().toLowerCase())){
-                    labels.add(annotation.getDescription());
-                }else if(notAcceptedImages.contains(annotation.getDescription().toLowerCase())){
-                    negative.add(annotation.getDescription());
-                }
+                labels.add(annotation.getDescription());
             }
         }
-        if(acceptedLabels.size() >= negative.size()) {
-            return labels;
-        }else{
-            return new ArrayList<>();
-        }
+        return labels.subList(0,Math.min(labels.size(),10));
     }
 
 

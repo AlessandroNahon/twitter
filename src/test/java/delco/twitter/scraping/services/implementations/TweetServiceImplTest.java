@@ -19,7 +19,7 @@ class TweetServiceImplTest {
 
     @BeforeEach
     void setup(){
-        twitterAPIService = new TwitterAPIServiceImpl(brearerToken);
+        twitterAPIService = new TwitterAPIServiceImpl();
         tweetService = new TweetServiceImpl();
     }
 

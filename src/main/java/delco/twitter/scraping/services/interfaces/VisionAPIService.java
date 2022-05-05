@@ -10,7 +10,7 @@ public interface VisionAPIService {
 
     List<String> getValidPictureType(String path);
 
-    List<String> detectLabels(Image img);
+    List<String> detectLabels(String url);
 
     Boolean getSafeSearch(String path);
 

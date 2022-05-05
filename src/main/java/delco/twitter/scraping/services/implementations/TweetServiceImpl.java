@@ -65,15 +65,10 @@ public class TweetServiceImpl extends Thread implements TweetService {
                     tweetRepository.save(tweet);
                     images.forEach(img -> {
                         img.setTweet(tweet);
-                        imageService.saveImageWithTweet(img);
+                        imageService.addLabelsAndSaveImage(img);
                     });
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            repliesService.parseReplyFromTweet(
-                                    twitterAPIService.getReplies(datum.getConversation_id()), tweet);
-                        }
-                    }).start();
+                    repliesService.parseReplyFromTweet(
+                            twitterAPIService.getReplies(tweet.getConversationId()), tweet);
                     new Thread(new Runnable() {
                         @Override
                         public void run() {

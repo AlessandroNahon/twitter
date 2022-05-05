@@ -40,3 +40,32 @@ function callFragmentReply() {
     });
 }
 
+function changePictureClassification(){
+    console.log('entra al metodo')
+    var id = $('#imageIdInput').val();
+    var tweetId = parseInt(window.location.href.split('/')[5])
+    var classification = $('#classificationInput').val()
+    changeButtonText()
+    setTimeout(1000, changeButtonText(),$.ajax({
+           type: 'get',
+           url: '/tweet/showTweetInformation/'+tweetId,
+           data: {
+               editImage: true,
+               imageId: id,
+               classification: classification
+           },
+           success: function (data) {
+               /*<![CDATA[*/
+               document.location.reload(true)
+               /*]]>*/
+           },
+       })) ;
+}
+
+function changeButtonText(){
+    var button = document.getElementById('changeButton')
+    button.innerText = 'Hold on...'
+    button.className = 'btn bg-light text-black p-3 d-inline-block'
+
+}
+

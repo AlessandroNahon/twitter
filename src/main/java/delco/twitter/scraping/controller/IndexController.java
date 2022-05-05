@@ -2,6 +2,7 @@ package delco.twitter.scraping.controller;
 
 import delco.twitter.scraping.model.utils.ImageUtil;
 import delco.twitter.scraping.repositories.ImageRepository;
+import delco.twitter.scraping.repositories.RepliesRepository;
 import delco.twitter.scraping.repositories.TweetRepository;
 import delco.twitter.scraping.services.interfaces.SentimentService;
 import delco.twitter.scraping.services.interfaces.WordService;
@@ -35,6 +36,9 @@ public class IndexController {
     @Autowired
     private ImageRepository imageRepository;
 
+    @Autowired
+    private RepliesRepository repliesRepository;
+
     public IndexController(){
     }
 
@@ -48,7 +52,7 @@ public class IndexController {
         model.addAttribute("totalPages",totalPages);
         model.addAttribute("actualPage",1);
         model.addAttribute("tweets", tweetRepository.findAll(PageRequest.of(0,10)));
-        System.out.println(1+"  "+totalPages);
+        getAnalysisCount(model);
 
         return "index";
     }
@@ -62,6 +66,14 @@ public class IndexController {
         model.addAttribute("actualPage",currentPage);
         model.addAttribute("tweets", tweetRepository.findAll(PageRequest.of(currentPage,10)));
         return "indexFragments/tweet_table :: tweet_table";
+    }
+
+    private void getAnalysisCount(Model model) {
+        Long analysisCount = tweetRepository.count() + repliesRepository.count();
+        int numberOfFullPositive = tweetRepository.findAllFullPositiveTweets().size();
+        int numberOfFullNegative = tweetRepository.findAllFullNegativeTweets().size();
+        int numberOfNeutralTweets = tweetRepository.findAllOtherTweets().size();
+
     }
 
 

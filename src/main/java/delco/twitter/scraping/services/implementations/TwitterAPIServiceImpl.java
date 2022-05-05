@@ -17,11 +17,11 @@ import java.util.Date;
 @Service
 public class TwitterAPIServiceImpl extends Thread implements TwitterAPIService {
 
-    private final String BEARER_TOKEN;
-    private final String max_tweets = "10";
 
-    public TwitterAPIServiceImpl(@Value("${BEARER_TOKEN}") String bearer_token) {
-        BEARER_TOKEN = "AAAAAAAAAAAAAAAAAAAAAFelbAEAAAAA6BKWPBKmWTviEy2Pr1BPj1yhh3Q%3D8Kq8C7d0Vl9vOE0LwXroMtAiYriC5yq9FperLTjQBCNIXXndam";
+    private String BEARER_TOKEN = <bearer>;
+    private final String max_tweets = "50";
+
+    public TwitterAPIServiceImpl(){
     }
 
 

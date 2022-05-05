@@ -236,7 +236,6 @@ faulty
 fearful
 fearsome
 feeble
-fell
 ferocious 
 fetid
 feverish
@@ -425,7 +424,7 @@ obnoxious
 obscene
 odd
 odious 
-off
+
 offensive
 ominous
 onerous

@@ -1,6 +1,7 @@
 package delco.twitter.scraping.bootstrap;
 
 import delco.twitter.scraping.model.Sentiment;
+import delco.twitter.scraping.model.Tweet;
 import delco.twitter.scraping.model.Word;
 import delco.twitter.scraping.model.enumerations.TypeEnum;
 import delco.twitter.scraping.model.twitterapi.model_content.Root;
@@ -82,13 +83,10 @@ import java.util.List;
 
     public void executeSearch(){
         limpiarRegistros();
-        String endDate = "2021-06-30"+"T00:00:00-00:00";
-        String startDate = "2021-06-10"+"T00:00:00-00:00";
-        Root r = twitterAPIService.getTweets("Peta",startDate,endDate);
-        tweetService.parseTweetDatumFromRoot(r, "Peta");
-        r = twitterAPIService.getNextTweets(r.getMeta().getNext_token(),startDate,endDate);
-        tweetService.parseTweetDatumFromRoot(r, "Peta");
-        System.out.println("Tweets cargados");
+        String startDate = "2021-01-01"+"T00:00:00-00:00";
+        String endDate = "2021-05-01"+"T00:00:00-00:00";
+        Root r = twitterAPIService.getTweets("Greenpeace",startDate,endDate);
+        tweetService.parseTweetDatumFromRoot(r, "Greenpeace");
     }
 
     public void initiateProgram(){

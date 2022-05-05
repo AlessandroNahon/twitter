@@ -10,15 +10,15 @@ import java.util.List;
 
 public interface ImageService {
 
-    void saveImageWithTweet(Images image);
+    void addLabelsAndSaveImage(Images image);
 
     List<Images> getImages(Includes include, Datum datum);
 
     Images downloadImage(String url,boolean tweetHasSensibleContent);
 
+    void annotateImageWitObjects(List<String> responses, Images image);
 
-
-    void annotateImageWithLabels(List<String> responses, Images image);
+    void changeImageClassification(String id, String actualClassification);
 
 
 }

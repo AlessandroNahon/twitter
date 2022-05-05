@@ -45,9 +45,7 @@ charged
 charming
 cheap
 cheapjack
-cheeky 
-cheese
-cheesy
+cheeky
 chiefly 
 chocolate-box
 circuitous 
@@ -230,8 +228,7 @@ lackluster
 left-handed
 lemon
 lifelike
-like
-likely
+
 liking
 living
 longing

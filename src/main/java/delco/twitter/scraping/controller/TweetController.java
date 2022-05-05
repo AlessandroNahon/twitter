@@ -6,8 +6,10 @@ import delco.twitter.scraping.model.enumerations.TypeEnum;
 import delco.twitter.scraping.model.utils.ImageUtil;
 import delco.twitter.scraping.repositories.ImageRepository;
 import delco.twitter.scraping.repositories.TweetRepository;
+import delco.twitter.scraping.services.interfaces.ImageService;
 import delco.twitter.scraping.services.interfaces.TweetService;
 import delco.twitter.scraping.services.interfaces.WordService;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,11 +40,19 @@ public class TweetController {
     @Autowired
     private ImageRepository imageRepository;
 
+    @Autowired
+    private ImageService imageService;
+
 
     public TweetController(){ }
 
+    @SneakyThrows
     @RequestMapping("/showTweetInformation/{id}")
-    public String showById(@PathVariable String id, Model model) {
+    public String showById(@PathVariable String id, Model model,@RequestParam(defaultValue = "false") boolean editImage,
+                           @RequestParam Optional<String> imageId, @RequestParam Optional<String> classification)  {
+        if(editImage){
+            changePictureClassification(imageId.get(), classification.get());
+        }
         Tweet tweetInfo = tweetRepository.findById(Long.valueOf(id)).get();
         List<Word> listOfWords  = wordService.getAllWordsFromTweet(tweetInfo);
         model.addAttribute("replies", tweetInfo.getReplies());
@@ -56,6 +67,12 @@ public class TweetController {
         return "tweet/showTweetInformation";
     }
 
+    @RequestMapping("/searchIndex")
+    public String showSearchIndex(){
+        return "tweet/searchIndex";
+    }
+
+
 
     @GetMapping("/fragments/display_image_modal")
     public String getImageById(Model model, @RequestParam("id") Optional<Long> id){
@@ -69,6 +86,11 @@ public class TweetController {
         model.addAttribute("pictures",imageRepository.findByReplyId(id.get()));
         model.addAttribute("imgUtil",new ImageUtil());
         return "tweet/fragments/show_reply_images :: show_reply_images";
+    }
+
+    public void changePictureClassification(String pictureId, String classification){
+        System.out.println("llega al change picture");
+        imageService.changeImageClassification(pictureId, classification);
     }
 
 
