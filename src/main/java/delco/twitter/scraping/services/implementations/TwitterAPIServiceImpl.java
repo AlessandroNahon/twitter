@@ -4,24 +4,22 @@ import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-import delco.twitter.scraping.model.Tweet;
 import delco.twitter.scraping.model.twitterapi.model_content.Root;
-import delco.twitter.scraping.model.twitterapi.user_model_content.UserRoot;
 import delco.twitter.scraping.services.interfaces.TwitterAPIService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
-import java.util.Date;
 
 @Service
 public class TwitterAPIServiceImpl extends Thread implements TwitterAPIService {
 
 
-    private String BEARER_TOKEN = <bearer>;
+    @Value("${token.BEARER_TOKEN}")
+    private String BEARER_TOKEN;
     private final String max_tweets = "50";
 
     public TwitterAPIServiceImpl(){
+
     }
 
 
@@ -109,15 +107,15 @@ public class TwitterAPIServiceImpl extends Thread implements TwitterAPIService {
      * @return The Root file (JSON) from the Twitter API with the replies
      */
     @Override
-    public Root getReplies(String conversationId) {
+    public Root getReplies(String conversationId, String sinceId) {
         Response response = null;
         Root raiz = new Root();
         try {
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
-                    .url("https://api.twitter.com/2/tweets/search/all?media.fields=media_key,preview_image_url" +
-                            ",url&query=conversation_id:"+conversationId+"&max_results=10&" +
-                            "expansions=attachments.media_keys&tweet.fields=conversation_id,created_at,possibly_sensitive")
+                    .url("https://api.twitter.com/2/tweets/search/all?max_results=10&tweet.fields=conversation_id,created_at," +
+                            "possibly_sensitive&expansions=attachments.media_keys&media.fields=media_key,preview_image_url,url" +
+                            "&since_id="+sinceId+"&query=conversation_id:"+conversationId)
                     .method("GET", null)
                     .addHeader("Authorization", "Bearer "+this.BEARER_TOKEN)
                     .addHeader("Cookie", "guest_id=v1%3A164851793848590618")

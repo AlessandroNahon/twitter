@@ -76,6 +76,13 @@ public class VisionAPIServiceImpl extends Thread implements VisionAPIService {
         // Display the results
         for (AnnotateImageResponse res : responses) {
             for (LocalizedObjectAnnotation entity : res.getLocalizedObjectAnnotationsList()) {
+                System.out.format("Object name: %s%n", entity.getName());
+                System.out.format("Confidence: %s%n", entity.getScore());
+                System.out.format("Normalized Vertices:%n");
+                entity
+                        .getBoundingPoly()
+                        .getNormalizedVerticesList()
+                        .forEach(vertex -> System.out.format("- (%s, %s)%n", vertex.getX(), vertex.getY()));
                 if (acceptedImages.contains(entity.getName().toLowerCase())) {
                     resultsFromSearch.add(entity.getName());
                 }
@@ -135,15 +142,10 @@ public class VisionAPIServiceImpl extends Thread implements VisionAPIService {
                     return false;
                 }
                 SafeSearchAnnotation annotation = res.getSafeSearchAnnotation();
-                if(getIfConditionMatches(annotation.getAdult(), annotation.getViolence(),
-                        annotation.getMedical(), annotation.getRacy())){
-                    return true;
-                }else{
-                    return false;
-                }
+                return getIfConditionMatches(annotation.getAdult(), annotation.getViolence(),
+                        annotation.getMedical(), annotation.getRacy());
             }
             return false;
-
         }
     }
 

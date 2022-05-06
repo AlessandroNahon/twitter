@@ -19,4 +19,6 @@ public interface RepliesService {
 
     List<Reply> findAllByTextContaining(String text);
 
+    List<Reply> findTextImagePositive();
+
 }

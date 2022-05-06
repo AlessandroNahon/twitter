@@ -19,11 +19,9 @@ import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
-
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 public class WordServiceImpl extends Thread  implements WordService {
@@ -111,14 +109,8 @@ public class WordServiceImpl extends Thread  implements WordService {
         String[] words = textWithoutEmojis.split("\\s+");
         for (String word : words) {
             if (word.length() > 2 && !word.contains("@") && !word.contains("http") && !word.contains("#")) {
-                word = word.replace(",", "").replaceAll("(?s)(?<=&lt;).*?(?=&gt;)", "")
-                        .replace("\n"," ")
-                        .replace(".", "")
-                        .replace("?", "")
-                        .replace("!", "")
-                        .replace("\"","")
-                        .replace("'","")
-                        .replace(":","");
+                if(!word.equalsIgnoreCase("the")){
+                    word = word.replaceAll("\\p{Punct}","");
                     if(isGrotesqueWord(word)){
                         parseWord(word, TypeEnum.GROTESQUE,belongs_to);
                     } else if(isKischWord(word)) {
@@ -127,6 +119,8 @@ public class WordServiceImpl extends Thread  implements WordService {
                         parseWord(word,getTypeOfWord(word),belongs_to);
                     }
                 }
+                }
+
             }
 
         }
@@ -220,14 +214,7 @@ public class WordServiceImpl extends Thread  implements WordService {
         String[] words = textWithoutEmojis.split("\\s+");
         for (String word : words) {
             if (word.length() > 2 && !word.contains("@") && !word.contains("http") && !word.contains("#")) {
-                word = word.replace(",", "").replaceAll("(?s)(?<=&lt;).*?(?=&gt;)", "")
-                        .replace("\n"," ")
-                        .replace(".", "")
-                        .replace("?", "")
-                        .replace("!", "")
-                        .replace("\"","")
-                        .replace("'","")
-                        .replace(":","");
+                word = word.replaceAll("\\p{Punct}","");
                 if(wordList.containsKey(word)){
                     wordList.put(word.toLowerCase(), wordList.get(word.toLowerCase())+1);
                 }else{
@@ -261,27 +248,6 @@ public class WordServiceImpl extends Thread  implements WordService {
         return finalListOfWords;
     }
 
-    @Override
-    public List<Word> sortByCountFilterBySyntax(List<Word> listOfWords, TypeEnum ... target) {
-        List<Word> sortedFilteredWords = new ArrayList<>();
-        if(target.length == 1){
-            sortedFilteredWords = listOfWords.stream().filter(word -> word.getSyntax() == target[0])
-                    .collect(Collectors.toList());
-        }else if(target.length == 2){
-            sortedFilteredWords = listOfWords.stream().filter(word -> word.getSyntax() == target[0]
-                    || word.getSyntax() == target[1]).collect(Collectors.toList());
-        }else if(target.length == 3){
-            sortedFilteredWords = listOfWords.stream().filter(word -> word.getSyntax() == target[0]
-                    || word.getSyntax() == target[1] || word.getSyntax() == target[2])
-                    .collect(Collectors.toList());
-        }else{
-            System.out.println("This method only support up to three TypeEnum. The list will be empty");
-        }
-        return sortedFilteredWords;
-    }
-
-
-
     /**
      * This method checks the type of word, using the StanfordCoreNLP.
      * @param word The word to be analyzed
@@ -311,12 +277,6 @@ public class WordServiceImpl extends Thread  implements WordService {
                 case "JJR":
                 case "JJS":
                     return TypeEnum.ADJECTIVE;
-                case "VB":
-                case "VBG":
-                case "VBN":
-                case "VBP":
-                case "VBZ":
-                    return TypeEnum.VERB;
                 case "RB":
                 case "RBR":
                 case "RBS":
@@ -328,16 +288,6 @@ public class WordServiceImpl extends Thread  implements WordService {
     }
 
 
-    /**
-     * THis method is used to check if a word is present in the database
-     * @param word the word to be checked
-     * @return the word if it is present, null otherwise
-     */
-    @Override
-    public Word isWordPresent(String word) {
-        return StreamSupport.stream(wordRepository.findAll().spliterator(), false)
-                .filter(w -> w.getWord().equals(word)).findAny().orElse(null);
-    }
 
     /**
      * This method is copied from the EmojiParser library. It is used to detect all the emojis in a String. The difference
@@ -362,12 +312,9 @@ public class WordServiceImpl extends Thread  implements WordService {
                 i = candidate.getFitzpatrickEndIndex() - 1;
             }
         }
-        List<String> emojis = new ArrayList<>();
-        for (Emojis c : candidates){
-            emojis.add(c.getEmoji().getUnicode());
-        }
-        return emojis;
+        return candidates.stream().map(Emoji -> Emoji.getEmoji().getUnicode()).collect(Collectors.toList());
     }
+
 
     /**
      * This method is used by the getAllEmojisFromText to get the position of the emoji in the String
@@ -389,7 +336,24 @@ public class WordServiceImpl extends Thread  implements WordService {
         return best;
     }
 
-
+    @Override
+    public List<Word> sortByCountFilterBySyntax(List<Word> listOfWords, TypeEnum ... target) {
+        List<Word> sortedFilteredWords = new ArrayList<>();
+        if(target.length == 1){
+            sortedFilteredWords = listOfWords.stream().filter(word -> word.getSyntax() == target[0])
+                    .collect(Collectors.toList());
+        }else if(target.length == 2){
+            sortedFilteredWords = listOfWords.stream().filter(word -> word.getSyntax() == target[0]
+                    || word.getSyntax() == target[1]).collect(Collectors.toList());
+        }else if(target.length == 3){
+            sortedFilteredWords = listOfWords.stream().filter(word -> word.getSyntax() == target[0]
+                    || word.getSyntax() == target[1] || word.getSyntax() == target[2])
+                    .collect(Collectors.toList());
+        }else{
+            System.out.println("This method only support up to three TypeEnum. The list will be empty");
+        }
+        return sortedFilteredWords;
+    }
 
     @Override
     public List<Word> getAllWordsByBelongTo(String belong_to) {
@@ -414,6 +378,11 @@ public class WordServiceImpl extends Thread  implements WordService {
     @Override
     public Word getByWordAndBelongsTo(String word, String belongs_to) {
         return wordRepository.findByWordAndBelongsTo(word,belongs_to);
+    }
+
+    @Override
+    public Word getTopEmojiByBelongsTo(String belongs_to) {
+        return wordRepository.findTopEmojiByBelongsTo(belongs_to);
     }
 
     @Override

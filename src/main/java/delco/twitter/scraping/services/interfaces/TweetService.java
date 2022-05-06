@@ -24,6 +24,8 @@ public interface TweetService {
 
     List<Tweet> findTop5ByOrderByIdDesc();
 
+    List<Integer> analyzeDatabase(String typeOfSearch);
+
 
 
 }

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="special_words" th:fragment="special_words">
+  <div class="card-deck d-flex justify-content-center mt-4">
+    <div class="row col-12">
+      <div class="col-6">
+        <div class="card">
+          <div class="card-header pt-4">
+            <h5>Kitsch/Sentimental words</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="chart-line" width="300" height="175"></canvas>
+            <script th:inline="javascript">
+                  printHorizontal(/*[[${kischWords}]]*/, 'chart-line', 'Quiche', '#9ACD32')
+              </script>
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="card">
+          <div class="card-header pt-4">
+            <h5>Grotesque/Disruptive words</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="chart2-line" width="300" height="175"></canvas>
+            <script th:inline="javascript">
+                printHorizontal(/*[[${grotesqueWords}]]*/, 'chart2-line', 'Grotesque', '#FF7F50');
+            </script>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -16,12 +16,12 @@ class TweetServiceImplTest {
     String endDate = "2022-05-01"+"T00:00:00-00:00";
     String startDate = "2022-01-01"+"T00:00:00-00:00";
 
-
-    @BeforeEach
-    void setup(){
-        twitterAPIService = new TwitterAPIServiceImpl();
-        tweetService = new TweetServiceImpl();
-    }
+//
+//    @BeforeEach
+//    void setup(){
+//        twitterAPIService = new TwitterAPIServiceImpl();
+//        tweetService = new TweetServiceImpl();
+//    }
 
     @Test
     void parseTweetDatumFromRoot() {

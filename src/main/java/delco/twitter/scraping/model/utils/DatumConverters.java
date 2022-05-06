@@ -1,4 +1,4 @@
-package delco.twitter.scraping.model.Converters;
+package delco.twitter.scraping.model.utils;
 
 import delco.twitter.scraping.model.Reply;
 import delco.twitter.scraping.model.Tweet;

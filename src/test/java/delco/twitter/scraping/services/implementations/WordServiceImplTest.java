@@ -52,11 +52,6 @@ class WordServiceImplTest {
                 .build();
     }
 
-    @Test
-    public void checkFindAllBelongsTo(){
-        List<Word> listOfBelongs = wordService.getAllWordsByBelongTo("Tweet");
-        assertFalse(listOfBelongs.isEmpty());
-    }
 
 
     @Test

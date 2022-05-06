@@ -386,6 +386,7 @@ flood
 ice
 moon
 planet
+Luggage & bags
 rain
 season
 sky

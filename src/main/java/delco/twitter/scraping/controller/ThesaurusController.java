@@ -45,30 +45,14 @@ public class ThesaurusController {
         model.addAttribute("topNoun", wordService.getTopByBelongsToBySyntax(searchType,TypeEnum.NOUN));
         model.addAttribute("topAdverb", wordService.getTopByBelongsToBySyntax(searchType,TypeEnum.ADVERB));
         model.addAttribute("topAdjective", wordService.getTopByBelongsToBySyntax(searchType,TypeEnum.ADJECTIVE));
-        model.addAttribute("topEmoji", getTopEmoji(searchType));
-        model.addAttribute("topKicheWords", wordService.getTop10ByBelongsToBySyntax(searchType,TypeEnum.KITSCH));
-        model.addAttribute("topGrotesqueWords", wordService.getTop10ByBelongsToBySyntax(searchType,TypeEnum.GROTESQUE));
+        model.addAttribute("topEmoji", wordService.getTopEmojiByBelongsTo(searchType));
+        model.addAttribute("kischWords", wordService.getTop10ByBelongsToBySyntax(searchType,TypeEnum.KITSCH));
+        model.addAttribute("grotesqueWords", wordService.getTop10ByBelongsToBySyntax(searchType,TypeEnum.GROTESQUE));
         model.addAttribute("top20Words", wordService.getTop20ByBelongsTo(searchType));
         return "thesaurus/index";
     }
 
-    public Word getTopEmoji(String searchType) {
-        Word grotesque = wordService.getTopByBelongsToBySyntax(searchType, TypeEnum.GROTESQUE_EMOJI);
-        Word kisch = wordService.getTopByBelongsToBySyntax(searchType, TypeEnum.KITSCH_EMOJI);
-            if (grotesque == null && kisch == null) {
-                return new Word();
-            } else if (kisch == null) {
-                return grotesque;
-            } else if(grotesque == null) {
-                return kisch;
-            }else{
-                if (grotesque.getCount() > kisch.getCount()) {
-                    return grotesque;
-                } else {
-                    return kisch;
-                }
-            }
-    }
+
 
     /**
      * This method is used by the Thesaurus website in order to inject a fragment with a table with all the tweets/
@@ -107,15 +91,25 @@ public class ThesaurusController {
 
 
     @GetMapping("/fragment/whole_display_info")
-    public String getFullThesaurusBasedOnType(Model model, @RequestParam("type") String type){
-        System.out.println("\t\n\tTYPE TIENE COMO VALOR: "+type+"\n\n");
+    public String getFullThesaurusBasedOnType(Model model,
+                                              @RequestParam(value = "type") String type){
         model.addAttribute("topNoun", wordService.getTopByBelongsToBySyntax(type,TypeEnum.NOUN));
         model.addAttribute("topAdverb", wordService.getTopByBelongsToBySyntax(type,TypeEnum.ADVERB));
         model.addAttribute("topAdjective", wordService.getTopByBelongsToBySyntax(type,TypeEnum.ADJECTIVE));
-        model.addAttribute("topEmoji", getTopEmoji(type));
+        model.addAttribute("topEmoji", wordService.getTopEmojiByBelongsTo(type));
         model.addAttribute("topKicheWords", wordService.getTop10ByBelongsToBySyntax(type,TypeEnum.KITSCH));
         model.addAttribute("topGrotesqueWords", wordService.getTop10ByBelongsToBySyntax(type,TypeEnum.GROTESQUE));
         model.addAttribute("top20Words", wordService.getTop20ByBelongsTo(type));
         return "thesaurus/fragment/whole_display_info :: whole_display_info";
+    }
+
+    @GetMapping("/fragment/special_words")
+    public String getThesaurusKischTable(Model model, @RequestParam("classification") String classification,
+                                         @RequestParam("belongsTo") String belongsTo){
+        TypeEnum firstType = classification.equals("Words") ? TypeEnum.KITSCH : TypeEnum.KITSCH_EMOJI;
+        TypeEnum secondType = (firstType == TypeEnum.KITSCH) ? TypeEnum.GROTESQUE : TypeEnum.GROTESQUE_EMOJI;
+        model.addAttribute("kischWords", wordService.getTop10ByBelongsToBySyntax(belongsTo,firstType));
+        model.addAttribute("grotesqueWords", wordService.getTop10ByBelongsToBySyntax(belongsTo,secondType));
+        return "thesaurus/fragment/special_words :: special_words";
     }
 }

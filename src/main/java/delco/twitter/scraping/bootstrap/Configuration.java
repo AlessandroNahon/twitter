@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
@@ -13,14 +14,12 @@ import org.springframework.context.annotation.PropertySource;
 @org.springframework.context.annotation.Configuration
 @ComponentScan(basePackageClasses = Configuration.class)
 @PropertySource("classpath:application.yml")
+@ConfigurationProperties(prefix = "token")
 public class Configuration {
-
-    public Configuration(){
-    }
 
     @Bean
     public VisionAPIService visionAPIService(){
-
+        System.out.println();
         return new VisionAPIServiceImpl();
     }
 

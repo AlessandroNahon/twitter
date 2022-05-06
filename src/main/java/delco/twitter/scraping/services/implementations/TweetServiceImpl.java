@@ -1,17 +1,21 @@
 package delco.twitter.scraping.services.implementations;
 
-import delco.twitter.scraping.model.Converters.DatumConverters;
+import delco.twitter.scraping.model.Word;
+import delco.twitter.scraping.model.enumerations.SentimentEnum;
+import delco.twitter.scraping.model.utils.DatumConverters;
 import delco.twitter.scraping.model.Images;
 import delco.twitter.scraping.model.Reply;
 import delco.twitter.scraping.model.Tweet;
 import delco.twitter.scraping.model.twitterapi.model_content.Root;
 import delco.twitter.scraping.repositories.TweetRepository;
+import delco.twitter.scraping.repositories.WordRepository;
 import delco.twitter.scraping.services.interfaces.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -22,6 +26,9 @@ public class TweetServiceImpl extends Thread implements TweetService {
 
     @Autowired
     private WordService wordService;
+
+    @Autowired
+    private WordRepository wordRepository;
 
     @Autowired
     private ImageService imageService;
@@ -68,7 +75,7 @@ public class TweetServiceImpl extends Thread implements TweetService {
                         imageService.addLabelsAndSaveImage(img);
                     });
                     repliesService.parseReplyFromTweet(
-                            twitterAPIService.getReplies(tweet.getConversationId()), tweet);
+                            twitterAPIService.getReplies(tweet.getConversationId(),datum.getId()), tweet);
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -119,5 +126,60 @@ public class TweetServiceImpl extends Thread implements TweetService {
     @Override
     public List<Tweet> findTop5ByOrderByIdDesc() {
         return tweetRepository.findTop5ByOrderByIdDesc();
+    }
+
+    @Override
+    public List<Integer> analyzeDatabase(String typeOfSearch) {
+        List<Integer> tweets = new ArrayList<>();
+        if(typeOfSearch.equals("Sentimental")){
+            tweets.add(tweetRepository.findTextImagePositive().size());
+            List<Tweet> sentimentPostiveEmojiPositive = new ArrayList<>();
+            sentimentPostiveEmojiPositive.addAll(getListSentimentEmoji(SentimentEnum.POSITIVE));
+            sentimentPostiveEmojiPositive.addAll(getListSentimentEmoji(SentimentEnum.VERY_POSITIVE));
+            tweets.add(sentimentPostiveEmojiPositive.size());
+            tweets.add(getListOfEmojiMatches().size());
+        }else if(typeOfSearch.equals("Grey")){
+
+        }else{
+
+        }
+    return tweets;
+    }
+
+    private List<Tweet> getListOfEmojiMatches(){
+        List<Tweet> tweetList = tweetRepository.findTextImagePositive();
+        List<String> positiveEmojis = wordRepository.findAllEmojiByBelongsTo(WordServiceImpl.REPLY_BELONGS_TO)
+                .stream().map(Word::getWord).collect(Collectors.toList());
+        for(Tweet reply : tweetRepository.findTextImagePositive()){
+            List<String> words = wordService.getAllEmojisFromText(reply.getText());
+            if(words.size() > 0){
+                for(String s : words){
+                    if(positiveEmojis.contains(s)){
+                        tweetList.add(reply);
+                        break;
+                    }
+                }
+            }
+        }
+        return tweetList;
+    }
+
+    private List<Tweet> getListSentimentEmoji(SentimentEnum typeEnum){
+        List<Tweet> tweetList = new ArrayList<>();
+        int counter = 0;
+        List<String> positiveEmojis = wordRepository.findAllEmojiByBelongsTo(WordServiceImpl.REPLY_BELONGS_TO)
+                .stream().map(Word::getWord).collect(Collectors.toList());
+        for(Tweet tweet : tweetRepository.findAllByTextSentiment(typeEnum)){
+            List<String> words = wordService.getAllEmojisFromText(tweet.getText());
+            if(words.size() > 0){
+                for(String s : words){
+                    if(positiveEmojis.contains(s)){
+                        tweetList.add(tweet);
+                        break;
+                    }
+                }
+            }
+        }
+        return tweetList;
     }
 }

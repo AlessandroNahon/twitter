@@ -11,7 +11,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.File;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -30,19 +32,23 @@ class VisionAPIServiceImplTest extends Thread{
     void setup(){
         visionAPIService = new VisionAPIServiceImpl();
     }
-//
-//    @Test
-//    void checkListOfObjects(){
-//        String url = "https://pbs.twimg.com/media/FRV057aXEAAGlWs?format=jpg&name=medium";
-//        List<AnnotateImageResponse> responseList = visionAPIService.getValidPictureType(url);
-//        System.out.println(responseList);
-//        for(AnnotateImageResponse air : responseList){
-//            for(LocalizedObjectAnnotation ta : air.getLocalizedObjectAnnotationsList()){
-//                System.out.println(ta.getName() + "  " + ta.getScore());
-//            }
-//        }
-//        assertNotEquals(responseList,new ArrayList<AnnotateImageResponse>());
-//    }
+
+    @ParameterizedTest
+    @MethodSource("validUrls")
+    void checkListOfObjects(String arg){
+        List<String> responseList = visionAPIService.getValidPictureType(arg);
+        responseList.forEach(System.out::println);
+        assertFalse(responseList.isEmpty());
+    }
+
+    public static List<String> validUrls(){
+        try {
+            return new ArrayList<>(Files.readAllLines(Paths.get("C:\\Users\\chris\\OneDrive\\Desktop\\links.txt")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
 
 //
 //    @SneakyThrows

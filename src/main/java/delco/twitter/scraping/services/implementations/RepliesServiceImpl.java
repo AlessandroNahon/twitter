@@ -1,6 +1,6 @@
 package delco.twitter.scraping.services.implementations;
 
-import delco.twitter.scraping.model.Converters.DatumConverters;
+import delco.twitter.scraping.model.utils.DatumConverters;
 import delco.twitter.scraping.model.Images;
 import delco.twitter.scraping.model.Reply;
 import delco.twitter.scraping.model.Tweet;
@@ -103,6 +103,11 @@ public class RepliesServiceImpl extends Thread implements RepliesService {
     @Override
     public List<Reply> findAllByTextContaining(String text) {
         return repliesRepository.findAllByTextContaining(text);
+    }
+
+    @Override
+    public List<Reply> findTextImagePositive() {
+        return repliesRepository.findImageTextPositive();
     }
 
 

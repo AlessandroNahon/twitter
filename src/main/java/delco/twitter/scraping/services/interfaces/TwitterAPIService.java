@@ -1,9 +1,6 @@
 package delco.twitter.scraping.services.interfaces;
 
-import delco.twitter.scraping.model.Tweet;
 import delco.twitter.scraping.model.twitterapi.model_content.Root;
-
-import java.util.Date;
 
 public interface TwitterAPIService {
 
@@ -11,7 +8,7 @@ public interface TwitterAPIService {
 
     Root getNextTweets(String paginationToken, String startDate, String endDate);
 
-    Root getReplies(String conversationId);
+    Root getReplies(String conversationId, String sinceId);
 
 
 }

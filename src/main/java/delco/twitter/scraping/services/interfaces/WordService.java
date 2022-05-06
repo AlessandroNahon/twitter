@@ -3,7 +3,6 @@ package delco.twitter.scraping.services.interfaces;
 import delco.twitter.scraping.model.Tweet;
 import delco.twitter.scraping.model.Word;
 import delco.twitter.scraping.model.enumerations.TypeEnum;
-
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -14,8 +13,6 @@ public interface WordService {
     void analyzeText(String text, String belongs_to);
 
     TypeEnum getTypeOfWord(String word);
-
-    Word isWordPresent(String word);
 
     boolean isKischWord(String words);
 
@@ -32,6 +29,8 @@ public interface WordService {
     List<Word> getCountOfWordsFromText(String text);
 
     List<Word> sortByCountFilterBySyntax(List<Word> listOfWords, TypeEnum ... target);
+
+
 
 
     /*
@@ -54,6 +53,8 @@ public interface WordService {
     Word getTopByBelongsToBySyntax (String belongs_to, TypeEnum syntax);
 
     Word getByWordAndBelongsTo(String word, String belongs_to);
+
+    Word getTopEmojiByBelongsTo(String belongs_to);
 
 
 

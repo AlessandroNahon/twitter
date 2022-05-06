@@ -23,10 +23,10 @@ class TwitterAPIServiceImplTest {
 
     public static String endDate = "2022-05-01"+"T00:00:00-00:00";
     public static String startDate = "2022-01-01"+"T00:00:00-00:00";
-
+//
 //    @BeforeEach
 //    void setup(){
-//        twitterAPIService = new TwitterAPIServiceImpl(beare);
+//        twitterAPIService = new TwitterAPIServiceImpl();
 //    }
 
     @Test
@@ -38,7 +38,7 @@ class TwitterAPIServiceImplTest {
 
     @Test
     void checkGetReplies(){
-        Root r = twitterAPIService.getReplies("1409648813820629000");
+        Root r = twitterAPIService.getReplies("1384526491157946369","1384526491157946369");
         System.out.println(r.toString());
         assertFalse(r.getData().isEmpty());
     }
@@ -64,11 +64,5 @@ class TwitterAPIServiceImplTest {
 //        return listOfConversationId;
 //    }
 
-    @ParameterizedTest
-    @MethodSource("getConversationsId")
-    void getRepliesFromConversationsId(String arg){
-        Root r = twitterAPIService.getReplies(arg);
-        System.out.println(r.toString());
-        assertFalse(r.getData().isEmpty());
-    }
+
 }

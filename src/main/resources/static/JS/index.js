@@ -53,4 +53,10 @@ function loadComponents() {
     });
 }
 
+function printOrientationCharts(positiveCount, ambiguousCount, negativeCount){
+    var totalCount = positiveCount + ambiguousCount + negativeCount
+    printSentimentAnalysis('postiveChart',positiveCount,totalCount,'Positive')
+    printSentimentAnalysis('ambiguousChart',ambiguousCount,totalCount,'Ambiguous')
+    printSentimentAnalysis('negativeChart',negativeCount,totalCount,'Negative')
+}
 

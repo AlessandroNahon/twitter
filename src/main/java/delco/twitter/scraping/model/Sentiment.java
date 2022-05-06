@@ -14,7 +14,7 @@ public class Sentiment {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     public String sentiment;
-    public int appearances;
+    public int appearances = 0;
 
 
 

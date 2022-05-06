@@ -78,3 +78,39 @@ function getNewTableContent(wordType){
             },
         })
     }
+
+function changeHorizontalData(wordType){
+    var belongsTo = ''
+    if(document.getElementById("button1").className === 'bg-transparent nav-link active'){
+        belongsTo = 'Tweet'
+    }else{
+        belongsTo = 'Reply'
+    }
+    var fragment = '#special_words'
+        $.ajax({
+                type: 'get',
+                url: '/thesaurus/fragment/special_words',
+                data: {
+                    classification: wordType,
+                    belongsTo: belongsTo
+                },
+                success: function (data) {
+                    /*<![CDATA[*/
+                    $(fragment).html(data);
+                    changeDataFromSecondary(wordType)
+                    /*]]>*/
+                },
+            })
+        }
+
+function changeDataFromSecondary(wordType){
+    var navActive = 'bg-transparent nav-link active'
+    var navInactive = 'bg-transparent nav-link'
+    if(wordType === 'Words'){
+        document.getElementById("buttonWord").className=navActive
+        document.getElementById("buttonEmoji").className=navInactive
+    }else{
+        document.getElementById("buttonEmoji").className=navActive
+        document.getElementById("buttonWord").className=navInactive
+    }
+}

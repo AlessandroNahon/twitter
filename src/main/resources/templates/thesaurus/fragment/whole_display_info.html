@@ -141,31 +141,47 @@
                 </div>
             </div>
         </div>
-        <div class="card-deck d-flex justify-content-center mt-4">
-            <div class="row col-12">
-                <div class="col-6">
-                    <div class="card">
-                        <div class="card-header pt-4">
-                            <h5>Kitsch/Sentimental words</h5>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="chart-line" width="300" height="175"></canvas>
-                            <script th:inline="javascript">
+        <div class="card-header d-flex justify-content-center">
+            <ul class="nav nav-tabs card-header-tabs mb-1">
+                <li class="nav-item bg-light" id="word_nav_button">
+                    <button class="bg-transparent nav-link active" id="buttonWord" onclick="changeHorizontalData('Words')">
+                        <h6>Words</h6>
+                    </button>
+                </li>
+                <li class="nav-item bg-light" id="emoji_nav_button">
+                    <button class="bg-transparent nav-link" id="buttonEmoji" onclick="changeHorizontalData('Emojis')">
+                        <h6>Emojis</h6>
+                    </button>
+                </li>
+            </ul>
+        </div>
+        <div id="special_words" th:fragment="special_words">
+            <div class="card-deck d-flex justify-content-center mt-4">
+                <div class="row col-12">
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-header pt-4">
+                                <h5>Kitsch/Sentimental words</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="chart-line" width="300" height="175"></canvas>
+                                <script th:inline="javascript">
                                 printHorizontal(/*[[${topKicheWords}]]*/, 'chart-line', 'Quiche', '#9ACD32')
                             </script>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-6">
-                    <div class="card">
-                        <div class="card-header pt-4">
-                            <h5>Grotesque/Disruptive words</h5>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="chart2-line" width="300" height="175"></canvas>
-                            <script th:inline="javascript">
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-header pt-4">
+                                <h5>Grotesque/Disruptive words</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="chart2-line" width="300" height="175"></canvas>
+                                <script th:inline="javascript">
                                 printHorizontal(/*[[${topGrotesqueWords}]]*/, 'chart2-line', 'Grotesque', '#FF7F50');
                             </script>
+                            </div>
                         </div>
                     </div>
                 </div>
