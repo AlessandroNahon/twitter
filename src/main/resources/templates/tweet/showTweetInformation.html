@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>Title</title>
+    <title>Tweet Lookup</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
@@ -33,44 +33,7 @@
 </head>
 
 <body class="bg-light">
-    <div class="row">
-        <div class="col-md-12">
-            <nav class="navbar navbar-expand-lg navbar-light bg-info p-3">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="#">
-                        <i class='fab fa-twitter pr-3' style='font-size:32px; color:white;'></i>
-                    </a>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse"
-                        data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav mr-auto">
-                            <li class="nav-item">
-                                <a class="nav-link text-white fs-5 pl-4 pr-4 border-right " href="#"
-                                    th:href="@{'/index'}">Overview</a>
-                            </li>
-                            <li class="nav-item active ">
-                                <a class="nav-link text-white fs-5  pl-4 pr-4 border-right text-opacity-50"
-                                    href="#">Tweets</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white fs-5 pl-4 pr-4 border-right" href="#">Sentiment</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white fs-5  pl-4 pr-4 border-right"
-                                    th:href="@{'/thesaurus/index'}" href="#">Thesaurus</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white fs-5 pl-4 pr-4 " href="#">Search</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </div>
-    </div>
+    <div class="row" th:replace="~{/indexFragments/header :: header_row}"></div>
     <div class="container-fluid col-10 ">
         <div class="card-deck ">
             <div class="card col-md-9 mt-3 d-inline">

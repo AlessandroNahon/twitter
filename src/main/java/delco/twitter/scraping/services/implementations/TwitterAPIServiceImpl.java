@@ -6,21 +6,25 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import delco.twitter.scraping.model.twitterapi.model_content.Root;
 import delco.twitter.scraping.services.interfaces.TwitterAPIService;
+import lombok.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 
 @Service
+@Data
+@Builder(toBuilder = true)
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
+@Getter
 public class TwitterAPIServiceImpl extends Thread implements TwitterAPIService {
 
 
     @Value("${token.BEARER_TOKEN}")
     private String BEARER_TOKEN;
-    private final String max_tweets = "50";
+    private String max_tweets = "100";
 
-    public TwitterAPIServiceImpl(){
-
-    }
 
 
     /**

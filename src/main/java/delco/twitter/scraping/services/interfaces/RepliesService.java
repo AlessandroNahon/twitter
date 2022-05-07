@@ -12,13 +12,46 @@ public interface RepliesService {
 
     void parseReplyFromTweet(Root datum, Tweet originalTweet);
 
+    List<Reply> findAllReplies();
+
     /*
     Methods that access directly to the repository, they do not contain bussiness logic, only works as intermediates
     between the view and the model
      */
 
+    // =============================================
+    //           FIND POSITIVE CONTENT
+    // =============================================
+
     List<Reply> findAllByTextContaining(String text);
 
-    List<Reply> findTextImagePositive();
+    List<Reply> getReplyPositiveTextAndPositiveImage();
+
+    Integer getCountReplyPositiveTextAndPositiveImage();
+
+    List<Reply> getReplyPositiveTextAndPositiveEmojis();
+
+    Integer getCountReplysPositiveTextAndPositiveEmojis();
+
+    List<Reply> getFullMatchesReply();
+
+    Integer getCountFullMatchesReply();
+
+
+    // =============================================
+    //           FIND NEGATIVE CONTENT
+    // =============================================
+
+    List<Reply> getReplyNegativeTextAndNegativeImage();
+
+    Integer getCountReplyNegativeTextAndNegativeImage();
+
+    List<Reply> getReplyNegativeTextAndNegativeEmojis();
+
+    Integer getCountReplysNegativeTextAndNegativeEmojis();
+
+    List<Reply> getFullNegativeMatchesReply();
+
+    Integer getCountFullNegativeMatchesReply();
 
 }

@@ -16,23 +16,45 @@ public interface RepliesRepository extends PagingAndSortingRepository<Reply, Lon
 
 
 
+    // =============================================
+    //           FIND POSITIVE CONTENT
+    // =============================================
 
-    @Query(value = "SELECT count(t.id) FROM twitter.responses t where t.id in (select reply_id from image i where i.image_content" +
-            " = 'GROTESQUE') and t.text_sentiment =  'NEGATIVE' OR t.text_sentiment = 'VERY_NEGATIVE'", nativeQuery = true)
-    List<Reply> findImageTextNegative();
+    /**
+     * Find all tweets with positive sentiment and with an kistch image into the database
+     * @return List of tweets with positive sentiment and with an kistch image
+     */
+    @Query(value = "SELECT * FROM twitter.responses r where r.id in (select reply_id from image i where i.image_content" +
+            " = 'KITSCH') and r.text_sentiment =  'POSITIVE' OR r.text_sentiment = 'VERY_POSITIVE'", nativeQuery = true)
+    List<Reply> getTextImagePositive();
 
-    @Query(value = "SELECT * FROM twitter.responses t where t.id in (select reply_id from image i where i.image_content" +
-            " = 'KITSCH') and t.text_sentiment = 'POSITIVE' OR t.text_sentiment = 'VERY_POSITIVE'", nativeQuery = true)
-    List<Reply> findImageTextPositive();
+    /**
+     * This method is used to find in the database all those tweets that has negative or very negative text
+     * @return List of negative replies
+     */
+    @Query(value = "Select * from twitter.responses r where r.text_sentiment = " +
+            "'POSITIVE' OR r.text_sentiment = 'VERY_POSITIVE'", nativeQuery = true)
+    List<Reply> getTextPositive();
 
-    @Query(value = "select count(t.id) from twitter.responses t where t.id not in (SELECT t.id FROM twitter.responses t where t.id in \n" +
-            "(select reply_id from image i where i.image_content = 'GROTESQUE') and t.text_sentiment = 'NEGATIVE' \n" +
-            "OR t.text_sentiment = 'VERY_NEGATIVE')and t.id not in (SELECT t.id FROM twitter.tweets t where t.id in \n" +
-            "(select reply_id from image i where i.image_content = 'KITSCH') and t.text_sentiment = 'POSITIVE' \n" +
-            "OR t.text_sentiment = 'VERY_POSITIVE')", nativeQuery = true)
-    List<Reply> findImageTextGray();
 
-    List<Reply> findAllByTextSentiment(SentimentEnum sentiment);
+
+
+    // =============================================
+    //           FIND NEGATIVE CONTENT
+    // =============================================
+
+    @Query(value = "SELECT * FROM twitter.responses r where r.id in (select reply_id from image i where i.image_content" +
+            " = 'GROTESQUE') and r.text_sentiment =  'NEGATIVE' OR r.text_sentiment = 'VERY_NEGATIVE'", nativeQuery = true)
+    List<Reply> getTextImageNegative();
+
+    /**
+     * This method is used to find in the database all those tweets that has negative or very negative text
+     * @return List of negative replies
+     */
+    @Query(value = "Select * from twitter.responses r where r.text_sentiment = " +
+            "'NEGATIVE' OR r.text_sentiment = 'VERY_NEGATIVE'", nativeQuery = true)
+    List<Reply> getTextNegative();
+
 
 
 

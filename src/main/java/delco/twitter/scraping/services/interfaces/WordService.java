@@ -40,8 +40,6 @@ public interface WordService {
 
     List<String> getAllEmojisFromText(String text);
 
-    List<Word> getAllWordsByBelongTo(String belong_to);
-
     List<Word> getTop20ByBelongsTo(String belongs_to);
 
     List<Word> getTop5Words();
@@ -50,11 +48,14 @@ public interface WordService {
 
     List<Word> getTop10ByBelongsToBySyntax (String belongs_to, TypeEnum syntax);
 
+    List<Word> getAllWordsByBelongsToAndSyntax (String belongs_to, TypeEnum syntax);
+
     Word getTopByBelongsToBySyntax (String belongs_to, TypeEnum syntax);
 
     Word getByWordAndBelongsTo(String word, String belongs_to);
 
     Word getTopEmojiByBelongsTo(String belongs_to);
+
 
 
 

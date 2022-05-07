@@ -1,19 +1,16 @@
 package delco.twitter.scraping.services.implementations;
 
+import delco.twitter.scraping.model.Reply;
 import delco.twitter.scraping.model.Word;
-import delco.twitter.scraping.model.enumerations.SentimentEnum;
+import delco.twitter.scraping.model.enumerations.TypeEnum;
 import delco.twitter.scraping.model.utils.DatumConverters;
 import delco.twitter.scraping.model.Images;
-import delco.twitter.scraping.model.Reply;
 import delco.twitter.scraping.model.Tweet;
 import delco.twitter.scraping.model.twitterapi.model_content.Root;
 import delco.twitter.scraping.repositories.TweetRepository;
-import delco.twitter.scraping.repositories.WordRepository;
 import delco.twitter.scraping.services.interfaces.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.persistence.EntityManager;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,9 +25,6 @@ public class TweetServiceImpl extends Thread implements TweetService {
     private WordService wordService;
 
     @Autowired
-    private WordRepository wordRepository;
-
-    @Autowired
     private ImageService imageService;
 
     @Autowired
@@ -40,18 +34,10 @@ public class TweetServiceImpl extends Thread implements TweetService {
     private RepliesService repliesService;
 
     @Autowired
-    private SentimentService sentimentService;
-
-    @Autowired
-    private EntityManager em;
-
-    @Autowired
     private DatumConverters datumConverters;
 
 
-    public TweetServiceImpl() {
-
-    }
+    public TweetServiceImpl() {}
 
 
     /**
@@ -91,7 +77,7 @@ public class TweetServiceImpl extends Thread implements TweetService {
         });
     }
 
-
+    @Override
     public Set<String> getAllEmojisFromTweets(Tweet t){
         Set<String> emojisList = new HashSet<>(new HashSet<>(wordService.getAllEmojisFromText(t.getText())));
         for(Reply r : t.getReplies()){
@@ -99,6 +85,9 @@ public class TweetServiceImpl extends Thread implements TweetService {
         }
         return emojisList;
     }
+
+
+
 
     
     /**
@@ -117,69 +106,128 @@ public class TweetServiceImpl extends Thread implements TweetService {
         return new ArrayList<Tweet>();
     }
 
-    
-    /**
-     * This method is used by the controller to find the last 5 tweets stored in the database. Since the ID is 
-     * autoincremental, the query sort by this field and returns the 5 larger ID's 
-     * @return List of the last 5 tweets added
-     */
     @Override
-    public List<Tweet> findTop5ByOrderByIdDesc() {
-        return tweetRepository.findTop5ByOrderByIdDesc();
+    public List<Tweet> findAllTweets() {
+        return tweetRepository.findAll();
+    }
+
+
+    // =============================================
+    //           FIND POSITIVE CONTENT
+    // =============================================
+
+
+    @Override
+    public List<Tweet> getTweetsPositiveTextAndPositiveImage() {
+       return tweetRepository.getTextImagePositive();
     }
 
     @Override
-    public List<Integer> analyzeDatabase(String typeOfSearch) {
-        List<Integer> tweets = new ArrayList<>();
-        if(typeOfSearch.equals("Sentimental")){
-            tweets.add(tweetRepository.findTextImagePositive().size());
-            List<Tweet> sentimentPostiveEmojiPositive = new ArrayList<>();
-            sentimentPostiveEmojiPositive.addAll(getListSentimentEmoji(SentimentEnum.POSITIVE));
-            sentimentPostiveEmojiPositive.addAll(getListSentimentEmoji(SentimentEnum.VERY_POSITIVE));
-            tweets.add(sentimentPostiveEmojiPositive.size());
-            tweets.add(getListOfEmojiMatches().size());
-        }else if(typeOfSearch.equals("Grey")){
-
-        }else{
-
-        }
-    return tweets;
+    public Integer getCountTweetsPositiveTextAndPositiveImage() {
+        return tweetRepository.getTextImagePositive().size();
     }
 
-    private List<Tweet> getListOfEmojiMatches(){
-        List<Tweet> tweetList = tweetRepository.findTextImagePositive();
-        List<String> positiveEmojis = wordRepository.findAllEmojiByBelongsTo(WordServiceImpl.REPLY_BELONGS_TO)
-                .stream().map(Word::getWord).collect(Collectors.toList());
-        for(Tweet reply : tweetRepository.findTextImagePositive()){
-            List<String> words = wordService.getAllEmojisFromText(reply.getText());
-            if(words.size() > 0){
-                for(String s : words){
-                    if(positiveEmojis.contains(s)){
-                        tweetList.add(reply);
-                        break;
-                    }
+    @Override
+    public List<Tweet> getTweetsPositiveTextAndPositiveEmojis() {
+        List<Tweet> tweets = new ArrayList<>();
+        List<String> emojis = wordService.getAllWordsByBelongsToAndSyntax(WordServiceImpl.TWEET_BELONGS_TO,
+                TypeEnum.KITSCH_EMOJI).stream().map(Word::getWord).collect(Collectors.toList());
+        for(Tweet t : tweetRepository.getTextPositive()){
+            for(String s : wordService.getAllEmojisFromText(t.getText())){
+                if(emojis.contains(s)){
+                    tweets.add(t);
+                    break;
                 }
             }
         }
-        return tweetList;
+        return tweets;
     }
 
-    private List<Tweet> getListSentimentEmoji(SentimentEnum typeEnum){
-        List<Tweet> tweetList = new ArrayList<>();
-        int counter = 0;
-        List<String> positiveEmojis = wordRepository.findAllEmojiByBelongsTo(WordServiceImpl.REPLY_BELONGS_TO)
-                .stream().map(Word::getWord).collect(Collectors.toList());
-        for(Tweet tweet : tweetRepository.findAllByTextSentiment(typeEnum)){
-            List<String> words = wordService.getAllEmojisFromText(tweet.getText());
-            if(words.size() > 0){
-                for(String s : words){
-                    if(positiveEmojis.contains(s)){
-                        tweetList.add(tweet);
-                        break;
-                    }
+    @Override
+    public Integer getCountTweetsPositiveTextAndPositiveEmojis() {
+        return getTweetsPositiveTextAndPositiveEmojis().size();
+    }
+
+    @Override
+    public List<Tweet> getFullMatchesTweets() {
+        List<Tweet> tweets = new ArrayList<>();
+        List<String> emojis = wordService.getAllWordsByBelongsToAndSyntax(WordServiceImpl.TWEET_BELONGS_TO,
+                TypeEnum.KITSCH_EMOJI).stream().map(Word::getWord).collect(Collectors.toList());
+        for(Tweet t : tweetRepository.getTextImagePositive()){
+            for(String s : wordService.getAllEmojisFromText(t.getText())){
+                if(emojis.contains(s)){
+                    tweets.add(t);
+                    break;
                 }
             }
         }
-        return tweetList;
+        return tweets;
     }
+
+
+    @Override
+    public Integer getCountFullMatchesTweets() {
+        return getFullMatchesTweets().size();
+    }
+
+
+
+
+    // =============================================
+    //           FIND NEGATIVE CONTENT
+    // =============================================
+
+    @Override
+    public List<Tweet> getTweetsNegativeTextAndNegativeImage() {
+        return tweetRepository.getTextImageNegative();
+    }
+
+    @Override
+    public Integer getCountTweetsNegativeTextAndNegativeImage() {
+        return tweetRepository.getTextImageNegative().size();
+    }
+
+    @Override
+    public List<Tweet> getTweetsNegativeTextAndNegativeEmojis() {
+        List<Tweet> tweets = new ArrayList<>();
+        List<String> emojis = wordService.getAllWordsByBelongsToAndSyntax(WordServiceImpl.TWEET_BELONGS_TO,
+                TypeEnum.GROTESQUE_EMOJI).stream().map(Word::getWord).collect(Collectors.toList());
+        for(Tweet t : tweetRepository.getTextNegative()){
+            for(String s : wordService.getAllEmojisFromText(t.getText())){
+                if(emojis.contains(s)){
+                    tweets.add(t);
+                    break;
+                }
+            }
+        }
+        return tweets;
+    }
+
+    @Override
+    public Integer getCountTweetsNegativeTextAndNegativeEmojis() {
+        return getTweetsNegativeTextAndNegativeEmojis().size();
+    }
+
+    @Override
+    public List<Tweet> getFullNegativeMatchesTweets() {
+        List<Tweet> tweets = new ArrayList<>();
+        List<String> emojis = wordService.getAllWordsByBelongsToAndSyntax(WordServiceImpl.TWEET_BELONGS_TO,
+                TypeEnum.GROTESQUE_EMOJI).stream().map(Word::getWord).collect(Collectors.toList());
+        for(Tweet t : tweetRepository.getTextImageNegative()){
+            for(String s : wordService.getAllEmojisFromText(t.getText())){
+                if(emojis.contains(s)){
+                    tweets.add(t);
+                    break;
+                }
+            }
+        }
+        return tweets;
+    }
+
+    @Override
+    public Integer getCountFullNegativeMatchesTweets() {
+        return getFullNegativeMatchesTweets().size();
+    }
+
+
 }

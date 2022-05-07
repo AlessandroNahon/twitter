@@ -170,3 +170,35 @@ function printSentimentAnalysis(chartName, value, totalCount, type){
      });
 }
 
+function printTables(chartName, value, totalCount, type){
+     var ctx = document.getElementById(chartName).getContext('2d');
+     var myChart = new Chart(ctx, {
+       type: 'doughnut',
+       data: {
+         labels: [type,"Other"],
+         datasets: [{
+           label: 'Sentiment appearance',
+           data: [value,totalCount-value],
+           backgroundColor: [
+             colorDonuts,
+             'rgba(236,236,236,1)'
+           ],
+           borderColor: [
+             colorDonuts,
+             'rgba(236,236,236,1)'
+           ],
+           borderWidth: 1
+         }]
+       },
+       options: {
+         scales: {
+           y: {
+             beginAtZero: true
+           }
+         }
+       }
+     });
+}
+
+
+

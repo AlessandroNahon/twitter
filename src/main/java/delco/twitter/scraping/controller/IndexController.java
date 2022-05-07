@@ -21,10 +21,6 @@ import java.util.Optional;
 @Controller
 public class IndexController {
 
-
-    @Autowired
-    private TweetService tweetService;
-
     @Autowired
     private SentimentService sentimentService;
 
@@ -36,9 +32,6 @@ public class IndexController {
 
     @Autowired
     private ImageRepository imageRepository;
-
-    @Autowired
-    private RepliesRepository repliesRepository;
 
     public IndexController(){
     }
@@ -53,33 +46,9 @@ public class IndexController {
         model.addAttribute("totalPages",totalPages);
         model.addAttribute("actualPage",1);
         model.addAttribute("tweets", tweetRepository.findAll(PageRequest.of(0,10)));
-//        getAnalysisCount(model);
 
         return "index";
     }
-
-//    @GetMapping("/indexFragments/tweet_table")
-//    public String getPaginationTable(Model model, @RequestParam("page") Optional<Integer> page,
-//                                     @RequestParam("totalPages") Optional<Integer> maxPages){
-//        int currentPage = page.orElse(1);
-//        int totalPages = maxPages.orElse(1);
-//        model.addAttribute("numberOfPages",totalPages);
-//        model.addAttribute("actualPage",currentPage);
-//        model.addAttribute("tweets", tweetRepository.findAll(PageRequest.of(currentPage,10)));
-//        return "indexFragments/tweet_table :: tweet_table";
-//    }
-//
-//    private void getAnalysisCount(Model model) {
-//        int numberOfFullPositive = repliesRepository.findImageTextPositive()
-//                .add(BigInteger.valueOf(tweetRepository.findAllFullPositiveTweets().size())).intValue();
-//        int numberOfFullNegative = repliesRepository.findImageTextNegative()
-//                .add(BigInteger.valueOf(tweetRepository.findAllFullNegativeTweets().size())).intValue();
-//        int numberOfNeutralTweets = repliesRepository.findImageTextGray()
-//                .add(BigInteger.valueOf(tweetRepository.findAllOtherTweets().size())).intValue();
-//        model.addAttribute("numberOfFullPositive",numberOfFullPositive);
-//        model.addAttribute("numberOfFullNegative",numberOfFullNegative);
-//        model.addAttribute("numberOfNeutralTweets",numberOfNeutralTweets);
-//    }
 
 
 }

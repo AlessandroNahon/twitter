@@ -355,24 +355,21 @@ public class WordServiceImpl extends Thread  implements WordService {
         return sortedFilteredWords;
     }
 
-    @Override
-    public List<Word> getAllWordsByBelongTo(String belong_to) {
-        return wordRepository.findAllByBelongsTo("Tweet");
-    }
 
     @Override
     public List<Word> getTop20WordsByBelongsToBySyntax(String belongs_to, TypeEnum syntax) {
-        return wordRepository.findTop20ByBelongsToAndSyntaxOrderByCountDesc(belongs_to, TypeEnum.NOUN);
+        return wordRepository.findTop20ByBelongsToAndSyntaxOrderByCountDesc(belongs_to, syntax);
     }
 
     @Override
     public List<Word> getTop10ByBelongsToBySyntax(String belongs_to, TypeEnum syntax) {
-        return wordRepository.findTop10ByBelongsToAndSyntaxOrderByCountDesc(belongs_to,syntax);
+        List<Word> listOfWords = getTop20WordsByBelongsToBySyntax(belongs_to,syntax);
+        return listOfWords.subList(0,Math.min(10,listOfWords.size()));
     }
 
     @Override
     public Word getTopByBelongsToBySyntax(String belongs_to, TypeEnum syntax) {
-        return wordRepository.findTop1ByBelongsToAndSyntaxOrderByCountDesc(belongs_to,syntax);
+        return getTop20WordsByBelongsToBySyntax(belongs_to,syntax).get(0);
     }
 
     @Override
@@ -393,6 +390,11 @@ public class WordServiceImpl extends Thread  implements WordService {
     @Override
     public List<Word> getTop5Words() {
         return wordRepository.findTop5ByOrderByCountDesc();
+    }
+
+    @Override
+    public List<Word> getAllWordsByBelongsToAndSyntax(String belongs_to, TypeEnum syntax) {
+        return wordRepository.findAllByBelongsToAndSyntax(belongs_to,syntax.name());
     }
 
 

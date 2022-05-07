@@ -1,5 +1,7 @@
 package delco.twitter.scraping.services.implementations;
 
+import delco.twitter.scraping.model.Word;
+import delco.twitter.scraping.model.enumerations.TypeEnum;
 import delco.twitter.scraping.model.utils.DatumConverters;
 import delco.twitter.scraping.model.Images;
 import delco.twitter.scraping.model.Reply;
@@ -13,9 +15,11 @@ import delco.twitter.scraping.services.interfaces.WordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -30,8 +34,6 @@ public class RepliesServiceImpl extends Thread implements RepliesService {
     @Autowired
     private WordService wordService;
 
-    @Autowired
-    private SentimentService sentimentService;
 
     @Autowired
     private DatumConverters datumConverters;
@@ -94,6 +96,11 @@ public class RepliesServiceImpl extends Thread implements RepliesService {
         }
     }
 
+    @Override
+    public List<Reply> findAllReplies() {
+        return repliesRepository.findAll();
+    }
+
     /**
      * This method calls the repository in order to find all the replies that contains a String passed via
      * parameter
@@ -106,8 +113,113 @@ public class RepliesServiceImpl extends Thread implements RepliesService {
     }
 
     @Override
-    public List<Reply> findTextImagePositive() {
-        return repliesRepository.findImageTextPositive();
+    public List<Reply> getReplyPositiveTextAndPositiveImage() {
+        return repliesRepository.getTextImagePositive();
+    }
+
+    @Override
+    public Integer getCountReplyPositiveTextAndPositiveImage() {
+        return repliesRepository.getTextImagePositive().size();
+    }
+
+    @Override
+    public List<Reply> getReplyPositiveTextAndPositiveEmojis() {
+        List<Reply> replies = new ArrayList<>();
+        List<String> emojis = wordService.getAllWordsByBelongsToAndSyntax(WordServiceImpl.REPLY_BELONGS_TO,
+                TypeEnum.KITSCH_EMOJI).stream().map(Word::getWord).collect(Collectors.toList());
+        for(Reply t : repliesRepository.getTextPositive()){
+            for(String s : wordService.getAllEmojisFromText(t.getText())){
+                if(emojis.contains(s)){
+                    replies.add(t);
+                    break;
+                }
+            }
+        }
+        return replies;
+    }
+
+    @Override
+    public Integer getCountReplysPositiveTextAndPositiveEmojis() {
+        return getReplyPositiveTextAndPositiveEmojis().size();
+    }
+
+    @Override
+    public List<Reply> getFullMatchesReply() {
+        List<Reply> replies = new ArrayList<>();
+        List<String> emojis = wordService.getAllWordsByBelongsToAndSyntax(WordServiceImpl.REPLY_BELONGS_TO,
+                TypeEnum.KITSCH_EMOJI).stream().map(Word::getWord).collect(Collectors.toList());
+        for(Reply t : repliesRepository.getTextImagePositive()){
+            for(String s : wordService.getAllEmojisFromText(t.getText())){
+                if(emojis.contains(s)){
+                    replies.add(t);
+                    break;
+                }
+            }
+        }
+        return replies;
+    }
+
+
+
+    @Override
+    public Integer getCountFullMatchesReply() {
+        return getFullMatchesReply().size();
+    }
+
+    // =============================================
+    //           FIND NEGATIVE CONTENT
+    // =============================================
+
+    @Override
+    public List<Reply> getReplyNegativeTextAndNegativeImage() {
+        return repliesRepository.getTextImageNegative();
+    }
+
+    @Override
+    public Integer getCountReplyNegativeTextAndNegativeImage() {
+        return getReplyNegativeTextAndNegativeImage().size();
+    }
+
+    @Override
+    public List<Reply> getReplyNegativeTextAndNegativeEmojis() {
+        List<Reply> replies = new ArrayList<>();
+        List<String> emojis = wordService.getAllWordsByBelongsToAndSyntax(WordServiceImpl.REPLY_BELONGS_TO,
+                TypeEnum.GROTESQUE_EMOJI).stream().map(Word::getWord).collect(Collectors.toList());
+        for(Reply t : repliesRepository.getTextNegative()){
+            for(String s : wordService.getAllEmojisFromText(t.getText())){
+                if(emojis.contains(s)){
+                    replies.add(t);
+                    break;
+                }
+            }
+        }
+        return replies;
+    }
+
+    @Override
+    public Integer getCountReplysNegativeTextAndNegativeEmojis() {
+        return getReplyNegativeTextAndNegativeEmojis().size();
+    }
+
+    @Override
+    public List<Reply> getFullNegativeMatchesReply() {
+        List<Reply> replies = new ArrayList<>();
+        List<String> emojis = wordService.getAllWordsByBelongsToAndSyntax(WordServiceImpl.REPLY_BELONGS_TO,
+                TypeEnum.GROTESQUE_EMOJI).stream().map(Word::getWord).collect(Collectors.toList());
+        for(Reply t : repliesRepository.getTextImageNegative()){
+            for(String s : wordService.getAllEmojisFromText(t.getText())){
+                if(emojis.contains(s)){
+                    replies.add(t);
+                    break;
+                }
+            }
+        }
+        return replies;
+    }
+
+    @Override
+    public Integer getCountFullNegativeMatchesReply() {
+        return getFullNegativeMatchesReply().size();
     }
 
 
