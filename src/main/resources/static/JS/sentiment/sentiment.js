@@ -176,7 +176,9 @@ function changeLowerTable(){
             },
             success: function (data) {
                 /*<![CDATA[*/
+                console.log(data);
                 $('#layers_card').html(data);
+    changeAfterFragment();
                 /*]]>*/
             },
         })
@@ -191,6 +193,7 @@ function changeLowerTable(){
 function groupChangesTweetReply(){
     changeBelongsTo(this.id);
     changeLowerTable();
+    changeAfterFragment();
 }
 
 function changeBelongsTo(id){
@@ -203,7 +206,16 @@ function changeBelongsTo(id){
         buttonSeeTweets.className = inactiveClass;
         buttonSeeReplies.className = activeClass;
     }
-    alert(belongsTo);
+}
+
+function changeAfterFragment(){
+    if(belongsTo === 'Tweet'){
+        buttonSeeTweets.className = activeClass;
+        buttonSeeReplies.className = inactiveClass;
+    }else{
+        buttonSeeTweets.className = inactiveClass;
+        buttonSeeReplies.className = activeClass;
+    }
 }
 
 

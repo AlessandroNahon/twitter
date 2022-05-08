@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 import java.io.IOException;
+import java.net.ConnectException;
 
 @SpringBootApplication
 @EnableConfigurationProperties(Configuration.class)
@@ -18,7 +19,9 @@ public class TwitterDemoApplication {
 		System.setProperty("javax.xml.transform.TransformerFactory","com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl");
 		System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
 				"com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
+
 		SpringApplication. run(TwitterDemoApplication.class, args);
+
 	}
 
 
