@@ -10,8 +10,18 @@
     <tr>
         <th>Text</th>
         <th>Sentiment</th>
-        <th>Type</th>
+        <th>Replies</th>
         <th>See...</th>
+    </tr>
+    <tr th:each="tweet : ${tweetList}">
+        <td th:text="${tweet.text}"></td>
+        <td th:text="${tweet.textSentiment}"></td>
+        <td th:text="${#lists.size(tweet.replies)}"></td>
+        <td>
+            <a href="#" th:href="@{'/tweet/showTweetInformation/'+${tweet.id}}" class="text-dark">
+                See tweet
+            </a>
+        </td>
     </tr>
     </thead>
 </table>

@@ -9,6 +9,8 @@ public interface ImageService {
 
     void addLabelsAndSaveImage(Images image);
 
+    void deleteByTweetId(Long id);
+
     List<Images> getImages(Includes include, Datum datum);
 
     Images downloadImage(String url,boolean tweetHasSensibleContent);

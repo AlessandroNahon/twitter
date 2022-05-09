@@ -21,6 +21,10 @@ public interface TweetRepository  extends PagingAndSortingRepository<Tweet, Long
 
     List<Tweet> findAllByTextContaining(String text);
 
+    List<Tweet> findAllByTextSentiment(SentimentEnum sentiment);
+
+    List<Tweet> findByUsername(String username);
+
 
      // =============================================
      //           FIND POSITIVE CONTENT

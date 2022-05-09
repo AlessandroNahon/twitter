@@ -6,6 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link th:href="@{/css/commonStyle.css}" rel="stylesheet" />
+    <script th:src="@{/JS/tweet/searchIndex.js}"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
@@ -40,14 +41,35 @@
                     <div class="card-body align-content-center pb-2">
                         <div class="row">
                             <div class="input-group mb-3">
-                                <div class="input-group-prepend">
+                                <div class="input-group-prepend d-flex col-12">
                                     <button class="btn btn-outline-white rounded bg-white text-black font-weight-normal"
-                                            onclick="" type="button">Search
-                                        </button>
-                                </div>
-                                <input type="text" class="form-control ml-3 rounded"
-                                       placeholder="Search for specific words into the database..." id="textSearch">
+                                            onclick="" type="button" id="searchButton">Search
+                                    </button>
+                                    <input type="text" class="form-control ml-3 rounded d-flex col-9"
+                                           placeholder="Search for specific tweets..." id="textSearch">
+                                    <div class="dropdown col-2">
+                                        <select class="dropdown-toggle h-100 w-100 btn-white rounded"  id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            <option class="dropdown-item text-dark" >Choose an option</option>
+                                        </select>
 
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row col-12">
+                                <div class="input-group-prepend d-flex col-12 justify-content-center">
+                                    <div class="mr-5 d-flex">
+                                        <input class="form-check-input" type="radio" id="radioUsername" name="radio" value="username">
+                                        <label class="form-check-label" for="radioUsername">Search by username</label>
+                                    </div>
+                                    <div class="mr-5 d-flex">
+                                        <input class="form-check-input" type="radio" id="radioSentiment" name="radio" value="username">
+                                        <label class="form-check-label" for="radioUsername">Search by sentiment</label>
+                                    </div>
+                                    <div>
+                                        <input class="form-check-input" type="radio" id="radioWord" name="radio" value="username">
+                                        <label class="form-check-label" for="radioUsername">Search by word</label>
+                                    </div>
+                                </div>
                             </div>
                             <div>
                                 <div class="row d-flex justify-content-around">
@@ -65,7 +87,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header pt-4">
-                        <h5 class="float-left" >Search for Tweets</h5>
+                        <h5 class="float-left" id="tableTitle">Search for Tweets</h5>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive border rounded">
@@ -86,6 +108,9 @@
             </div>
         </div>
     </div>
+    <script>
+        loadComponents();
+    </script>
 </body>
 
 </html>

@@ -4,6 +4,7 @@ import delco.twitter.scraping.model.Reply;
 import delco.twitter.scraping.model.Tweet;
 import delco.twitter.scraping.model.enumerations.SentimentEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
@@ -14,7 +15,9 @@ public interface RepliesRepository extends PagingAndSortingRepository<Reply, Lon
 
     List<Reply> findAllByTextContaining(String text);
 
-
+    @Modifying
+    @Query(value = "delete from responses r where r.original_tweet_id = ?1", nativeQuery = true)
+    void deleteAllByOriginalTweet(Long id);
 
     // =============================================
     //           FIND POSITIVE CONTENT

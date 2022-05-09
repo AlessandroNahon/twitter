@@ -101,6 +101,11 @@ public class RepliesServiceImpl extends Thread implements RepliesService {
         return repliesRepository.findAll();
     }
 
+    @Override
+    public void deleteByTweetId(Long id) {
+        repliesRepository.deleteAllByOriginalTweet(id);
+    }
+
     /**
      * This method calls the repository in order to find all the replies that contains a String passed via
      * parameter

@@ -1,6 +1,7 @@
 package delco.twitter.scraping.services.interfaces;
 
 import delco.twitter.scraping.model.Tweet;
+import delco.twitter.scraping.model.enumerations.SentimentEnum;
 import delco.twitter.scraping.model.twitterapi.model_content.Datum;
 import delco.twitter.scraping.model.twitterapi.model_content.Root;
 
@@ -18,11 +19,17 @@ public interface TweetService {
     between the view and the model
      */
 
+    void deleteAllInfo(Long id);
+
     List<Tweet> findByText(String text);
 
     List<Tweet> findAllTweets();
 
     Set<String> getAllEmojisFromTweets(Tweet t);
+
+    List<Tweet> findBySentiment(String sentiment);
+
+    List<Tweet> findByUsername(String username);
 
     /*
     METHODS TO FIND ALL THE POSITIVE CONTENT IN THE DATABASE

@@ -1,3 +1,5 @@
+var tweetId = '';
+
 function callFragment() {
     $.ajax({
         type: 'get',
@@ -69,3 +71,17 @@ function changeButtonText(){
 
 }
 
+function removeTweet(){
+    $.ajax({
+            type: 'get',
+            url: '/tweet/fragments/fooHtml',
+            data: {
+                id: tweetId
+            },
+            success: function (data) {
+                /*<![CDATA[*/
+                window.location.replace("/tweet/searchIndex");
+                /*]]>*/
+            },
+        });
+}

@@ -33,8 +33,12 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public void addLabelsAndSaveImage(Images image) {
-
         imageRepository.save(image);
+    }
+
+    @Override
+    public void deleteByTweetId(Long id) {
+        imageRepository.deleteByTweetId(id);
     }
 
     /**

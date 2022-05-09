@@ -67,10 +67,6 @@ public class TweetController {
         return "tweet/showTweetInformation";
     }
 
-    @RequestMapping("/searchIndex")
-    public String showSearchIndex(){
-        return "tweet/searchIndex";
-    }
 
 
 
@@ -91,6 +87,12 @@ public class TweetController {
     public void changePictureClassification(String pictureId, String classification){
         System.out.println("llega al change picture");
         imageService.changeImageClassification(pictureId, classification);
+    }
+
+    @GetMapping("/fragments/fooHtml")
+    public String deleteTweet(@RequestParam("id") Optional<Long> id){
+        tweetService.deleteAllInfo(id.get());
+        return "tweet/searchIndex";
     }
 
 

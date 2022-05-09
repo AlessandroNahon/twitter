@@ -13,6 +13,7 @@ import delco.twitter.scraping.services.implementations.TwitterAPIServiceImpl;
 import delco.twitter.scraping.services.implementations.VisionAPIServiceImpl;
 import delco.twitter.scraping.services.implementations.WordServiceImpl;
 import delco.twitter.scraping.services.interfaces.RepliesService;
+import delco.twitter.scraping.services.interfaces.TweetService;
 import delco.twitter.scraping.services.interfaces.TwitterAPIService;
 import delco.twitter.scraping.services.interfaces.WordService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,12 @@ import java.util.stream.Collectors;
     @Autowired
     private WordService wordService;
 
+    @Autowired
+    private TwitterAPIService twitterAPIService;
+
+    @Autowired
+    private TweetService tweetService;
+
     public DataLoader(){
 
     }
@@ -49,7 +56,7 @@ import java.util.stream.Collectors;
     @Transactional
     @Override
     public void run(String... args) throws Exception {
-
+//        executeSearch("WWF");
     }
 
 
@@ -65,13 +72,13 @@ import java.util.stream.Collectors;
 //        }
 //    }
 //
-//    public void executeSearch(String username){
-//
-//        String startDate = "2021-01-01"+"T00:00:00-00:00";
-//        String endDate = "2021-05-01"+"T00:00:00-00:00";
-//        Root r = twitterAPIService.getTweets(username,startDate,endDate);
-//        tweetService.parseTweetDatumFromRoot(r, username);
-//    }
+    public void executeSearch(String username){
+
+        String startDate = "2021-01-01"+"T00:00:00-00:00";
+        String endDate = "2021-05-01"+"T00:00:00-00:00";
+        Root r = twitterAPIService.getTweets(username,startDate,endDate);
+        tweetService.parseTweetDatumFromRoot(r, username);
+    }
 //
 //    public void initiateProgram(){
 //        try {

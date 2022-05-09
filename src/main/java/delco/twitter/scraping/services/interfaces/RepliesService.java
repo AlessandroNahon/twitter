@@ -14,6 +14,8 @@ public interface RepliesService {
 
     List<Reply> findAllReplies();
 
+    void deleteByTweetId(Long id);
+
     /*
     Methods that access directly to the repository, they do not contain bussiness logic, only works as intermediates
     between the view and the model

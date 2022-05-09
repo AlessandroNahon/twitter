@@ -36,6 +36,7 @@ public class TwitterAPIServiceImpl extends Thread implements TwitterAPIService {
     public Root getTweets(String username, String startDate, String endDate) {
         Response response = null;
         Root raiz = new Root();
+
         try {
 
             OkHttpClient client = new OkHttpClient();

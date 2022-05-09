@@ -2,6 +2,7 @@ package delco.twitter.scraping.services.implementations;
 
 import delco.twitter.scraping.model.Reply;
 import delco.twitter.scraping.model.Word;
+import delco.twitter.scraping.model.enumerations.SentimentEnum;
 import delco.twitter.scraping.model.enumerations.TypeEnum;
 import delco.twitter.scraping.model.utils.DatumConverters;
 import delco.twitter.scraping.model.Images;
@@ -11,6 +12,8 @@ import delco.twitter.scraping.repositories.TweetRepository;
 import delco.twitter.scraping.services.interfaces.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -77,6 +80,14 @@ public class TweetServiceImpl extends Thread implements TweetService {
         });
     }
 
+    @Transactional
+    @Override
+    public void deleteAllInfo(Long id) {
+        tweetRepository.deleteById(id);
+        repliesService.deleteByTweetId(id);
+        imageService.deleteByTweetId(id);
+    }
+
     /**
      * This method iterates over the text of the tweet and the text of its replies to gather all the emojis
      * that are contained in the text of those objects
@@ -92,10 +103,28 @@ public class TweetServiceImpl extends Thread implements TweetService {
         return emojisList;
     }
 
+    @Override
+    public List<Tweet> findBySentiment(String sentiment) {
+        switch (sentiment.toLowerCase()){
+            case "positive":
+                return tweetRepository.findAllByTextSentiment(SentimentEnum.POSITIVE);
+            case "negative":
+                return tweetRepository.findAllByTextSentiment(SentimentEnum.NEGATIVE);
+            case "neutral":
+                return tweetRepository.findAllByTextSentiment(SentimentEnum.NEUTRAL);
+            case "very positive":
+                return tweetRepository.findAllByTextSentiment(SentimentEnum.VERY_POSITIVE);
+            default:
+                return tweetRepository.findAllByTextSentiment(SentimentEnum.VERY_NEGATIVE);
+        }
+    }
+
+    @Override
+    public List<Tweet> findByUsername(String username) {
+        return tweetRepository.findByUsername(username);
+    }
 
 
-
-    
     /**
      * This method is used by the controller to call the repository and find all the tweets that contains
      * the word passed by parameter
