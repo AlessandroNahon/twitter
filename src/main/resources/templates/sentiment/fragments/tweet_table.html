@@ -22,8 +22,20 @@
         </li>
       </ul>
     </div>
-    <div class="row col-12 d-flex justify-content-center" style="border: 1px solid black;">
-        <
+    <div class="row col-12 d-flex justify-content-center mt-4">
+      <nav aria-label="pagination" class="col-4 d-flex justify-content-center">
+        <ul class="pagination">
+          <li class="page-item">
+            <button id="buttonPrevious" class="border-0 bg-transparent mr-4 pr-4"><i class="fas fas fa-arrow-left"></i></button>
+          </li>
+          <li class="page-item">
+            <h6 id="pageDescriber">Page 1 of 3</h6>
+          </li>
+          <li class="page-item">
+            <button id="buttonNext" class="border-0 bg-transparent ml-4 pl-4"><i  class="fas fas fa-arrow-right"></i></button>
+          </li>
+        </ul>
+      </nav>
     </div>
     <div class="card-body w-100" >
       <div class="table-responsive border rounded">
@@ -60,6 +72,8 @@
       </div>
     </div>
     <script>
+
+      changeMaxPages([[${maxPages}]])
       loadComponents();
     </script>
   </div>

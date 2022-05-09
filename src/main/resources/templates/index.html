@@ -99,67 +99,54 @@
           </div>
         </div>
       </div>
-      <div class="container-fluid mt-4  pl-0 pr-0" >
-        <div class="card-deck  justify-content-around pl-0 pr-0" >
-          <div class="row container-fluid  pl-0 pr-0" >
-            <div class="card col-4  pl-0 pr-0">
-              <div class="card-header d-flex justify-content-center pt-4">
-                <h5 class="card-title">Full positive Tweets</h5>
+      <div class="row  d-flex justify-content-around mt-4">
+        <div class="card">
+            <div class="card-header pt-4 d-flex justify-content-between">
+              <div class="card-title d-inline">
+                <h5 class="d-inline">Relation between content analysis</h5>
               </div>
-              <div class="card-body">
-                <div>
-                  <canvas id="postiveChart" width="300" height="300"></canvas>
+              <a th:href="@{'/sentiment/index'}" href="#">
+                <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+            <div class="card-body">
+              <div class="card-deck">
+                <div class="card col-4  pl-0 pr-0">
+                  <div class="card-header d-flex justify-content-center pt-4">
+                    <h5 class="card-title">Full positive Tweets</h5>
+                  </div>
+                  <div class="card-body">
+                    <div>
+                      <canvas id="postiveChart" width="300" height="300"></canvas>
+                    </div>
+                  </div>
                 </div>
-                <div class="card-footer d-flex col-12 mt-4 justify-content-center" >
-                  <div class="row d-inline justify-content-center">
-                    <a href="" class="p-2 w-100 text-dark" >
-                      <h5 class="d-inline pr-4">See positive analysis</h5>
-                      <i class="fas fas fa-arrow-right"></i>
-                    </a>
+                <div class="card col-4  pl-0 pr-0">
+                  <div class="card-header d-flex justify-content-center pt-4">
+                    <h5 class="card-title">Ambiguous tweets</h5>
+                  </div>
+                  <div class="card-body ">
+                    <div>
+                      <canvas id="ambiguousChart" width="300" height="300"></canvas>
+                    </div>
+                  </div>
+                </div>
+                <div class="card col-4  pl-0 pr-0">
+                  <div class="card-header d-flex justify-content-center pt-4">
+                    <h5 class="card-title">Full negative tweets</h5>
+                  </div>
+                  <div class="card-body">
+                    <div>
+                      <canvas id="negativeChart" width="300" height="300"></canvas>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="card col-4  pl-0 pr-0">
-              <div class="card-header d-flex justify-content-center pt-4">
-                <h5 class="card-title">Ambiguous tweets</h5>
-              </div>
-              <div class="card-body ">
-                <div>
-                  <canvas id="ambiguousChart" width="300" height="300"></canvas>
-                </div>
-                <div class="card-footer d-flex col-12 mt-4 justify-content-center" >
-                  <div class="row d-inline justify-content-center">
-                    <a href="" class="p-2 w-100 text-dark" >
-                      <h5 class="d-inline pr-4 ">See ambiguous analysis</h5>
-                      <i class="fas fas fa-arrow-right"></i>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="card col-4  pl-0 pr-0">
-              <div class="card-header d-flex justify-content-center pt-4">
-                <h5 class="card-title">Full negative tweets</h5>
-              </div>
-              <div class="card-body">
-                <div>
-                  <canvas id="negativeChart" width="300" height="300"></canvas>
-                </div>
-                <div class="card-footer d-flex col-12 mt-4 justify-content-center" >
-                  <div class="row d-inline justify-content-center">
-                    <a href="" class="p-2 w-100 text-dark" >
-                      <h5 class="d-inline pr-4">See negative analysis</h5>
-                      <i class="fas fas fa-arrow-right"></i>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+        </div>
         </div>
       </div>
-    </div>
+
 </body>
 <script>
   printOrientationCharts([[${numberOfFullPositive}]],[[${numberOfNeutralTweets}]],[[${numberOfFullNegative}]]);

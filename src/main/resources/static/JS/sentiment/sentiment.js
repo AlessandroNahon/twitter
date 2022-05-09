@@ -1,13 +1,19 @@
 var colorDonuts = 'rgba(119,221,119,1)'
 
 //Used to identify the search, between image and emojis, images and text, and full search
-var searchType = 'SentimentImage';
+var searchType = 'Choose one';
 
 //Used to identify wheter we want to get the Sentimental, Grotesque or Gray tweets
 var classification = 'Sentimental';
 
 //Used to identify if we want to get the tweets or the replies
 var belongsTo = 'Tweet'
+
+var pageNumber = 1;
+
+var maxPageNumber = 1;
+
+var identifies = '';
 
 //This two variables are used to change the classes of each navigation button
 var activeClass = 'bg-transparent nav-link active';
@@ -47,6 +53,13 @@ var buttonReply = document.getElementById('buttonSeeReplies');
 buttonSeeTweets.addEventListener('click', groupChangesTweetReply);
 buttonSeeReplies.addEventListener('click', groupChangesTweetReply);
 
+
+var buttonPrevious = document.getElementById('buttonPrevious');
+var buttonNext = document.getElementById('buttonNext');
+var pageDescriber = document.getElementById('pageDescriber');
+buttonPrevious.addEventListener('click', changePaginationPage);
+buttonNext.addEventListener('click', changePaginationPage);
+changeButtonsByPageNumber();
 }
 
 /*
@@ -113,6 +126,7 @@ function changeTopNavigation(id){
 */
 function changeWholeFragment(){
     var fragment = '#layers_card'
+
     $.ajax({
             type: 'get',
             url: '/sentiment/fragments/full_fragment',
@@ -142,6 +156,7 @@ function changeWholeFragment(){
     it will always attack to the tweet set and not the replies one
 */
 function groupChangesListOfTweets(){
+    pageNumber = 1
     changeSearchType(this.id);
     changeLowerTable();
 }
@@ -172,13 +187,14 @@ function changeLowerTable(){
             data: {
                 searchType: searchType,
                 classification: classification,
-                belongsTo: belongsTo
+                belongsTo: belongsTo,
+                page: pageNumber
             },
             success: function (data) {
                 /*<![CDATA[*/
                 console.log(data);
                 $('#layers_card').html(data);
-    changeAfterFragment();
+                changeAfterFragment();
                 /*]]>*/
             },
         })
@@ -194,17 +210,15 @@ function groupChangesTweetReply(){
     changeBelongsTo(this.id);
     changeLowerTable();
     changeAfterFragment();
+    changeButtonsByPageNumber();
+    pageNumber = 1
 }
 
 function changeBelongsTo(id){
     if(id === 'buttonSeeTweets'){
         belongsTo = 'Tweet';
-        buttonSeeTweets.className = activeClass;
-        buttonSeeReplies.className = inactiveClass;
     }else{
         belongsTo = 'Reply';
-        buttonSeeTweets.className = inactiveClass;
-        buttonSeeReplies.className = activeClass;
     }
 }
 
@@ -219,10 +233,63 @@ function changeAfterFragment(){
 }
 
 
+function changeButtonsByPageNumber(){
+    if(pageNumber === 1 && maxPageNumber === 1){
+        buttonPrevious.style.display = 'none';
+         buttonNext.style.display = 'none';
+    }else{
+        if(pageNumber === 1){
+                buttonPrevious.style.display = 'none';
+        }else if(pageNumber == maxPageNumber){
+                buttonNext.style.display = 'none';
+        }else{
+            buttonPrevious.style.display = '';
+            buttonNext.style.display = '';
+        }
+    }
+    pageDescriber.innerHTML = 'Page ' + pageNumber + ' of ' + maxPageNumber + '  ('+searchType+')';
+}
 
 
+function changePaginationPage(){
+    if(this.id === buttonNext.id){
+        pageNumber++;
+    }else{
+        pageNumber--;
+    }
+    changeLowerTable();
+    changeButtonsByPageNumber();
+
+}
+
+function changeLowerTable(){
+    $.ajax({
+            type: 'get',
+            url: '/sentiment/fragments/tweet_table',
+            data: {
+                searchType: searchType,
+                classification: classification,
+                belongsTo: belongsTo,
+                page: pageNumber
+            },
+            success: function (data) {
+                /*<![CDATA[*/
+                console.log(data);
+                $('#layers_card').html(data);
+                changeAfterFragment();
+                /*]]>*/
+            },
+        })
+    }
 
 
+function changeMaxPages(maxPages){
+    if(typeof maxPages === 'undefined'){
+        maxPageNumber = 1;
+    }else{
+        maxPageNumber = maxPages;
+    }
+}
 
 
 

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -46,8 +47,21 @@ public class IndexController {
         model.addAttribute("totalPages",totalPages);
         model.addAttribute("actualPage",1);
         model.addAttribute("tweets", tweetRepository.findAll(PageRequest.of(0,10)));
-
+        getSentimentAnlysis(model);
         return "index";
+    }
+
+
+    public void getSentimentAnlysis(Model model){
+        List<Integer> listOfValues = sentimentService.analyzeDatabaseByTypeAndClassification("Sentimental");
+        int countPositive = listOfValues.get(0)+listOfValues.get(1)+listOfValues.get(2);
+        model.addAttribute("numberOfFullPositive",countPositive);
+        listOfValues = sentimentService.analyzeDatabaseByTypeAndClassification("Disruptive");
+        int countNegative = listOfValues.get(0)+listOfValues.get(1)+listOfValues.get(2);
+        model.addAttribute("numberOfFullNegative",countNegative);
+        model.addAttribute("numberOfNeutralTweets",
+                sentimentService.findAllOtherReply().size()+sentimentService.findAllOtherTweets().size());
+
     }
 
 
