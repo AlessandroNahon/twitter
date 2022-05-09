@@ -97,6 +97,15 @@ public class SentimentServiceImpl implements SentimentService {
         return sentimentRepository.findAll();
     }
 
+
+    /**
+     * This method encapsulates the logic to get the number of replies/tweet that has Sentimental matches or
+     * Grotesque matches
+     * @param classification The type of tweet/reply to be analyzed, being Sentimental -> Kitsch, Disruptive -> Grotesque
+     * @return List of Integer. From 0 to 2, values are: 0 -> Tweets/replies with positive/negative text and image,
+     * 1 -> Tweets/replies with positive/negative text and emojis, 2 -> Tweets/replies with full positive/negative matches
+     * (Text, image and emojis)
+     */
     @Override
     public List<Integer> analyzeDatabaseByTypeAndClassification(String classification) {
         List<Integer> list = new ArrayList<>();
@@ -113,7 +122,10 @@ public class SentimentServiceImpl implements SentimentService {
     }
 
 
-
+    /**
+     * This method returns all the tweets that aren't present in the search of matches
+     * @return List of tweets with no matches
+     */
     @Override
     public List<Tweet> findAllOtherTweets() {
         List<Tweet> fullList = tweetService.findAllTweets();
@@ -126,6 +138,10 @@ public class SentimentServiceImpl implements SentimentService {
         return fullList;
     }
 
+    /**
+     * This method returns all the replies that aren't present in the search of matches
+     * @return List of replies with no matches
+     */
     @Override
     public List<Reply> findAllOtherReply() {
         List<Reply> fullList = repliesService.findAllReplies();
@@ -138,6 +154,14 @@ public class SentimentServiceImpl implements SentimentService {
         return fullList;
     }
 
+    /**
+     * This method search for the List of tweet that matches certain condition. This condition comes from the Javascript
+     * of the Sentiment website, and is used to filter by level of matches, and classification between Sentimental
+     * or Grotesque
+     * @param search String that my be Sentimental or Grotesque
+     * @param lookingFor String thay indicate the level of match that we want the List of tweet to have
+      * @return List<Tweet> matching the two conditions.
+     */
     @Override
     public List<Tweet> getTweetsBySearchAndLookingFor(String search, String lookingFor) {
         if (search.equals("Sentimental")) {
@@ -161,6 +185,12 @@ public class SentimentServiceImpl implements SentimentService {
         }
     }
 
+    /**
+     * Same as the getTweetBySearchAndLookingFor but for replies
+     * @param search String that my be Sentimental or Grotesque
+     * @param lookingFor String thay indicate the level of match that we want the List of tweet to have
+     * @return List<Reply> matching the two conditions
+     */
     @Override
     public List<Reply> getRepliesBySearchAndLookingFor(String search, String lookingFor) {
             if(search.equals("Sentimental")){
