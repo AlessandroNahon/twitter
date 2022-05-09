@@ -77,6 +77,12 @@ public class TweetServiceImpl extends Thread implements TweetService {
         });
     }
 
+    /**
+     * This method iterates over the text of the tweet and the text of its replies to gather all the emojis
+     * that are contained in the text of those objects
+     * @param t The tweet that is being analyzed
+     * @return A Set<String> with all the emojis. A set is used so the emojis aren't repeated
+     */
     @Override
     public Set<String> getAllEmojisFromTweets(Tweet t){
         Set<String> emojisList = new HashSet<>(new HashSet<>(wordService.getAllEmojisFromText(t.getText())));
@@ -106,6 +112,10 @@ public class TweetServiceImpl extends Thread implements TweetService {
         return new ArrayList<Tweet>();
     }
 
+    /**
+     * This metdhod uses the repository to get a list of all the present tweets in the database
+     * @return
+     */
     @Override
     public List<Tweet> findAllTweets() {
         return tweetRepository.findAll();
@@ -117,16 +127,32 @@ public class TweetServiceImpl extends Thread implements TweetService {
     // =============================================
 
 
+    /**
+     * This method is used to get all the Tweet that contains text with positive/very_positive sentiment
+     * and the content of the Image is kistch
+     * @return List<Tweet> that matches both conditions
+     */
     @Override
     public List<Tweet> getTweetsPositiveTextAndPositiveImage() {
        return tweetRepository.getTextImagePositive();
     }
 
+    /**
+     * This method calls the getTweetsPositiveTextAndPositiveImage() and returns the size of the list returned by
+     * that method.
+     * @return Integer with the size of the list of Tweets that has postive/very_positive sentiment and positive image
+     */
     @Override
     public Integer getCountTweetsPositiveTextAndPositiveImage() {
         return tweetRepository.getTextImagePositive().size();
     }
 
+    /**
+     * This method is used to filter the tweets that has positive Text and positive Emojis. To achieve this, we
+     * fisrt get all the tweets that has positive/very_positive text, and then we compare the emojis of
+     * those tweets with the kistch emojis. If there is at least one positive emoji in the tweet, we add it to the list
+     * @return List<Tweet> with positive emojis in the text
+     */
     @Override
     public List<Tweet> getTweetsPositiveTextAndPositiveEmojis() {
         List<Tweet> tweets = new ArrayList<>();
@@ -143,11 +169,21 @@ public class TweetServiceImpl extends Thread implements TweetService {
         return tweets;
     }
 
+    /**
+     * This method calls the getTweetsPositiveTextAndPositiveEmojis() and returns the size of the list returned by
+     * @return Integer with the size of the list of Tweets that has postive/very_positive sentiment and positive emojis
+     */
     @Override
     public Integer getCountTweetsPositiveTextAndPositiveEmojis() {
         return getTweetsPositiveTextAndPositiveEmojis().size();
     }
 
+    /**
+     * This method is similar to the getTweetsPositiveTextAndPositiveEmojis(), with the difference that this method
+     * compares the emojis with the list of tweets returned by the method getTweetsPositiveTextAndPositiveImage() instead
+     * of getTextPositive()
+     * @return The list of tweets that contains positive text, positive emojis and positive images
+     */
     @Override
     public List<Tweet> getFullMatchesTweets() {
         List<Tweet> tweets = new ArrayList<>();
@@ -165,6 +201,10 @@ public class TweetServiceImpl extends Thread implements TweetService {
     }
 
 
+    /**
+     * This method calls the getFullMatchesTweets() and returns the size of the list returned by
+     * @return Integer with the size of the list of Tweets that contains positive text, positive emojis and positive images
+     */
     @Override
     public Integer getCountFullMatchesTweets() {
         return getFullMatchesTweets().size();
@@ -173,20 +213,42 @@ public class TweetServiceImpl extends Thread implements TweetService {
 
 
 
+
+
     // =============================================
     //           FIND NEGATIVE CONTENT
     // =============================================
 
+
+
+
+    /**
+     * This method is used to get all the Tweet that contains text with negative/very_negative sentiment
+     * and the content of the Image is Grotesque
+     * @return List<Tweet> that matches both conditions
+     */
     @Override
     public List<Tweet> getTweetsNegativeTextAndNegativeImage() {
         return tweetRepository.getTextImageNegative();
     }
 
+    /**
+     * This method calls the getTweetsNegativeTextAndNegativeImage() and returns the size of the list returned by
+     * that method.
+     * @return Integer with the size of the list of Tweets that has negative/very_negative sentiment and Grotesque image
+     */
     @Override
     public Integer getCountTweetsNegativeTextAndNegativeImage() {
         return tweetRepository.getTextImageNegative().size();
     }
 
+
+    /**
+     * This method is used to filter the tweets that has negative Text and negative Emojis. To achieve this, we
+     * fisrt get all the tweets that has negative/very_negative text, and then we compare the emojis of
+     * those tweets with the Grotesque emojis. If there is at least one grotesque emoji in the tweet, we add it to the list
+     * @return List<Tweet> with grotesque emojis in the text
+     */
     @Override
     public List<Tweet> getTweetsNegativeTextAndNegativeEmojis() {
         List<Tweet> tweets = new ArrayList<>();
@@ -203,11 +265,22 @@ public class TweetServiceImpl extends Thread implements TweetService {
         return tweets;
     }
 
+
+    /**
+     * This method calls the getTweetsNegativeTextAndNegativeEmojis() and returns the size of the list returned by
+     * @return Integer with the size of the list of Tweets that has negative/very_negative sentiment and negative emojis
+     */
     @Override
     public Integer getCountTweetsNegativeTextAndNegativeEmojis() {
         return getTweetsNegativeTextAndNegativeEmojis().size();
     }
 
+    /**
+     * This method is similar to the getTweetsNegativeTextAndNegativeEmojis(), with the difference that this method
+     * compares the emojis with the list of tweets returned by the method getTweetsNegativeTextAndNegativeImage() instead
+     * of getTextNegative()
+     * @return The list of tweets that contains negative text, negative emojis and negative images
+     */
     @Override
     public List<Tweet> getFullNegativeMatchesTweets() {
         List<Tweet> tweets = new ArrayList<>();
@@ -224,6 +297,10 @@ public class TweetServiceImpl extends Thread implements TweetService {
         return tweets;
     }
 
+    /**
+     * This method calls the getFullNegativeMatchesTweets() and returns the size of the list returned by
+     * @return Integer with the size of the list of Tweets that contains negative text, negative emojis and negative images
+     */
     @Override
     public Integer getCountFullNegativeMatchesTweets() {
         return getFullNegativeMatchesTweets().size();
