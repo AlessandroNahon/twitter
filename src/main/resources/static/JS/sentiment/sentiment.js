@@ -201,6 +201,8 @@ function changeLowerTable(){
     }
 
 
+
+
 /* ======================================================
     METHODS TO CHANGE THE LIST OF TWEETS/REPLIES
 ====================================================== */
@@ -233,6 +235,14 @@ function changeAfterFragment(){
 }
 
 
+
+/* ======================================================
+            METHODS FOR THE PAGINATION
+====================================================== */
+
+/*
+    This method actuates over the buttons in the pagination nav, and changes the page number
+*/
 function changeButtonsByPageNumber(){
     if(pageNumber === 1 && maxPageNumber === 1){
         buttonPrevious.style.display = 'none';
@@ -251,6 +261,10 @@ function changeButtonsByPageNumber(){
 }
 
 
+/*
+    This method is activated by te pagination buttons. It changes the page number and the content of the
+    table itself, besides the navigation bar text
+*/
 function changePaginationPage(){
     if(this.id === buttonNext.id){
         pageNumber++;
@@ -259,30 +273,13 @@ function changePaginationPage(){
     }
     changeLowerTable();
     changeButtonsByPageNumber();
-
 }
 
-function changeLowerTable(){
-    $.ajax({
-            type: 'get',
-            url: '/sentiment/fragments/tweet_table',
-            data: {
-                searchType: searchType,
-                classification: classification,
-                belongsTo: belongsTo,
-                page: pageNumber
-            },
-            success: function (data) {
-                /*<![CDATA[*/
-                console.log(data);
-                $('#layers_card').html(data);
-                changeAfterFragment();
-                /*]]>*/
-            },
-        })
-    }
 
-
+/*
+    This function is used to assign the correct value to the maxPageNumber variable
+    when the page is loaded
+*/
 function changeMaxPages(maxPages){
     if(typeof maxPages === 'undefined'){
         maxPageNumber = 1;
