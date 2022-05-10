@@ -90,8 +90,21 @@
         <div class="row col-11 ">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header pt-4">
+                    <div class="card-header pt-4 d-flex justify-content-between">
                         <h5 class="float-left" id="tableTitle">Search for Tweets</h5>
+                        <nav aria-label="pagination" class="d-flex justify-content-center mr-2">
+                            <ul class="pagination">
+                                <li class="page-item">
+                                    <button id="buttonPrevious" class="border-0 bg-transparent mr-4 pr-4"><i class="fas fas fa-arrow-left"></i></button>
+                                </li>
+                                <li class="page-item">
+                                    <h6 id="pageDescriber">Page 1 of 3</h6>
+                                </li>
+                                <li class="page-item">
+                                    <button id="buttonNext" class="border-0 bg-transparent ml-4 pl-4"><i  class="fas fas fa-arrow-right"></i></button>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive border rounded">

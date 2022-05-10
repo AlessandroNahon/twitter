@@ -12,6 +12,8 @@ var radioImage = '';
 var radioWord = '';
 
 var searchValue = '';
+var pageNumber = 1;
+var maxPageNumber = 1;
 
 var listOfUsers = ['Greenpeace','Peta','WWF']
 var listOfSentiments = ['Very Positive','Positive','Neutral','Negative','Very Negative'];
@@ -36,7 +38,50 @@ function loadComponents(){
     searchButton = document.getElementById('searchButton');
     searchButton.addEventListener("click", search);
     tableTitle = document.getElementById('tableTitle');
+
+    var buttonPrevious = document.getElementById('buttonPrevious');
+    var buttonNext = document.getElementById('buttonNext');
+    var pageDescriber = document.getElementById('pageDescriber');
+    buttonPrevious.addEventListener('click', changePaginationPage);
+    buttonNext.addEventListener('click', changePaginationPage);
+    changeButtonsByPageNumber();
 }
+
+function changeMaxPages(maxPages){
+    if(typeof maxPages === 'undefined'){
+        this.maxPageNumber = 1;
+    }else{
+        this.maxPageNumber = maxPages;
+    }
+    changeButtonsByPageNumber();
+}
+
+function changePaginationPage(){
+    if(this.id === buttonNext.id){
+        pageNumber++;
+    }else{
+        pageNumber--;
+    }
+    changeButtonsByPageNumber();
+}
+
+function changeButtonsByPageNumber(){
+    if(pageNumber === 1 && maxPageNumber === 1){
+        buttonPrevious.style.display = 'none';
+         buttonNext.style.display = 'none';
+    }else{
+        if(pageNumber === 1){
+                buttonPrevious.style.display = 'none';
+        }else if(pageNumber == maxPageNumber){
+                buttonNext.style.display = 'none';
+        }else{
+            buttonPrevious.style.display = '';
+            buttonNext.style.display = '';
+        }
+    }
+    pageDescriber.innerHTML = 'Page ' + pageNumber + ' of ' + maxPageNumber;
+}
+
 
 function behaviorRadioButtons(){
    enable(dropdownMenu);
@@ -65,7 +110,7 @@ function behaviorRadioButtons(){
 }
 
 function changeDropDown(list){
-    dropdownMenu.innerHTML = '';
+ dropdownMenu.innerHTML = '';
     list.forEach(element => {
     var option = document.createElement('option');
             option.value = element;
@@ -102,16 +147,22 @@ function getNewTableContent(){
             url: '/tweet/fragments/table_search_tweet',
             data: {
                 searchBy: radioChecked,
-                searchValue: searchValue
+                searchValue: searchValue,
+                pageNumber: pageNumber
             },
             success: function (data) {
             console.log(data)
                 /*<![CDATA[*/
                 $(fragment).html(data);
+
                 /*]]>*/
             },
         })
+        pageNumber = 1;
+        changeButtonsByPageNumber();
     }
+
+
 
 
 /*

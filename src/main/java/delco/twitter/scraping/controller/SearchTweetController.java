@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -23,17 +24,21 @@ public class SearchTweetController {
     }
 
     @RequestMapping("/fragments/table_search_tweet")
-    public String getSearch(Model model, @RequestParam("searchBy") String searchType, @RequestParam("searchValue") String searchValue){
+    public String getSearch(Model model, @RequestParam("searchBy") String searchType,
+                            @RequestParam("searchValue") String searchValue,
+                            @RequestParam("pageNumber") int pageNumber){
+        List<Tweet> tweetList = new ArrayList<>();
+        pageNumber--;
         if(searchType.equals("username")){
-            model.addAttribute("tweetList", tweetService.findByUsername(searchValue));
+            tweetList = getPagination(tweetService.findByUsername(searchValue), pageNumber,model);
         }else if(searchType.equals("sentiment")){
-            model.addAttribute("tweetList", tweetService.findBySentiment(searchValue));
+            tweetList = getPagination(tweetService.findBySentiment(searchValue),pageNumber,model);
         }else if(searchType.equals("image")) {
-            model.addAttribute("tweetList", tweetService.findByImageContent(searchValue));
+            tweetList = getPagination(tweetService.findByImageContent(searchValue),pageNumber,model);
         }else{
-            model.addAttribute("tweetList", tweetService.findByText(searchValue));
+            tweetList = getPagination(tweetService.findByText(searchValue),pageNumber,model);
         }
-
+        model.addAttribute("tweetList",tweetList);
         return "tweet/fragments/table_search_tweet :: table_search_tweet";
     }
 
