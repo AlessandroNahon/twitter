@@ -41,7 +41,7 @@ public class IndexController {
     public String loadIndexPage(Model model){
         model.addAttribute("sentiment_dataset", sentimentService.findAllSentiment());
         model.addAttribute("imgUtil",new ImageUtil());
-        model.addAttribute("images", imageRepository.findByReplyIsNull());
+        model.addAttribute("images", imageRepository.findByReplyIsNull().subList(0,10));
         model.addAttribute("words_dataset",wordService.getTop5Words());
         Long totalPages = (tweetRepository.count()%10)==0?(tweetRepository.count()/10):((tweetRepository.count()/10)+1);
         model.addAttribute("totalPages",totalPages);

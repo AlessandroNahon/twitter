@@ -28,7 +28,8 @@ public class SearchTweetController {
             model.addAttribute("tweetList", tweetService.findByUsername(searchValue));
         }else if(searchType.equals("sentiment")){
             model.addAttribute("tweetList", tweetService.findBySentiment(searchValue));
-
+        }else if(searchType.equals("image")) {
+            model.addAttribute("tweetList", tweetService.findByImageContent(searchValue));
         }else{
             model.addAttribute("tweetList", tweetService.findByText(searchValue));
         }

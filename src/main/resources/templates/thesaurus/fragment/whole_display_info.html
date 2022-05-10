@@ -12,11 +12,9 @@
             <div class="row col-12">
                 <div class="col-md-3 mt-4">
                     <div class="card" id="noun-card">
-                        <div class="card-header col-12 text-white ">
-                            <div class="row justify-content-between">
-                                <h5 class="col-6 mt-2">Nouns: </h5>
-                                <h5 class="inline-block col-4 mt-2" th:text="${topNoun.count}+' times'">total</h5>
-                            </div>
+                        <div class="card-header text-white d-flex justify-content-between">
+                                <h5 class="mt-2">Nouns: </h5>
+                                <h5 class=" mt-2" th:text="${topNoun.count}+' times'">total</h5>
                         </div>
                         <div class="card-body ">
                             <div class="row col-12 justify-content-between ">
@@ -41,11 +39,9 @@
                 </div>
                 <div class="col-md-3 mt-4">
                     <div class="card" id="adverbs-card">
-                        <div class="card-header col-12 text-white ">
-                            <div class="row justify-content-between">
-                                <h5 class="col-6 mt-2">Adverbs: </h5>
-                                <h5 class="inline-block col-4 mt-2" th:text="${topAdverb.count}+' times'">total</h5>
-                            </div>
+                        <div class="card-header text-white d-flex justify-content-between">
+                                <h5 class="mt-2">Adverbs: </h5>
+                                <h5 class="mt-2" th:text="${topAdverb.count}+' times'">total</h5>
                         </div>
                         <div class="card-body ">
                             <div class="row col-12 justify-content-between ">
@@ -70,11 +66,9 @@
                 </div>
                 <div class="col-md-3 mt-4">
                     <div class="card" id="adjectives-card">
-                        <div class="card-header col-12 text-white ">
-                            <div class="row justify-content-between">
-                                <h5 class="col-6 mt-2">Adjectives: </h5>
-                                <h5 class="inline-block col-4 mt-2" th:text="${topAdjective.count}+' times'">total</h5>
-                            </div>
+                        <div class="card-header text-white d-flex justify-content-between">
+                                <h5 class="mt-2">Adjectives: </h5>
+                                <h5 class="mt-2" th:text="${topAdjective.count}+' times'">total</h5>
                         </div>
                         <div class="card-body ">
                             <div class="row col-12 justify-content-between ">
@@ -98,11 +92,9 @@
                 </div>
                 <div class="col-md-3 mt-4">
                     <div class="card" id="emojis-card">
-                        <div class="card-header col-12 text-white ">
-                            <div class="row justify-content-between">
-                                <h5 class="col-6 mt-2">Emojis: </h5>
-                                <h5 class="inline-block col-4 mt-2" th:text="${topEmoji.count}+' times'">total</h5>
-                            </div>
+                        <div class="card-header text-white d-flex justify-content-between">
+                                <h5 class=" mt-2">Emojis: </h5>
+                                <h5 class="inline-block  mt-2" th:text="${topEmoji.count}+' times'">total</h5>
                         </div>
                         <div class="card-body ">
                             <div class="row col-12 justify-content-between ">

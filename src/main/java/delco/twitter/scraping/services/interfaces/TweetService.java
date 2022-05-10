@@ -31,6 +31,8 @@ public interface TweetService {
 
     List<Tweet> findByUsername(String username);
 
+    List<Tweet> findByImageContent(String imageContent);
+
     /*
     METHODS TO FIND ALL THE POSITIVE CONTENT IN THE DATABASE
      */

@@ -8,12 +8,14 @@ var tableTitle = '';
 
 var radioUsername = '';
 var radioSentiment = '';
+var radioImage = '';
 var radioWord = '';
 
 var searchValue = '';
 
 var listOfUsers = ['Greenpeace','Peta','WWF']
 var listOfSentiments = ['Very Positive','Positive','Neutral','Negative','Very Negative'];
+var listOfImageType = ['Kistch','Grotesque']
 
 
 function loadComponents(){
@@ -21,13 +23,16 @@ function loadComponents(){
     dropdownMenu.addEventListener('change', onChangeDropdown);
     radioUsername = document.getElementById('radioUsername');
     radioSentiment = document.getElementById('radioSentiment');
+    radioImage = document.getElementById('radioImage');
     radioWord = document.getElementById('radioWord');
     inputBox = document.getElementById('textSearch');
+
     disable(inputBox);
 
     radioUsername.addEventListener("click", behaviorRadioButtons);
     radioSentiment.addEventListener("click", behaviorRadioButtons);
     radioWord.addEventListener("click", behaviorRadioButtons);
+    radioImage.addEventListener("click", behaviorRadioButtons);
     searchButton = document.getElementById('searchButton');
     searchButton.addEventListener("click", search);
     tableTitle = document.getElementById('tableTitle');
@@ -45,6 +50,11 @@ function behaviorRadioButtons(){
         searchValue = 'Very positive'
         radioChecked = 'sentiment'
          disable(inputBox);
+    }else if(this.id == radioImage.id){
+        changeDropDown(listOfImageType);
+        searchValue = 'Kistch'
+        radioChecked = 'image'
+    disable(inputBox);
     }else{
         dropdownMenu.innerHTML = '';
         disable(dropdownMenu);

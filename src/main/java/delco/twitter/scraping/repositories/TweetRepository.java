@@ -25,6 +25,10 @@ public interface TweetRepository  extends PagingAndSortingRepository<Tweet, Long
 
     List<Tweet> findByUsername(String username);
 
+    @Query(value = "select * from twitter.tweets t where t.id in " +
+            "(select tweet_id from image i where i.image_content = ?1)", nativeQuery = true)
+    List<Tweet> findByImageContent(String imageContent);
+
 
      // =============================================
      //           FIND POSITIVE CONTENT

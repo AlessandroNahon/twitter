@@ -124,6 +124,15 @@ public class TweetServiceImpl extends Thread implements TweetService {
         return tweetRepository.findByUsername(username);
     }
 
+    @Override
+    public List<Tweet> findByImageContent(String imageContent) {
+        if(imageContent.equals("Grotesque")){
+            return tweetRepository.findByImageContent(TypeEnum.GROTESQUE.name());
+        }else{
+            return tweetRepository.findByImageContent(TypeEnum.KITSCH.name());
+        }
+    }
+
 
     /**
      * This method is used by the controller to call the repository and find all the tweets that contains
