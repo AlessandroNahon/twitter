@@ -56,7 +56,7 @@ public class TweetServiceImpl extends Thread implements TweetService {
                 List<Images> images = imageService.getImages(root.getIncludes(),datum);
                 if(!images.isEmpty()) {
                     System.out.println("Hay un tweet que es válido");
-                    Tweet tweet = datumConverters.convertDatumToTweet(datum);
+                    Tweet tweet = datumConverters.convertDatumToTweet(datum,username);
                     tweet.setUsername(username);
                     tweetRepository.save(tweet);
                     images.forEach(img -> {
@@ -68,7 +68,7 @@ public class TweetServiceImpl extends Thread implements TweetService {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            wordService.analyzeText(datum.getText(),WordServiceImpl.TWEET_BELONGS_TO);
+                            wordService.analyzeText(datum.getText(),WordServiceImpl.TWEET_BELONGS_TO,username);
                         }
                     }).start();
                     try {
@@ -86,6 +86,29 @@ public class TweetServiceImpl extends Thread implements TweetService {
         tweetRepository.deleteById(id);
         repliesService.deleteByTweetId(id);
         imageService.deleteByTweetId(id);
+    }
+
+    @Override
+    public void changeSentiment(String sentiment, Long id) {
+        Tweet tweet = tweetRepository.findById(id).get();
+        switch (sentiment.toLowerCase()) {
+            case  "positive":
+                tweet.setTextSentiment(SentimentEnum.POSITIVE);
+                break;
+            case "negative":
+                tweet.setTextSentiment(SentimentEnum.NEGATIVE);
+                break;
+            case "neutral":
+                tweet.setTextSentiment(SentimentEnum.NEUTRAL);
+                break;
+            case "very positive":
+                tweet.setTextSentiment(SentimentEnum.VERY_POSITIVE);
+                break;
+            case "very negative":
+                tweet.setTextSentiment(SentimentEnum.VERY_NEGATIVE);
+                break;
+        }
+        tweetRepository.save(tweet);
     }
 
     /**
@@ -133,6 +156,86 @@ public class TweetServiceImpl extends Thread implements TweetService {
         }
     }
 
+    @Override
+    public List<Tweet> findTextImage(String username, boolean wantPositive) {
+        if (wantPositive) {
+            return tweetRepository.getTextImagePositive(username);
+        }else{
+            return tweetRepository.getTextImageNegative(username);
+        }
+    }
+
+    @Override
+    public List<Tweet> findText(String username, boolean wantPositive) {
+        if(wantPositive){
+            return tweetRepository.getTextPositive(username);
+        }else{
+            return tweetRepository.getTextNegative(username);
+        }
+    }
+
+    @Override
+    public List<Tweet> findTextEmoji(String username, boolean wantPositive) {
+        List<Tweet> tweetList = wantPositive ? findText(username,true) : findText(username,false);
+        List<String> tweetListEmoji = wantPositive ?
+                wordService.getByBelongsToAndOrganizationBySyntax("Tweet",TypeEnum.KITSCH_EMOJI,username)
+                        .stream().map(Word::getWord).collect(Collectors.toList()) :
+                wordService.getByBelongsToAndOrganizationBySyntax("Tweet",TypeEnum.GROTESQUE_EMOJI,username)
+                        .stream().map(Word::getWord).collect(Collectors.toList());
+        Set<Tweet> tweetListEmojiFiltered = new HashSet<>();
+        for(Tweet t : tweetList){
+            List<String> emojisFromTweet = wordService.getAllEmojisFromText(t.getText());
+            for(String s : emojisFromTweet){
+                if(tweetListEmoji.contains(s)){
+                    tweetListEmojiFiltered.add(t);
+                    break;
+                }
+            }
+        }
+        return new ArrayList<>(tweetListEmojiFiltered);
+    }
+    @Override
+    public List<Tweet> findFullMatches(String username, boolean wantPositive) {
+        List<Tweet> tweetList = wantPositive ? findTextImage(username,true) : findTextImage(username,false);
+        List<String> tweetListEmoji = wantPositive ?
+                wordService.getByBelongsToAndOrganizationBySyntax("Tweet",TypeEnum.KITSCH_EMOJI,username)
+                        .stream().map(Word::getWord).collect(Collectors.toList()) :
+                wordService.getByBelongsToAndOrganizationBySyntax("Tweet",TypeEnum.GROTESQUE_EMOJI,username)
+                        .stream().map(Word::getWord).collect(Collectors.toList());
+        Set<Tweet> tweetListEmojiFiltered = new HashSet<>();
+        for(Tweet t : tweetList){
+            List<String> emojisFromTweet = wordService.getAllEmojisFromText(t.getText());
+            for(String s : emojisFromTweet){
+                if(tweetListEmoji.contains(s)){
+                    tweetListEmojiFiltered.add(t);
+                    break;
+                }
+            }
+        }
+        return new ArrayList<>(tweetListEmojiFiltered);
+    }
+
+    @Override
+    public List<Tweet> findAllOthers(String username) {
+        List<Tweet> tweetList = tweetRepository.findByUsername(username);
+        tweetList.removeAll(findTextImage(username,true));
+        tweetList.removeAll(findTextEmoji(username,true));
+        tweetList.removeAll(findFullMatches(username,true));
+        tweetList.removeAll(findTextImage(username,false));
+        tweetList.removeAll(findTextEmoji(username,false));
+        tweetList.removeAll(findFullMatches(username,false));
+        return tweetList;
+    }
+
+    @Override
+    public List<Tweet> getCountBySentiment(String username,boolean wantPositive) {
+        Set<Tweet> tweetSet = new HashSet<>();
+        tweetSet.addAll(findTextEmoji(username,wantPositive));
+        tweetSet.addAll(findTextImage(username, wantPositive));
+        tweetSet.addAll(findFullMatches(username, wantPositive));
+        return new ArrayList<>(tweetSet);
+    }
+
 
     /**
      * This method is used by the controller to call the repository and find all the tweets that contains
@@ -159,190 +262,6 @@ public class TweetServiceImpl extends Thread implements TweetService {
         return tweetRepository.findAll();
     }
 
-
-    // =============================================
-    //           FIND POSITIVE CONTENT
-    // =============================================
-
-
-    /**
-     * This method is used to get all the Tweet that contains text with positive/very_positive sentiment
-     * and the content of the Image is kistch
-     * @return List<Tweet> that matches both conditions
-     */
-    @Override
-    public List<Tweet> getTweetsPositiveTextAndPositiveImage() {
-       return tweetRepository.getTextImagePositive();
-    }
-
-    /**
-     * This method calls the getTweetsPositiveTextAndPositiveImage() and returns the size of the list returned by
-     * that method.
-     * @return Integer with the size of the list of Tweets that has postive/very_positive sentiment and positive image
-     */
-    @Override
-    public Integer getCountTweetsPositiveTextAndPositiveImage() {
-        return tweetRepository.getTextImagePositive().size();
-    }
-
-    /**
-     * This method is used to filter the tweets that has positive Text and positive Emojis. To achieve this, we
-     * fisrt get all the tweets that has positive/very_positive text, and then we compare the emojis of
-     * those tweets with the kistch emojis. If there is at least one positive emoji in the tweet, we add it to the list
-     * @return List<Tweet> with positive emojis in the text
-     */
-    @Override
-    public List<Tweet> getTweetsPositiveTextAndPositiveEmojis() {
-        List<Tweet> tweets = new ArrayList<>();
-        List<String> emojis = wordService.getAllWordsByBelongsToAndSyntax(WordServiceImpl.TWEET_BELONGS_TO,
-                TypeEnum.KITSCH_EMOJI).stream().map(Word::getWord).collect(Collectors.toList());
-        for(Tweet t : tweetRepository.getTextPositive()){
-            for(String s : wordService.getAllEmojisFromText(t.getText())){
-                if(emojis.contains(s)){
-                    tweets.add(t);
-                    break;
-                }
-            }
-        }
-        return tweets;
-    }
-
-    /**
-     * This method calls the getTweetsPositiveTextAndPositiveEmojis() and returns the size of the list returned by
-     * @return Integer with the size of the list of Tweets that has postive/very_positive sentiment and positive emojis
-     */
-    @Override
-    public Integer getCountTweetsPositiveTextAndPositiveEmojis() {
-        return getTweetsPositiveTextAndPositiveEmojis().size();
-    }
-
-    /**
-     * This method is similar to the getTweetsPositiveTextAndPositiveEmojis(), with the difference that this method
-     * compares the emojis with the list of tweets returned by the method getTweetsPositiveTextAndPositiveImage() instead
-     * of getTextPositive()
-     * @return The list of tweets that contains positive text, positive emojis and positive images
-     */
-    @Override
-    public List<Tweet> getFullMatchesTweets() {
-        List<Tweet> tweets = new ArrayList<>();
-        List<String> emojis = wordService.getAllWordsByBelongsToAndSyntax(WordServiceImpl.TWEET_BELONGS_TO,
-                TypeEnum.KITSCH_EMOJI).stream().map(Word::getWord).collect(Collectors.toList());
-        for(Tweet t : tweetRepository.getTextImagePositive()){
-            for(String s : wordService.getAllEmojisFromText(t.getText())){
-                if(emojis.contains(s)){
-                    tweets.add(t);
-                    break;
-                }
-            }
-        }
-        return tweets;
-    }
-
-
-    /**
-     * This method calls the getFullMatchesTweets() and returns the size of the list returned by
-     * @return Integer with the size of the list of Tweets that contains positive text, positive emojis and positive images
-     */
-    @Override
-    public Integer getCountFullMatchesTweets() {
-        return getFullMatchesTweets().size();
-    }
-
-
-
-
-
-
-    // =============================================
-    //           FIND NEGATIVE CONTENT
-    // =============================================
-
-
-
-
-    /**
-     * This method is used to get all the Tweet that contains text with negative/very_negative sentiment
-     * and the content of the Image is Grotesque
-     * @return List<Tweet> that matches both conditions
-     */
-    @Override
-    public List<Tweet> getTweetsNegativeTextAndNegativeImage() {
-        return tweetRepository.getTextImageNegative();
-    }
-
-    /**
-     * This method calls the getTweetsNegativeTextAndNegativeImage() and returns the size of the list returned by
-     * that method.
-     * @return Integer with the size of the list of Tweets that has negative/very_negative sentiment and Grotesque image
-     */
-    @Override
-    public Integer getCountTweetsNegativeTextAndNegativeImage() {
-        return tweetRepository.getTextImageNegative().size();
-    }
-
-
-    /**
-     * This method is used to filter the tweets that has negative Text and negative Emojis. To achieve this, we
-     * fisrt get all the tweets that has negative/very_negative text, and then we compare the emojis of
-     * those tweets with the Grotesque emojis. If there is at least one grotesque emoji in the tweet, we add it to the list
-     * @return List<Tweet> with grotesque emojis in the text
-     */
-    @Override
-    public List<Tweet> getTweetsNegativeTextAndNegativeEmojis() {
-        List<Tweet> tweets = new ArrayList<>();
-        List<String> emojis = wordService.getAllWordsByBelongsToAndSyntax(WordServiceImpl.TWEET_BELONGS_TO,
-                TypeEnum.GROTESQUE_EMOJI).stream().map(Word::getWord).collect(Collectors.toList());
-        for(Tweet t : tweetRepository.getTextNegative()){
-            for(String s : wordService.getAllEmojisFromText(t.getText())){
-                if(emojis.contains(s)){
-                    tweets.add(t);
-                    break;
-                }
-            }
-        }
-        return tweets;
-    }
-
-
-    /**
-     * This method calls the getTweetsNegativeTextAndNegativeEmojis() and returns the size of the list returned by
-     * @return Integer with the size of the list of Tweets that has negative/very_negative sentiment and negative emojis
-     */
-    @Override
-    public Integer getCountTweetsNegativeTextAndNegativeEmojis() {
-        return getTweetsNegativeTextAndNegativeEmojis().size();
-    }
-
-    /**
-     * This method is similar to the getTweetsNegativeTextAndNegativeEmojis(), with the difference that this method
-     * compares the emojis with the list of tweets returned by the method getTweetsNegativeTextAndNegativeImage() instead
-     * of getTextNegative()
-     * @return The list of tweets that contains negative text, negative emojis and negative images
-     */
-    @Override
-    public List<Tweet> getFullNegativeMatchesTweets() {
-        List<Tweet> tweets = new ArrayList<>();
-        List<String> emojis = wordService.getAllWordsByBelongsToAndSyntax(WordServiceImpl.TWEET_BELONGS_TO,
-                TypeEnum.GROTESQUE_EMOJI).stream().map(Word::getWord).collect(Collectors.toList());
-        for(Tweet t : tweetRepository.getTextImageNegative()){
-            for(String s : wordService.getAllEmojisFromText(t.getText())){
-                if(emojis.contains(s)){
-                    tweets.add(t);
-                    break;
-                }
-            }
-        }
-        return tweets;
-    }
-
-    /**
-     * This method calls the getFullNegativeMatchesTweets() and returns the size of the list returned by
-     * @return Integer with the size of the list of Tweets that contains negative text, negative emojis and negative images
-     */
-    @Override
-    public Integer getCountFullNegativeMatchesTweets() {
-        return getFullNegativeMatchesTweets().size();
-    }
 
 
 }

@@ -10,7 +10,7 @@ public interface WordService {
 
 
 
-    void analyzeText(String text, String belongs_to);
+    void analyzeText(String text, String belongs_to, String organization);
 
     TypeEnum getTypeOfWord(String word);
 
@@ -22,7 +22,7 @@ public interface WordService {
 
     int getEmojiEndPos(char[] text, int startPos);
 
-    void parseWord(String text, TypeEnum syntax, String belongs_to);
+    void parseWord(String text, TypeEnum syntax, String belongs_to, String organization);
 
     List<Word> getAllWordsFromTweet(Tweet t);
 
@@ -40,21 +40,17 @@ public interface WordService {
 
     List<String> getAllEmojisFromText(String text);
 
-    List<Word> getTop20ByBelongsTo(String belongs_to);
-
-    List<Word> getTop5Words();
-
-    List<Word> getTop20WordsByBelongsToBySyntax (String belongs_to, TypeEnum syntax);
-
-    List<Word> getTop10ByBelongsToBySyntax (String belongs_to, TypeEnum syntax);
-
-    List<Word> getAllWordsByBelongsToAndSyntax (String belongs_to, TypeEnum syntax);
-
-    Word getTopByBelongsToBySyntax (String belongs_to, TypeEnum syntax);
-
     Word getByWordAndBelongsTo(String word, String belongs_to);
 
-    Word getTopEmojiByBelongsTo(String belongs_to);
+    List<Word> getByBelongsToAndOrganizationBySyntax(String belongs_to, TypeEnum syntax, String organization);
+
+    List<Word> getSortedByBelongsAndOrganization(String belongs_to, String organization, int limit);
+
+    List<Word> getSortedByBelongsOrganizationAndSyntax(String belongs_to, String organization, TypeEnum syntax, int limit);
+
+    Word getTopByBelongsSyntaxAndOrganization(String belongs_to, TypeEnum syntax, String organization);
+
+    Word getTopEmojiByBelongsAndOrganization(String belongs_to, String organization);
 
 
 

@@ -23,14 +23,10 @@
                                 </div>
                                 <div class="col-5">
                                     <div class="row">
-                                        <a href="#" onclick="loadNewTable
-                                          ('#words_table_tweets',
-                                          '#word_title',
-                                          document.getElementById('nounWord').innerHTML)">
-                                            <h5 th:text="${topNoun.word}"
-                                                class="text-decoration-none pt-3 pb-3 text-light" id="nounWord">Lorem
-                                                ipsuim</h5>
-                                        </a>
+                                        <button th:text="${topNoun.word}"
+                                                class="bg-transparent border-0 h5 mt-2 text-light"
+                                                id="buttonNoun">
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -50,14 +46,10 @@
                                 </div>
                                 <div class="col-5">
                                     <div class="row">
-                                        <a href="#" class="" onclick="loadNewTable
-                                          ('#words_table_tweets',
-                                          '#word_title',
-                                          document.getElementById('adverbWord').innerHTML)">
-                                            <h5 th:text="${topAdverb.word}"
-                                                class="text-decoration-none pt-3 pb-3 text-light" id="adverbWord">Lorem
-                                                ipsuim</h5>
-                                        </a>
+                                        <button th:text="${topAdverb.word}"
+                                                class="bg-transparent border-0 h5 mt-2 text-light"
+                                                id="buttonAdverb">
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -77,13 +69,10 @@
                                 </div>
                                 <div class="col-5">
                                     <div class="row">
-                                        <a href="#" onclick="loadNewTable
-                                          ('#words_table_tweets',
-                                          '#word_title',
-                                          document.getElementById('adjectiveWord').innerHTML)">
-                                            <h5 id="adjectiveWord" th:text="${topAdjective.word}"
-                                                class="text-decoration-none pt-3 pb-3 text-light">Lorem ipsuim</h5>
-                                        </a>
+                                        <button th:text="${topAdjective.word}"
+                                                class="bg-transparent border-0 h5 mt-2 text-light"
+                                                id="buttonAdjective">
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -103,13 +92,10 @@
                                 </div>
                                 <div class="col-5">
                                     <div class="row">
-                                        <a href="#" onclick="loadNewTable
-                                          ('#words_table_tweets',
-                                          '#word_title',
-                                          document.getElementById('emojiWord').innerHTML)">
-                                            <h5 id="emojiWord" th:text="${topEmoji.word}"
-                                                class="text-decoration-none pt-3 pb-3 text-light">Lorem ipsuim</h5>
-                                        </a>
+                                        <button th:text="${topEmoji.word}"
+                                                class="bg-transparent border-0 h5 mt-2 text-light"
+                                                id="buttonEmoji">
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -136,12 +122,12 @@
         <div class="card-header d-flex justify-content-center">
             <ul class="nav nav-tabs card-header-tabs mb-1">
                 <li class="nav-item bg-light" id="word_nav_button">
-                    <button class="bg-transparent nav-link active" id="buttonWord" onclick="changeHorizontalData('Words')">
+                    <button class="bg-transparent nav-link active" id="buttonNavWord">
                         <h6>Words</h6>
                     </button>
                 </li>
                 <li class="nav-item bg-light" id="emoji_nav_button">
-                    <button class="bg-transparent nav-link" id="buttonEmoji" onclick="changeHorizontalData('Emojis')">
+                    <button class="bg-transparent nav-link" id="buttonNavEmoji" >
                         <h6>Emojis</h6>
                     </button>
                 </li>
@@ -158,8 +144,8 @@
                             <div class="card-body">
                                 <canvas id="chart-line" width="300" height="175"></canvas>
                                 <script th:inline="javascript">
-                                printHorizontal(/*[[${topKicheWords}]]*/, 'chart-line', 'Quiche', '#9ACD32')
-                            </script>
+                                    printHorizontal(/*[[${topKicheWords}]]*/, 'chart-line', 'Quiche', '#9ACD32')
+                                </script>
                             </div>
                         </div>
                     </div>
@@ -171,8 +157,8 @@
                             <div class="card-body">
                                 <canvas id="chart2-line" width="300" height="175"></canvas>
                                 <script th:inline="javascript">
-                                printHorizontal(/*[[${topGrotesqueWords}]]*/, 'chart2-line', 'Grotesque', '#FF7F50');
-                            </script>
+                                    printHorizontal(/*[[${topGrotesqueWords}]]*/, 'chart2-line', 'Grotesque', '#FF7F50');
+                                </script>
                             </div>
                         </div>
                     </div>
@@ -180,6 +166,9 @@
             </div>
         </div>
     </div>
+<script>
+    addEventToButtonsFromFragment();
+</script>
 </body>
 
 </html>

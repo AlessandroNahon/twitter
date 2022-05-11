@@ -7,7 +7,7 @@
 <body>
 <div class="row" th:fragment="header_row">
 
-  <div class="col-md-12">
+  <div class="col-12 ">
     <nav class="navbar navbar-expand-lg navbar-light bg-info p-3">
       <div class="container-fluid">
         <a class="navbar-brand" href="#">
@@ -33,9 +33,21 @@
                 th:href="@{'/sentiment/index'}">Sentiment</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-white fs-5  pl-4 pr-4" th:href="@{'/thesaurus/index'}" href="#">Thesaurus</a>
+              <a class="nav-link text-white fs-5 pl-4 pr-4 border-right" th:href="@{'/thesaurus/index'}" href="#">Thesaurus</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white fs-5  pl-4 pr-4" th:href="@{'/thesaurus/index'}" href="#">Clouds</a>
             </li>
           </ul>
+        </div>
+        <div class="d-flex h-100" id="organizationSelector">
+          <h5 class="d-inline-block d-flex text-white p-2 pt-3 mr-4">Select an organization:</h5>
+          <select class="dropdown-toggle p-3 btn-white rounded d-inline-block border-white text-white bg-transparent"
+          id="comboboxIndex">
+            <option value="Greenpeace" class="text-white bg-info">Greenpeace</option>
+            <option value="Peta" class="text-white bg-info">PETA</option>
+            <option value="WWF" class="text-white bg-info">WWF</option>
+          </select>
         </div>
       </div>
     </nav>

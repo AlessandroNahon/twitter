@@ -72,13 +72,13 @@ public class RepliesServiceImpl extends Thread implements RepliesService {
         }
         if (root.getData().size() != 0) {
             root.getData().forEach(datum -> {
-                Reply reply = datumConverters.convertDatumToReply(datum);
+                Reply reply = datumConverters.convertDatumToReply(datum, originalTweet.getUsername());
                 reply.setOriginalTweet(originalTweet);
                 repliesRepository.save(reply);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        wordService.analyzeText(reply.getText(),WordServiceImpl.REPLY_BELONGS_TO);
+                        wordService.analyzeText(reply.getText(),WordServiceImpl.REPLY_BELONGS_TO, originalTweet.getUsername());
                     }
                 }).start();
                 if(!datum.getAttachments().getMedia_keys().isEmpty()) {
@@ -102,129 +102,94 @@ public class RepliesServiceImpl extends Thread implements RepliesService {
     }
 
     @Override
+    public List<Reply> getByOrganization(String organization) {
+        return repliesRepository.findByOrganization(organization);
+    }
+
+    @Override
     public void deleteByTweetId(Long id) {
         repliesRepository.deleteAllByOriginalTweet(id);
     }
 
-    /**
-     * This method calls the repository in order to find all the replies that contains a String passed via
-     * parameter
-     * @param text The text to search into the replies objects
-     * @return The list of replies which contains that text
-     */
     @Override
-    public List<Reply> findAllByTextContaining(String text) {
-        return repliesRepository.findAllByTextContaining(text);
+    public List<Reply> findTextImage(String username, boolean wantPositive) {
+        if (wantPositive) {
+            return repliesRepository.getTextImagePositive(username);
+        }else{
+            return repliesRepository.getTextImageNegative(username);
+        }
     }
 
     @Override
-    public List<Reply> getReplyPositiveTextAndPositiveImage() {
-        return repliesRepository.getTextImagePositive();
+    public List<Reply> findText(String username, boolean wantPositive) {
+        if(wantPositive){
+            return repliesRepository.getTextPositive(username);
+        }else{
+            return repliesRepository.getTextNegative(username);
+        }
     }
 
     @Override
-    public Integer getCountReplyPositiveTextAndPositiveImage() {
-        return repliesRepository.getTextImagePositive().size();
-    }
-
-    @Override
-    public List<Reply> getReplyPositiveTextAndPositiveEmojis() {
-        List<Reply> replies = new ArrayList<>();
-        List<String> emojis = wordService.getAllWordsByBelongsToAndSyntax(WordServiceImpl.REPLY_BELONGS_TO,
-                TypeEnum.KITSCH_EMOJI).stream().map(Word::getWord).collect(Collectors.toList());
-        for(Reply t : repliesRepository.getTextPositive()){
-            for(String s : wordService.getAllEmojisFromText(t.getText())){
-                if(emojis.contains(s)){
-                    replies.add(t);
+    public List<Reply> findTextEmoji(String username, boolean wantPositive) {
+        List<Reply> replyList = wantPositive ? findText(username,true) : findText(username,false);
+        List<String> tweetListEmoji = wantPositive ?
+                wordService.getByBelongsToAndOrganizationBySyntax("Reply",TypeEnum.KITSCH_EMOJI,username)
+                        .stream().map(Word::getWord).collect(Collectors.toList()) :
+                wordService.getByBelongsToAndOrganizationBySyntax("Reply",TypeEnum.GROTESQUE_EMOJI,username)
+                        .stream().map(Word::getWord).collect(Collectors.toList());
+        Set<Reply> replyListEmojiFiltered = new HashSet<>();
+        for(Reply r : replyList){
+            List<String> emojisFromTweet = wordService.getAllEmojisFromText(r.getText());
+            for(String s : emojisFromTweet){
+                if(tweetListEmoji.contains(s)){
+                    replyListEmojiFiltered.add(r);
                     break;
                 }
             }
         }
-        return replies;
+        return new ArrayList<>(replyListEmojiFiltered);
     }
 
     @Override
-    public Integer getCountReplysPositiveTextAndPositiveEmojis() {
-        return getReplyPositiveTextAndPositiveEmojis().size();
-    }
-
-    @Override
-    public List<Reply> getFullMatchesReply() {
-        List<Reply> replies = new ArrayList<>();
-        List<String> emojis = wordService.getAllWordsByBelongsToAndSyntax(WordServiceImpl.REPLY_BELONGS_TO,
-                TypeEnum.KITSCH_EMOJI).stream().map(Word::getWord).collect(Collectors.toList());
-        for(Reply t : repliesRepository.getTextImagePositive()){
-            for(String s : wordService.getAllEmojisFromText(t.getText())){
-                if(emojis.contains(s)){
-                    replies.add(t);
+    public List<Reply> findFullMatches(String username, boolean wantPositive) {
+        List<Reply> replyList = wantPositive ? findTextImage(username,true) : findTextImage(username,false);
+        List<String> tweetListEmoji = wantPositive ?
+                wordService.getByBelongsToAndOrganizationBySyntax("Reply",TypeEnum.KITSCH_EMOJI,username)
+                        .stream().map(Word::getWord).collect(Collectors.toList()) :
+                wordService.getByBelongsToAndOrganizationBySyntax("Reply",TypeEnum.GROTESQUE_EMOJI,username)
+                        .stream().map(Word::getWord).collect(Collectors.toList());
+        Set<Reply> replyListEmojiFiltered = new HashSet<>();
+        for(Reply r : replyList){
+            List<String> emojisFromTweet = wordService.getAllEmojisFromText(r.getText());
+            for(String s : emojisFromTweet){
+                if(tweetListEmoji.contains(s)){
+                    replyListEmojiFiltered.add(r);
                     break;
                 }
             }
         }
-        return replies;
-    }
-
-
-
-    @Override
-    public Integer getCountFullMatchesReply() {
-        return getFullMatchesReply().size();
-    }
-
-    // =============================================
-    //           FIND NEGATIVE CONTENT
-    // =============================================
-
-    @Override
-    public List<Reply> getReplyNegativeTextAndNegativeImage() {
-        return repliesRepository.getTextImageNegative();
+        return new ArrayList<>(replyListEmojiFiltered);
     }
 
     @Override
-    public Integer getCountReplyNegativeTextAndNegativeImage() {
-        return getReplyNegativeTextAndNegativeImage().size();
+    public List<Reply> findAllOthers(String username) {
+        List<Reply> repliesList = repliesRepository.findByOrganization(username);
+        repliesList.removeAll(findTextImage(username,true));
+        repliesList.removeAll(findTextEmoji(username,true));
+        repliesList.removeAll(findFullMatches(username,true));
+        repliesList.removeAll(findTextImage(username,false));
+        repliesList.removeAll(findTextEmoji(username,false));
+        repliesList.removeAll(findFullMatches(username,false));
+        return repliesList;
     }
 
     @Override
-    public List<Reply> getReplyNegativeTextAndNegativeEmojis() {
-        List<Reply> replies = new ArrayList<>();
-        List<String> emojis = wordService.getAllWordsByBelongsToAndSyntax(WordServiceImpl.REPLY_BELONGS_TO,
-                TypeEnum.GROTESQUE_EMOJI).stream().map(Word::getWord).collect(Collectors.toList());
-        for(Reply t : repliesRepository.getTextNegative()){
-            for(String s : wordService.getAllEmojisFromText(t.getText())){
-                if(emojis.contains(s)){
-                    replies.add(t);
-                    break;
-                }
-            }
-        }
-        return replies;
-    }
-
-    @Override
-    public Integer getCountReplysNegativeTextAndNegativeEmojis() {
-        return getReplyNegativeTextAndNegativeEmojis().size();
-    }
-
-    @Override
-    public List<Reply> getFullNegativeMatchesReply() {
-        List<Reply> replies = new ArrayList<>();
-        List<String> emojis = wordService.getAllWordsByBelongsToAndSyntax(WordServiceImpl.REPLY_BELONGS_TO,
-                TypeEnum.GROTESQUE_EMOJI).stream().map(Word::getWord).collect(Collectors.toList());
-        for(Reply t : repliesRepository.getTextImageNegative()){
-            for(String s : wordService.getAllEmojisFromText(t.getText())){
-                if(emojis.contains(s)){
-                    replies.add(t);
-                    break;
-                }
-            }
-        }
-        return replies;
-    }
-
-    @Override
-    public Integer getCountFullNegativeMatchesReply() {
-        return getFullNegativeMatchesReply().size();
+    public List<Reply> getCountBySentiment(String username, boolean wantPositive) {
+        Set<Reply> replySet = new HashSet<>();
+        replySet.addAll(findTextEmoji(username,wantPositive));
+        replySet.addAll(findTextImage(username, wantPositive));
+        replySet.addAll(findFullMatches(username, wantPositive));
+        return new ArrayList<>(replySet);
     }
 
 

@@ -14,6 +14,8 @@ public interface RepliesService {
 
     List<Reply> findAllReplies();
 
+    List<Reply> getByOrganization(String organization);
+
     void deleteByTweetId(Long id);
 
     /*
@@ -21,39 +23,17 @@ public interface RepliesService {
     between the view and the model
      */
 
-    // =============================================
-    //           FIND POSITIVE CONTENT
-    // =============================================
+    List<Reply> findTextImage(String username, boolean wantPositive);
 
-    List<Reply> findAllByTextContaining(String text);
+    List<Reply> findText(String username, boolean wantPositive);
 
-    List<Reply> getReplyPositiveTextAndPositiveImage();
+    List<Reply> findTextEmoji(String username, boolean wantPositive);
 
-    Integer getCountReplyPositiveTextAndPositiveImage();
+    List<Reply> findFullMatches(String username, boolean wantPositive);
 
-    List<Reply> getReplyPositiveTextAndPositiveEmojis();
+    List<Reply> findAllOthers(String username);
 
-    Integer getCountReplysPositiveTextAndPositiveEmojis();
+    List<Reply> getCountBySentiment(String username,boolean wantPositive);
 
-    List<Reply> getFullMatchesReply();
-
-    Integer getCountFullMatchesReply();
-
-
-    // =============================================
-    //           FIND NEGATIVE CONTENT
-    // =============================================
-
-    List<Reply> getReplyNegativeTextAndNegativeImage();
-
-    Integer getCountReplyNegativeTextAndNegativeImage();
-
-    List<Reply> getReplyNegativeTextAndNegativeEmojis();
-
-    Integer getCountReplysNegativeTextAndNegativeEmojis();
-
-    List<Reply> getFullNegativeMatchesReply();
-
-    Integer getCountFullNegativeMatchesReply();
 
 }

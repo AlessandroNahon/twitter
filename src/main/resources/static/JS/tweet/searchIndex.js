@@ -21,6 +21,7 @@ var listOfImageType = ['Kistch','Grotesque']
 
 
 function loadComponents(){
+    document.getElementById('organizationSelector').innerHTML = '';
     dropdownMenu = document.getElementById('dropdownMenuButton');
     dropdownMenu.addEventListener('change', onChangeDropdown);
     radioUsername = document.getElementById('radioUsername');
@@ -45,6 +46,8 @@ function loadComponents(){
     buttonPrevious.addEventListener('click', changePaginationPage);
     buttonNext.addEventListener('click', changePaginationPage);
     changeButtonsByPageNumber();
+
+
 }
 
 function changeMaxPages(maxPages){

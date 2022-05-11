@@ -38,79 +38,46 @@
 <body class="bg-light ">
     <div class="row" th:replace="~{/indexFragments/header :: header_row}"></div>
 
-    <div class="d-flex justify-content-center mt-4 ">
+    <div class="d-flex justify-content-center pt-5 position-relative">
         <div class="card text-center col-11 bg-light">
             <div class="card-header d-flex justify-content-center">
                 <ul class="nav nav-tabs card-header-tabs mb-1">
                     <li class="nav-item bg-light" id="tweets_nav_button">
-                        <button class="bg-transparent nav-link active" id="button1" onclick="changeDataContent('Tweets')">
+                        <button class="bg-transparent nav-link active" id="buttonNavTweet">
                             <h6>Tweets</h6>
                         </button>
                     </li>
                     <li class="nav-item bg-light">
-                        <button class="bg-transparent nav-link" id="button2" onclick="changeDataContent('Replies')">
+                        <button class="bg-transparent nav-link" id="buttonNavReplies">
                             <h6>Replies</h6>
                         </button>
                     </li>
                 </ul>
             </div>
-            <div th:replace="~{/thesaurus/fragment/whole_display_info :: whole_display_info}"></div>
+            <div id="thesaurus_lookup"></div>
         </div>
     </div>
     <div class="card-deck d-flex justify-content-center mt-4">
         <div class="row col-11 ">
-            <div class="col-12">
-                <div class="card bg-info">
-                    <div class="card-body align-content-center pb-2">
-                        <div class="row">
-                            <div class="input-group mb-3">
-                                <div class="input-group-prepend">
-                                    <button class="btn btn-outline-white rounded bg-white text-black font-weight-normal"
-                                        onclick="loadNewTable
-                                          ('#table_search_tweet',
-                                          '#word_title',
-                                          document.getElementById('textSearch').value)" type="button">Search
-                                        words</button>
-                                </div>
-                                <input type="text" class="form-control ml-3 rounded"
-                                    placeholder="Search for specific words into the database..." id="textSearch">
-
-                            </div>
+            <div class="card bg-info">
+                <div class="card-body align-content-center pb-2">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <button class="btn btn-outline-white rounded bg-white text-black
+                            font-weight-normal" type="button">Search words</button>
                         </div>
+                        <input type="text" class="form-control ml-3 rounded"
+                            placeholder="Search for specific words into the database..." id="textSearch">
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="card- d-flex justify-content-center mt-4">
-        <div class="row col-11 ">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header pt-4">
-                        <h5 class="float-left" id="word_title">Search for words</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive border rounded">
-                            <table class="table table-striped table-hover" th:fragment="table_search_tweet"
-                                id="table_search_tweet">
-                                <thead class="thead-inverse">
-                                    <tr>
-                                        <th>Text</th>
-                                        <th>Sentiment</th>
-                                        <th>Type</th>
-                                        <th>See...</th>
-                                    </tr>
-                                </thead>
-
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="row col-11 mt-2 bg-light rounded mt-4">
+            <div th:replace="~{/thesaurus/fragment/words_table_tweets :: words_table_tweets}"></div>
         </div>
     </div>
-    <script type="text/javascript">
-        loadNewTable('#table_search_tweet', '#word_title');
+    <script>
+        loadComponentIndex();
     </script>
 </body>
 

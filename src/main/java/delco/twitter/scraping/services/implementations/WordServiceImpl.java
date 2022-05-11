@@ -94,14 +94,14 @@ public class WordServiceImpl extends Thread  implements WordService {
      * @param text The text of the tweet
      */
     @Override
-    public void analyzeText(String text, String belongs_to) {
+    public void analyzeText(String text, String belongs_to, String organization) {
         List<String> emojisList = getAllEmojisFromText(text);
         if(emojisList.size() != 0){
             for(String s : emojisList){
                 if(isGrotesqueEmoji(s)){
-                    parseWord(s, TypeEnum.GROTESQUE_EMOJI, belongs_to);
+                    parseWord(s, TypeEnum.GROTESQUE_EMOJI, belongs_to, organization);
                 }else{
-                    parseWord(s, TypeEnum.KITSCH_EMOJI, belongs_to);
+                    parseWord(s, TypeEnum.KITSCH_EMOJI, belongs_to, organization);
                 }
             }
         }
@@ -112,17 +112,15 @@ public class WordServiceImpl extends Thread  implements WordService {
                 if(!word.equalsIgnoreCase("the")){
                     word = word.replaceAll("\\p{Punct}","");
                     if(isGrotesqueWord(word)){
-                        parseWord(word, TypeEnum.GROTESQUE,belongs_to);
+                        parseWord(word, TypeEnum.GROTESQUE,belongs_to, organization);
                     } else if(isKischWord(word)) {
-                        parseWord(word, TypeEnum.KITSCH,belongs_to);
+                        parseWord(word, TypeEnum.KITSCH,belongs_to, organization);
                     } else {
-                        parseWord(word,getTypeOfWord(word),belongs_to);
+                        parseWord(word,getTypeOfWord(word),belongs_to, organization);
                     }
                 }
                 }
-
             }
-
         }
 
     /**
@@ -157,7 +155,7 @@ public class WordServiceImpl extends Thread  implements WordService {
      * @param text The text of the tweet
      */
     @Override
-    public synchronized void parseWord(String text, TypeEnum syntax, String belongs_to){
+    public synchronized void parseWord(String text, TypeEnum syntax, String belongs_to, String organization){
         if(syntax != TypeEnum.GROTESQUE_EMOJI && syntax != TypeEnum.KITSCH_EMOJI
                 && syntax != TypeEnum.GROTESQUE && syntax != TypeEnum.KITSCH){
             syntax = getTypeOfWord(text);
@@ -172,6 +170,7 @@ public class WordServiceImpl extends Thread  implements WordService {
                             .count(1)
                             .syntax(syntax)
                             .belongsTo(belongs_to)
+                            .organization(organization)
                             .build();
                 }
                 wordRepository.save(newWord);
@@ -356,45 +355,47 @@ public class WordServiceImpl extends Thread  implements WordService {
     }
 
 
-    @Override
-    public List<Word> getTop20WordsByBelongsToBySyntax(String belongs_to, TypeEnum syntax) {
-        return wordRepository.findTop20ByBelongsToAndSyntaxOrderByCountDesc(belongs_to, syntax);
-    }
-
-    @Override
-    public List<Word> getTop10ByBelongsToBySyntax(String belongs_to, TypeEnum syntax) {
-        List<Word> listOfWords = getTop20WordsByBelongsToBySyntax(belongs_to,syntax);
-        return listOfWords.subList(0,Math.min(10,listOfWords.size()));
-    }
-
-    @Override
-    public Word getTopByBelongsToBySyntax(String belongs_to, TypeEnum syntax) {
-        return getTop20WordsByBelongsToBySyntax(belongs_to,syntax).get(0);
-    }
 
     @Override
     public Word getByWordAndBelongsTo(String word, String belongs_to) {
         return wordRepository.findByWordAndBelongsTo(word,belongs_to);
     }
 
+
     @Override
-    public Word getTopEmojiByBelongsTo(String belongs_to) {
-        return wordRepository.findTopEmojiByBelongsTo(belongs_to);
+    public List<Word> getByBelongsToAndOrganizationBySyntax(String belongs_to, TypeEnum syntax, String organization) {
+        return wordRepository.findAllByBelongsSyntaxOrganization(belongs_to,syntax.name(),organization);
     }
 
     @Override
-    public List<Word> getTop20ByBelongsTo(String belongs_to) {
-        return wordRepository.findTop20ByBelongsToOrderByCountDesc(belongs_to);
+    public List<Word> getSortedByBelongsAndOrganization(String belongs_to, String organization, int limit) {
+        List<Word> wordsList = wordRepository.findSortedByBelongsAndOrganization(belongs_to,organization);
+        return wordsList.subList(0,Math.min(wordsList.size(),limit));
     }
 
     @Override
-    public List<Word> getTop5Words() {
-        return wordRepository.findTop5ByOrderByCountDesc();
+    public List<Word> getSortedByBelongsOrganizationAndSyntax(String belongs_to, String organization, TypeEnum syntax, int limit) {
+        List<Word> wordsList = wordRepository.findSortedByBelongSyntaxOrganization(belongs_to,syntax.name(),organization);
+        return wordsList.subList(0,Math.min(wordsList.size(),limit));
     }
 
     @Override
-    public List<Word> getAllWordsByBelongsToAndSyntax(String belongs_to, TypeEnum syntax) {
-        return wordRepository.findAllByBelongsToAndSyntax(belongs_to,syntax.name());
+    public Word getTopByBelongsSyntaxAndOrganization(String belongs_to, TypeEnum syntax, String organization) {
+        return wordRepository.findTopByBelongsSyntaxAndOrganization(belongs_to,syntax.name(),organization);
+    }
+
+    @Override
+    public Word getTopEmojiByBelongsAndOrganization(String belongs_to, String organization) {
+        System.out.println("LLega al método con belongs_to: " + belongs_to + " y organization: " + organization);
+        Word firstEmoji = getTopByBelongsSyntaxAndOrganization(belongs_to,TypeEnum.KITSCH_EMOJI,organization);
+        Word secondEmoji = getTopByBelongsSyntaxAndOrganization(belongs_to,TypeEnum.GROTESQUE_EMOJI,organization);
+        if(firstEmoji == null){
+            return secondEmoji;
+        }else if(secondEmoji == null){
+            return firstEmoji;
+        }else{
+            return firstEmoji.getCount() > secondEmoji.getCount() ? firstEmoji : secondEmoji;
+        }
     }
 
 

@@ -1,33 +1,23 @@
 package delco.twitter.scraping.services.interfaces;
 
 import delco.twitter.scraping.model.Reply;
-import delco.twitter.scraping.model.Sentiment;
+import delco.twitter.scraping.model.Sentiments;
 import delco.twitter.scraping.model.Tweet;
 import delco.twitter.scraping.model.enumerations.SentimentEnum;
-import delco.twitter.scraping.services.implementations.WordServiceImpl;
 
 import java.util.List;
 
 public interface SentimentService {
 
-    SentimentEnum getSentiment(String text);
+    SentimentEnum getSentiment(String text, String originalUsername, String belongsTo);
 
-    void addAppearance(Long id);
+    void addAppearance(SentimentEnum sentiment, String originalUsername, String belongsTo);
+
+    List<Sentiments> getSentimentsByOrganizationAndBelongs(String originalUsername, String belongsTo);
 
     /*
     Methods that access directly to the repository, they do not contain bussiness logic, only works as intermediates
     between the view and the model
      */
 
-    Iterable<Sentiment> findAllSentiment();
-
-    List<Integer> analyzeDatabaseByTypeAndClassification(String classification);
-
-    List<Tweet> findAllOtherTweets();
-
-    List<Reply> findAllOtherReply();
-
-    List<Tweet> getTweetsBySearchAndLookingFor(String search, String lookingFor);
-
-    List<Reply> getRepliesBySearchAndLookingFor(String search, String lookingFor);
 }

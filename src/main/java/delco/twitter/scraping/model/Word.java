@@ -37,6 +37,9 @@ public class Word {
     @Column(name = "belongs_to", nullable = false)
     public String belongsTo;
 
+    @Column(name = "organization", nullable = false)
+    public String organization;
+
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;

@@ -1,17 +1,7 @@
 package delco.twitter.scraping.bootstrap;
 
-import delco.twitter.scraping.model.Reply;
-import delco.twitter.scraping.model.Sentiment;
-import delco.twitter.scraping.model.Tweet;
-import delco.twitter.scraping.model.Word;
-import delco.twitter.scraping.model.enumerations.SentimentEnum;
-import delco.twitter.scraping.model.enumerations.TypeEnum;
 import delco.twitter.scraping.model.twitterapi.model_content.Root;
 import delco.twitter.scraping.repositories.*;
-import delco.twitter.scraping.services.implementations.TweetServiceImpl;
-import delco.twitter.scraping.services.implementations.TwitterAPIServiceImpl;
-import delco.twitter.scraping.services.implementations.VisionAPIServiceImpl;
-import delco.twitter.scraping.services.implementations.WordServiceImpl;
 import delco.twitter.scraping.services.interfaces.RepliesService;
 import delco.twitter.scraping.services.interfaces.TweetService;
 import delco.twitter.scraping.services.interfaces.TwitterAPIService;
@@ -21,15 +11,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-import java.awt.*;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Component class DataLoader implements CommandLineRunner {
@@ -56,6 +37,8 @@ import java.util.stream.Collectors;
     @Transactional
     @Override
     public void run(String... args) throws Exception {
+//        executeSearch("peta");
+//        executeSearch("Greenpeace");
 //        executeSearch("WWF");
     }
 

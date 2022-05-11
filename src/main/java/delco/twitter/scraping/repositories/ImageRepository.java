@@ -14,6 +14,12 @@ public interface ImageRepository extends PagingAndSortingRepository<Images, Long
 
     List<Images> findByReplyId(Long id);
 
+    @Query(value = "select * from images i where i.tweet_id in (select t.id from tweets t where t.username = ?1)", nativeQuery = true)
+    List<Images> findByTweetUsername(String username);
+
+//    @Query(value = "select * from images i where i.reply_id = ?1", nativeQuery = true)
+//    List<Images> findByReplyUsername(String username);
+
     @Modifying
     @Query(value = "delete from image i where i.tweet_id = ?1", nativeQuery = true)
     void deleteByTweetId(Long id);

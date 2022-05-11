@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="container-fluid col-12" th:fragment="whole_index_fragment">
+  <div class="row d-flex justify-content-between mt-3">
+    <h5 th:text="${textTitle}" class="col-3 d-flex ml-2">
+      Tweets from username
+    </h5>
+    <h5 th:text="'Total count: '+${totalCount}" class="col-1 d-flex">
+      Total count:
+    </h5>
+  </div>
+  <div class="card-deck ">
+    <div class="card col-md-3 mt-3">
+      <div class="card-header pt-4">
+        <h5 class="card-title d-inline ">General sentiment</h5>
+        <h5 class="card-title d-inline float-right">
+          <a href="#" class="text-dark">
+            <i class="fas fas fa-arrow-right"></i></a>
+        </h5>
+      </div>
+      <div class="card-body" style="height: 200">
+        <div>
+          <canvas id="myChart" width="300" height="300"></canvas>
+          <script th:inline="javascript">
+                printSentiment(/*[[${sentiment_dataset}]]*/, 'myChart');
+              </script>
+        </div>
+      </div>
+    </div>
+    <div class="card col-md-9 mt-3 d-inline">
+      <div class="card-header pt-4">
+        <h5 class="card-title d-inline ">General Thesaurus</h5>
+        <h5 class="card-title d-inline float-right">
+          <a href="#" class="text-dark" th:href="@{'thesaurus/index'}">
+            <i class="fas fas fa-arrow-right"></i></a>
+        </h5>
+      </div>
+      <div class="card-body" style="height: 100">
+        <canvas id="bar" width="300" height="100"></canvas>
+        <script th:inline="javascript">
+              printThesaurus(/*[[${words_dataset}]]*/)
+            </script>
+      </div>
+    </div>
+  </div>
+  <div class="card mt-3 pb-3 mb-3">
+    <div class="col-md-12">
+      <div class="card-header pt-4">
+        <h5 class="card-title d-inline pt-4">Images</h5>
+        <a href="#" class="float-right" style="font-size: 20px;">
+          <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+      <div class="card-body scrolling-wrapper" id="scrollingWp">
+        <div class="card d-inline-flex p-2 m-2" th:each="img : ${images}">
+          <div th:switch="${belongsTo}">
+          <div th:case="'Tweet'">
+          <a href="#" th:href="@{'/tweet/showTweetInformation/'+${img.tweet.id}}">
+            <img class="p-2 hover-shadow imageStyle1" th:src="'data:images/jpg;base64,' +
+                ${imgUtil.getImgData(img.image)}" />
+          </a>
+          </div >
+          <div th:case="'Reply'">
+            <a href="#" th:href="@{'/tweet/showTweetInformation/'+${img.reply.originalTweet.id}}">
+              <img class="p-2 hover-shadow imageStyle1" th:src="'data:images/jpg;base64,' +
+                ${imgUtil.getImgData(img.image)}" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <div class="row d-flex justify-content-around mt-4">
+    <div class="card" >
+      <div class="card-header pt-4 d-flex justify-content-between">
+        <div class="card-title d-inline">
+          <h5 class="d-inline">Conglomerate content analysis</h5>
+        </div>
+        <a th:href="@{'/sentiment/index'}" href="#">
+          <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+      <div class="card-body">
+        <div class="card-deck">
+          <div class="card col-4  pl-0 pr-0">
+            <div class="card-header d-flex justify-content-center pt-4">
+              <h5 class="card-title">Full sentimental Tweets</h5>
+            </div>
+            <div class="card-body">
+              <div>
+                <canvas id="postiveChart" width="300" height="300"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="card col-4  pl-0 pr-0">
+            <div class="card-header d-flex justify-content-center pt-4">
+              <h5 class="card-title">"Grey" tweets</h5>
+            </div>
+            <div class="card-body ">
+              <div>
+                <canvas id="ambiguousChart" width="300" height="300"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="card col-4  pl-0 pr-0">
+            <div class="card-header d-flex justify-content-center pt-4">
+              <h5 class="card-title">Full disruptive tweets</h5>
+            </div>
+            <div class="card-body">
+              <div>
+                <canvas id="negativeChart" width="300" height="300"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    printOrientationCharts([[${positive_count}]],[[${gray_count}]],[[${negative_count}]],[[${totalCount}]]);
+  </script>
+  </div>
+
+</body>
+</html>

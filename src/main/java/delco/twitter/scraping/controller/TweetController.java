@@ -90,8 +90,13 @@ public class TweetController {
     }
 
     @GetMapping("/fragments/fooHtml")
-    public String deleteTweet(@RequestParam("id") Optional<Long> id){
-        tweetService.deleteAllInfo(id.get());
+    public String deleteTweet(@RequestParam("id") Optional<Long> id, @RequestParam Optional<Boolean> changeSentiment,
+                              @RequestParam Optional<String> sentiment){
+        if(changeSentiment.get()){
+            tweetService.changeSentiment(sentiment.get(),id.get());
+        }else{
+            tweetService.deleteAllInfo(id.get());
+        }
         return "tweet/searchIndex";
     }
 

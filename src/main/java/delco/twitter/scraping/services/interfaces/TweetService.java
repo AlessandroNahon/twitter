@@ -21,6 +21,8 @@ public interface TweetService {
 
     void deleteAllInfo(Long id);
 
+    void changeSentiment(String sentiment, Long id);
+
     List<Tweet> findByText(String text);
 
     List<Tweet> findAllTweets();
@@ -34,37 +36,22 @@ public interface TweetService {
     List<Tweet> findByImageContent(String imageContent);
 
     /*
-    METHODS TO FIND ALL THE POSITIVE CONTENT IN THE DATABASE
+    Methods to analyze the sentiment of the tweets
      */
 
-    List<Tweet> getTweetsPositiveTextAndPositiveImage();
+    List<Tweet> findTextImage(String username, boolean wantPositive);
 
-    Integer getCountTweetsPositiveTextAndPositiveImage();
+    List<Tweet> findText(String username, boolean wantPositive);
 
-    List<Tweet> getTweetsPositiveTextAndPositiveEmojis();
+    List<Tweet> findTextEmoji(String username, boolean wantPositive);
 
-    Integer getCountTweetsPositiveTextAndPositiveEmojis();
+    List<Tweet> findFullMatches(String username, boolean wantPositive);
 
-    List<Tweet> getFullMatchesTweets();
+    List<Tweet> findAllOthers(String username);
 
-    Integer getCountFullMatchesTweets();
+    List<Tweet> getCountBySentiment(String username,boolean wantPositive);
 
 
-    /*
-    METHODS TO FIND ALL THE NEGATIVE CONTENT IN THE DATABASE
-     */
-
-    List<Tweet> getTweetsNegativeTextAndNegativeImage();
-
-    Integer getCountTweetsNegativeTextAndNegativeImage();
-
-    List<Tweet> getTweetsNegativeTextAndNegativeEmojis();
-
-    Integer getCountTweetsNegativeTextAndNegativeEmojis();
-
-    List<Tweet> getFullNegativeMatchesTweets();
-
-    Integer getCountFullNegativeMatchesTweets();
 
 
 

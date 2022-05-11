@@ -15,21 +15,17 @@ public interface WordRepository extends PagingAndSortingRepository<Word, Long>, 
 
     Word findByWordAndBelongsTo(String word, String belongs_to);
 
-    List<Word> findTop20ByBelongsToAndSyntaxOrderByCountDesc (String belongs_to, TypeEnum syntax);
+    @Query(value = "select * from twitter.words w where w.belongs_to = ?1 and w.syntax like ?2 and w.organization = ?3", nativeQuery = true)
+    List<Word> findAllByBelongsSyntaxOrganization(String belongs_to, String syntax, String organization);
 
-    List<Word> findTop5ByOrderByCountDesc();
+    @Query(value = "select * from twitter.words w where w.belongs_to = ?1 and w.syntax like ?2 and w.organization = ?3 order by w.count DESC", nativeQuery = true)
+    List<Word> findSortedByBelongSyntaxOrganization(String belongs_to, String syntax, String organization);
 
-    List<Word> findTop20ByBelongsToOrderByCountDesc (String belongs_to);
+    @Query(value = "select * from twitter.words w where w.belongs_to = ?1 and w.organization like ?2 order by w.count DESC", nativeQuery = true)
+    List<Word> findSortedByBelongsAndOrganization(String belongs_to, String organization);
 
-    @Query(value = "SELECT * from twitter.words w where w.syntax like '%EMOJI%' " +
-            "and w.belongs_to = ?1 order by w.count desc limit 1", nativeQuery = true)
-    Word findTopEmojiByBelongsTo(String belongs_to);
-
-
-
-    @Query(value = "select * from twitter.words w where w.belongs_to = ?1 and w.syntax like ?2", nativeQuery = true)
-    List<Word> findAllByBelongsToAndSyntax(String belongs_to, String syntax);
-
+    @Query(value = "select * from twitter.words w where w.belongs_to = ?1 and w.syntax = ?2 and w.organization = ?3 order by w.count DESC limit 1", nativeQuery = true)
+    Word findTopByBelongsSyntaxAndOrganization(String belongs_to, String syntax, String organization);
 
 
 

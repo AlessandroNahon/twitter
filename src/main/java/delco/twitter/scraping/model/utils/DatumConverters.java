@@ -13,7 +13,7 @@ public class DatumConverters {
     @Autowired
     private SentimentService sentimentService;
 
-    public Tweet convertDatumToTweet(Datum datum) {
+    public Tweet convertDatumToTweet(Datum datum, String username) {
         Tweet tweet = new Tweet();
         tweet.setCreatedAt(datum.getCreated_at());
         tweet.setPossibly_sensitive(datum.isPossibly_sensitive());
@@ -22,17 +22,18 @@ public class DatumConverters {
                 .replace("&gt+", "")
                 .replace("&gt;", ""));
         tweet.setConversationId(datum.getConversation_id());
-        tweet.setTextSentiment(sentimentService.getSentiment(datum.getText()));
+        tweet.setTextSentiment(sentimentService.getSentiment(datum.getText(),username,"Tweet"));
         return tweet;
     }
 
-    public Reply convertDatumToReply(Datum d){
+    public Reply convertDatumToReply(Datum d, String originalUsername){
         Reply reply = new Reply();
         reply.setText(d.getText()
                 .replace("&gt;&gt;", "")
                 .replace("&gt+", "")
                 .replace("&gt;", ""));
-        reply.setTextSentiment(sentimentService.getSentiment(d.getText()));
+        reply.setTextSentiment(sentimentService.getSentiment(d.getText(),originalUsername,"Reply"));
+        reply.setOrganization(originalUsername);
         return reply;
     }
 
