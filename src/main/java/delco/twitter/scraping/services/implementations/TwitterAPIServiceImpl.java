@@ -23,7 +23,7 @@ public class TwitterAPIServiceImpl extends Thread implements TwitterAPIService {
 
     @Value("${token.BEARER_TOKEN}")
     private String BEARER_TOKEN;
-    private String max_tweets = "100";
+    private String max_tweets = "25";
 
 
 

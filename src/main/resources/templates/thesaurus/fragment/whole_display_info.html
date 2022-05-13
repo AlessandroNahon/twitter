@@ -7,168 +7,133 @@
 </head>
 
 <body>
-    <div th:fragment="whole_display_info" id="whole_display_info">
-        <div class="card-deck d-flex justify-content-center">
-            <div class="row col-12">
-                <div class="col-md-3 mt-4">
-                    <div class="card" id="noun-card">
-                        <div class="card-header text-white d-flex justify-content-between">
-                                <h5 class="mt-2">Nouns: </h5>
-                                <h5 class=" mt-2" th:text="${topNoun.count}+' times'">total</h5>
-                        </div>
-                        <div class="card-body ">
-                            <div class="row col-12 justify-content-between ">
-                                <div class="col-4 ">
-                                    <h4 class="text-light">Most used:</h4>
-                                </div>
-                                <div class="col-5">
-                                    <div class="row">
-                                        <button th:text="${topNoun.word}"
-                                                class="bg-transparent border-0 h5 mt-2 text-light"
-                                                id="buttonNoun">
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+<div th:fragment="whole_display_info" id="whole_display_info">
+    <div class="card-deck d-flex justify-content-center">
+        <div class="row col-12">
+            <div class="col-md-3 mt-4">
+                <div class="card" id="noun-card">
+                    <div class="card-header text-white d-flex justify-content-center">
+                        <h5 class="mt-2">Nouns: </h5>
+                    </div>
+                    <div class="card-body col-12 d-flex justify-content-between">
+                        <h4 class="text-light">Most used:</h4>
+                        <button th:text="${topNoun.word}"
+                                class="bg-transparent border-0 pb-1 h5 text-light"
+                                id="buttonNoun">
+                        </button>
                     </div>
                 </div>
-                <div class="col-md-3 mt-4">
-                    <div class="card" id="adverbs-card">
-                        <div class="card-header text-white d-flex justify-content-between">
-                                <h5 class="mt-2">Adverbs: </h5>
-                                <h5 class="mt-2" th:text="${topAdverb.count}+' times'">total</h5>
-                        </div>
-                        <div class="card-body ">
-                            <div class="row col-12 justify-content-between ">
-                                <div class="col-4 ">
-                                    <h4 class="text-light">Most used:</h4>
-                                </div>
-                                <div class="col-5">
-                                    <div class="row">
-                                        <button th:text="${topAdverb.word}"
-                                                class="bg-transparent border-0 h5 mt-2 text-light"
-                                                id="buttonAdverb">
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            </div>
+            <div class="col-md-3 mt-4">
+                <div class="card" id="adverbs-card">
+                    <div class="card-header text-white d-flex justify-content-center">
+                        <h5 class="mt-2">Adverbs: </h5>
+                    </div>
+                    <div class="card-body col-12 d-flex justify-content-between">
+                        <h4 class="text-light">Most used:</h4>
+                        <button th:text="${topAdverb.word}"
+                                class="bg-transparent border-0 h5 pb-1 text-light"
+                                id="buttonAdverb">
+                        </button>
                     </div>
                 </div>
-                <div class="col-md-3 mt-4">
-                    <div class="card" id="adjectives-card">
-                        <div class="card-header text-white d-flex justify-content-between">
-                                <h5 class="mt-2">Adjectives: </h5>
-                                <h5 class="mt-2" th:text="${topAdjective.count}+' times'">total</h5>
-                        </div>
-                        <div class="card-body ">
-                            <div class="row col-12 justify-content-between ">
-                                <div class="col-4 ">
-                                    <h4 class="text-light">Most used:</h4>
-                                </div>
-                                <div class="col-5">
-                                    <div class="row">
-                                        <button th:text="${topAdjective.word}"
-                                                class="bg-transparent border-0 h5 mt-2 text-light"
-                                                id="buttonAdjective">
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            </div>
+            <div class="col-md-3 mt-4">
+                <div class="card" id="adjectives-card">
+                    <div class="card-header text-white d-flex justify-content-center">
+                        <h5 class="mt-2">Adjectives: </h5>
+                    </div>
+                    <div class="card-body col-12 d-flex justify-content-between">
+                        <h4 class="text-light">Most used:</h4>
+                        <button th:text="${topAdjective.word}"
+                                class="bg-transparent border-0 h5 pb-1 text-light"
+                                id="buttonAdjective">
+                        </button>
                     </div>
                 </div>
-                <div class="col-md-3 mt-4">
-                    <div class="card" id="emojis-card">
-                        <div class="card-header text-white d-flex justify-content-between">
-                                <h5 class=" mt-2">Emojis: </h5>
-                                <h5 class="inline-block  mt-2" th:text="${topEmoji.count}+' times'">total</h5>
-                        </div>
-                        <div class="card-body ">
-                            <div class="row col-12 justify-content-between ">
-                                <div class="col-4 ">
-                                    <h4 class="text-light">Most used:</h4>
-                                </div>
-                                <div class="col-5">
-                                    <div class="row">
-                                        <button th:text="${topEmoji.word}"
-                                                class="bg-transparent border-0 h5 mt-2 text-light"
-                                                id="buttonEmoji">
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            </div>
+            <div class="col-md-3 mt-4">
+                <div class="card" id="emojis-card">
+                    <div class="card-header text-white d-flex justify-content-center">
+                        <h5 class=" mt-2">Emojis: </h5>
+                    </div>
+                    <div class="card-body col-12 d-flex justify-content-between">
+                        <h4 class="text-light">Most used:</h4>
+                        <button th:text="${topEmoji.word}"
+                                class="bg-transparent border-0 h5 pb-1 text-light"
+                                id="buttonEmoji">
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="d-flex justify-content-center mt-4 col-12">
-            <div class="row col-12">
-                <div class="card">
-                    <div class="card-header pt-4">
-                        <h5 class="card-title d-inline ">Thesaurus of words</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="bar" width="400" height="75"></canvas>
-                        <script th:inline="javascript">
+    </div>
+    <div class="d-flex justify-content-center mt-4 col-12">
+        <div class="row col-12">
+            <div class="card">
+                <div class="card-header pt-4">
+                    <h5 class="card-title d-inline ">Thesaurus of words</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="bar" width="400" height="75"></canvas>
+                    <script th:inline="javascript">
                             printThesaurus(/*[[${top20Words}]]*/)
                         </script>
-                    </div>
                 </div>
             </div>
         </div>
-        <div class="card-header d-flex justify-content-center">
-            <ul class="nav nav-tabs card-header-tabs mb-1">
-                <li class="nav-item bg-light" id="word_nav_button">
-                    <button class="bg-transparent nav-link active" id="buttonNavWord">
-                        <h6>Words</h6>
-                    </button>
-                </li>
-                <li class="nav-item bg-light" id="emoji_nav_button">
-                    <button class="bg-transparent nav-link" id="buttonNavEmoji" >
-                        <h6>Emojis</h6>
-                    </button>
-                </li>
-            </ul>
-        </div>
-        <div id="special_words" th:fragment="special_words">
-            <div class="card-deck d-flex justify-content-center mt-4 mb-4">
-                <div class="row col-12">
-                    <div class="col-6">
-                        <div class="card">
-                            <div class="card-header pt-4">
-                                <h5>Kitsch/Sentimental words</h5>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="chart-line" width="300" height="175"></canvas>
-                                <script th:inline="javascript">
+    </div>
+    <div class="card-header d-flex justify-content-center">
+        <ul class="nav nav-tabs card-header-tabs mb-1">
+            <li class="nav-item bg-light" id="word_nav_button">
+                <button class="bg-transparent nav-link active" id="buttonNavWord">
+                    <h6>Words</h6>
+                </button>
+            </li>
+            <li class="nav-item bg-light" id="emoji_nav_button">
+                <button class="bg-transparent nav-link" id="buttonNavEmoji" >
+                    <h6>Emojis</h6>
+                </button>
+            </li>
+        </ul>
+    </div>
+    <div id="special_words" th:fragment="special_words">
+        <div class="card-deck d-flex justify-content-center mt-4 mb-4">
+            <div class="row col-12">
+                <div class="col-6">
+                    <div class="card">
+                        <div class="card-header pt-4">
+                            <h5>Kitsch/Sentimental words</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="chart-line" width="300" height="175"></canvas>
+                            <script th:inline="javascript">
                                     printHorizontal(/*[[${topKicheWords}]]*/, 'chart-line', 'Quiche', '#9ACD32')
                                 </script>
-                            </div>
                         </div>
                     </div>
-                    <div class="col-6">
-                        <div class="card">
-                            <div class="card-header pt-4">
-                                <h5>Grotesque/Disruptive words</h5>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="chart2-line" width="300" height="175"></canvas>
-                                <script th:inline="javascript">
+                </div>
+                <div class="col-6">
+                    <div class="card">
+                        <div class="card-header pt-4">
+                            <h5>Grotesque/Disruptive words</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="chart2-line" width="300" height="175"></canvas>
+                            <script th:inline="javascript">
                                     printHorizontal(/*[[${topGrotesqueWords}]]*/, 'chart2-line', 'Grotesque', '#FF7F50');
                                 </script>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-<script>
-    addEventToButtonsFromFragment();
-</script>
+    <script>
+        addEventToButtonsFromFragment();
+    </script>
+</div>
+
 </body>
 
 </html>

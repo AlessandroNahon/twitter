@@ -9,16 +9,32 @@ var classification = 'Sentimental';
 //Used to identify if we want to get the tweets or the replies
 var belongsTo = 'Tweet'
 
-var pageNumber = 1;
+var organization = 'Greenpeace';
 
-var maxPageNumber = 1;
 
 var identifies = '';
+
+var cardFragmentUrl = '/sentiment/fragments/cards_fragment';
+var tableFragmentUrl = '/sentiment/fragments/table_info';
 
 //This two variables are used to change the classes of each navigation button
 var activeClass = 'bg-transparent nav-link active';
 var inactiveClass = 'bg-transparent nav-link';
 
+var buttonNavSentimental = '';
+var buttonNavGrey = '';
+var buttonNavDisruptive = '';
+
+var buttonNavTweet = '';
+var buttonNavReplies = '';
+
+var comboboxIndex = '';
+
+var maxPages = 1;
+var currentPage = 1;
+var buttonNext = '';
+var buttonPrevious = '';
+var pageDescriber = '';
 
 
 /*
@@ -27,6 +43,9 @@ var inactiveClass = 'bg-transparent nav-link';
 */
 function printOrientationCharts(sentimentImg,sentimentEmo ,fullMatch){
     var fullCount = sentimentEmo + sentimentImg + fullMatch;
+    if(fullCount == 0){
+        fullCount = 1;
+    }
     printTables('sentimentImageChart',sentimentImg,fullCount, 'Img & Sentiment');
     printTables('sentimentEmojiChart',sentimentEmo,fullCount, 'Emoji & Sentiment');
     printTables('fullSearchChart',fullMatch,fullCount, 'Full matches');
@@ -40,27 +59,146 @@ function printOrientationCharts(sentimentImg,sentimentEmo ,fullMatch){
 */
 function loadComponents(){
 
-var buttonSentimental = document.getElementById('buttonSentimental');
-var buttonGrey = document.getElementById('buttonGrey');
-var buttonDisruptive = document.getElementById('buttonDisruptive');
-buttonSentimental.addEventListener('click', groupChangesFullFragment);
-buttonGrey.addEventListener('click', groupChangesFullFragment);
-buttonDisruptive.addEventListener('click', groupChangesFullFragment);
+buttonNavSentimental = document.getElementById('buttonNavSentimental');
+buttonNavGrey = document.getElementById('buttonNavGray');
+buttonNavDisruptive = document.getElementById('buttonNavDisruptive');
 
+buttonNavTweet = document.getElementById('buttonSeeTweets');
+buttonNavReplies = document.getElementById('buttonSeeReplies');
 
-var buttonTweet = document.getElementById('buttonSeeTweets');
-var buttonReply = document.getElementById('buttonSeeReplies');
-buttonSeeTweets.addEventListener('click', groupChangesTweetReply);
-buttonSeeReplies.addEventListener('click', groupChangesTweetReply);
+buttonNavSentimental.addEventListener('click', changeClassificationNavs);
+buttonNavGrey.addEventListener('click', changeClassificationNavs);
+buttonNavDisruptive.addEventListener('click', changeClassificationNavs);
 
+buttonNavTweet.addEventListener('click', changeBelongs);
+buttonNavReplies.addEventListener('click', changeBelongs);
 
-var buttonPrevious = document.getElementById('buttonPrevious');
-var buttonNext = document.getElementById('buttonNext');
-var pageDescriber = document.getElementById('pageDescriber');
-buttonPrevious.addEventListener('click', changePaginationPage);
-buttonNext.addEventListener('click', changePaginationPage);
-changeButtonsByPageNumber();
+comboboxIndex = document.getElementById('comboboxIndex');
+comboboxIndex.addEventListener('change', changeOrganization);
+callCardFragment();
 }
+
+function loadComponentTable(){
+    buttonPrevious = document.getElementById('buttonPrevious');
+    buttonNext = document.getElementById('buttonNext');
+    pageDescriber = document.getElementById('pageDescriber');
+    buttonPrevious.addEventListener('click', changePaginationPage);
+    buttonNext.addEventListener('click', changePaginationPage);
+    changeButtonsByPageNumber();
+}
+
+function changeMaxPages(maxPages){
+    if(typeof maxPages === 'undefined'){
+        this.maxPages = 1;
+    }else{
+        this.maxPages = maxPages;
+    }
+   changeButtonsByPageNumber();
+}
+
+function changePaginationPage(){
+    if(this.id === 'buttonNext'){
+    currentPage = currentPage + 1;
+    }else{
+        currentPage = currentPage - 1;
+    }
+    changeButtonsByPageNumber();
+    changeOnlyTable();
+}
+
+function changeButtonsByPageNumber(){
+        pageDescriber.innerHTML = 'Page ' + currentPage + ' of ' + maxPages;
+        if(currentPage === 1 && maxPages === 1){
+            buttonPrevious.style=  'display: none;';
+            buttonNext.style = 'display: none;';
+        }else if(currentPage === 1 && maxPages > 1){
+            buttonPrevious.style = 'display: none;';
+            buttonNext.style = '';
+        }else if(currentPage === maxPages && maxPages > 1){
+            buttonNext.style = 'display: none;';
+            buttonPrevious.style = '';
+        }else{
+           buttonNext.style = '';
+           buttonPrevious.style = '';
+        }
+}
+
+
+
+/*
+    This function is used to print all the charts that shows the sentiment analysis of the tweets with
+    the three levels of analysis: Sentimental, Grey (Text, emojis or Images do not match) and Disruptive
+*/
+function callCardFragment(){
+    var fragment = '#cards_fragment'
+    $.ajax({
+            type: 'get',
+            url: '/sentiment/fragments/cards_fragment',
+            data: {
+                organization: organization,
+                belongsTo: belongsTo,
+                classification: classification
+            },
+            success: function (data) {
+                /*<![CDATA[*/
+                $(fragment).html(data);
+                 $('#table_fragment').css('display', 'none');
+                /*]]>*/
+            },
+        })
+    }
+
+function changeOrganization(){
+    belongsTo = 'Tweet';
+    classification = 'Sentimental';
+    buttonNavTweet.className = activeClass;
+    buttonNavReplies.className = inactiveClass;
+    buttonNavSentimental.className = activeClass;
+    buttonNavGray.className = inactiveClass;
+    buttonNavDisruptive.className = inactiveClass;
+    organization = comboboxIndex.value;
+    colorDonuts = 'rgba(119,221,119,1)'
+    callCardFragment();
+}
+
+
+function changeBelongs(){
+    if(this.id === buttonNavTweet.id){
+        buttonNavTweet.className = activeClass;
+        buttonNavReplies.className = inactiveClass;
+        belongsTo = 'Tweet';
+    }else{
+        buttonNavTweet.className = inactiveClass;
+        buttonNavReplies.className = activeClass;
+        belongsTo = 'Replies';
+    }
+    callCardFragment();
+}
+
+function changeClassificationNavs(){
+    if(this.id === buttonNavSentimental.id){
+        buttonNavSentimental.className = activeClass;
+        buttonNavGray.className = inactiveClass;
+        buttonNavDisruptive.className = inactiveClass;
+        classification = 'Sentimental';
+        colorDonuts = 'rgba(119,221,119,1)'
+    }else if(this.id === buttonNavGray.id){
+        buttonNavSentimental.className = inactiveClass;
+        buttonNavGray.className = activeClass;
+        buttonNavDisruptive.className = inactiveClass;
+        classification = 'Grey';
+    }else{
+        buttonNavSentimental.className = inactiveClass;
+        buttonNavGray.className = inactiveClass;
+        buttonNavDisruptive.className = activeClass;
+        classification = 'Disruptive';
+        colorDonuts = "rgba(255,105,97,1)";
+    }
+    callCardFragment();
+}
+
+
+
 
 /*
  There is a distinction between the buttons of the sentimentImage etc, because in the gray table, these buttons
@@ -77,6 +215,56 @@ function addEventToInnerCars(){
 
 }
 
+function groupChangesListOfTweets(){
+    currentPage = 1
+    changeSearchType(this.id);
+
+}
+
+/*
+    This method changes the Type of search and display the correct set of tweets,
+    it will always attack to the tweet set and not the replies one unless you
+    change it with the lower navigation bar (Tweets/replies)
+*/
+function changeSearchType(id){
+    if(id === 'SentimentImage'){
+        searchType = 'Img & Sentiment';
+    }else if(id === 'SentimentEmoji'){
+        searchType = 'Emoji & Sentiment';
+    }else{
+        searchType = 'Full';
+    }
+    changeFooterTable();
+}
+
+
+function changeFooterTable(){
+    $.ajax({
+            type: 'get',
+            url: '/sentiment/fragments/table_info',
+            data: {
+                searchType: searchType,
+                classification: classification,
+                belongsTo: belongsTo,
+                organization: organization,
+                page: currentPage
+            },
+            success: function (data) {
+                /*<![CDATA[*/
+                console.log(data);
+                $('#table_fragment').html(data);
+                $('#table_fragment').css('display', '');
+                changeButtonsByPageNumber();
+                /*]]>*/
+            },
+        })
+    }
+
+
+
+
+
+
 
 
 /* ======================================================
@@ -90,6 +278,8 @@ function addEventToInnerCars(){
 function groupChangesFullFragment(){
     changeTopNavigation(this.id);
     changeWholeFragment();
+    currentPage = 1
+    changeButtonsByPageNumber();
 }
 
 /*
@@ -120,29 +310,6 @@ function changeTopNavigation(id){
     }
 }
 
-/*
-    This function is used to print all the charts that shows the sentiment analysis of the tweets with
-    the three levels of analysis: Sentimental, Grey (Text, emojis or Images do not match) and Disruptive
-*/
-function changeWholeFragment(){
-    var fragment = '#layers_card'
-
-    $.ajax({
-            type: 'get',
-            url: '/sentiment/fragments/full_fragment',
-            data: {
-                type: searchType,
-                classification: classification
-            },
-            success: function (data) {
-                /*<![CDATA[*/
-                $(fragment).html(data);
-                /*]]>*/
-            },
-        })
-    }
-
-
 
 
 
@@ -155,53 +322,33 @@ function changeWholeFragment(){
     This method changes the Type of search and display the correct set of tweets,
     it will always attack to the tweet set and not the replies one
 */
-function groupChangesListOfTweets(){
-    pageNumber = 1
-    changeSearchType(this.id);
-    changeLowerTable();
-}
 
-/*
-    This method changes the Type of search and display the correct set of tweets,
-    it will always attack to the tweet set and not the replies one unless you
-    change it with the lower navigation bar (Tweets/replies)
-*/
-function changeSearchType(id){
-    if(id === 'SentimentImage'){
-        searchType = 'Img & Sentiment';
-    }else if(id === 'SentimentEmoji'){
-        searchType = 'Emoji & Sentiment';
-    }else{
-        searchType = 'Full';
-    }
-    belongsTo = 'Tweet';
-}
+
 
 /*
     This function is used to make the call to the controller and change the table with the tweets
 */
-function changeLowerTable(){
+
+function changeOnlyTable(){
     $.ajax({
             type: 'get',
-            url: '/sentiment/fragments/tweet_table',
+            url: '/sentiment/fragments/table_info',
             data: {
                 searchType: searchType,
                 classification: classification,
                 belongsTo: belongsTo,
-                page: pageNumber
+                organization: organization,
+                page: currentPage
             },
             success: function (data) {
                 /*<![CDATA[*/
                 console.log(data);
-                $('#layers_card').html(data);
-                changeAfterFragment();
+                $('#cards_fragment').html(data);
+changeButtonsByPageNumber();
                 /*]]>*/
             },
         })
     }
-
-
-
 
 /* ======================================================
     METHODS TO CHANGE THE LIST OF TWEETS/REPLIES
@@ -213,7 +360,7 @@ function groupChangesTweetReply(){
     changeLowerTable();
     changeAfterFragment();
     changeButtonsByPageNumber();
-    pageNumber = 1
+    currentPage = 1
 }
 
 function changeBelongsTo(id){
@@ -232,61 +379,11 @@ function changeAfterFragment(){
         buttonSeeTweets.className = inactiveClass;
         buttonSeeReplies.className = activeClass;
     }
-}
-
-
-
-/* ======================================================
-            METHODS FOR THE PAGINATION
-====================================================== */
-
-/*
-    This method actuates over the buttons in the pagination nav, and changes the page number
-*/
-function changeButtonsByPageNumber(){
-    if(pageNumber === 1 && maxPageNumber === 1){
-        buttonPrevious.style.display = 'none';
-         buttonNext.style.display = 'none';
-    }else{
-        if(pageNumber === 1){
-                buttonPrevious.style.display = 'none';
-        }else if(pageNumber == maxPageNumber){
-                buttonNext.style.display = 'none';
-        }else{
-            buttonPrevious.style.display = '';
-            buttonNext.style.display = '';
-        }
-    }
-    pageDescriber.innerHTML = 'Page ' + pageNumber + ' of ' + maxPageNumber + '  ('+searchType+')';
-}
-
-
-/*
-    This method is activated by te pagination buttons. It changes the page number and the content of the
-    table itself, besides the navigation bar text
-*/
-function changePaginationPage(){
-    if(this.id === buttonNext.id){
-        pageNumber++;
-    }else{
-        pageNumber--;
-    }
-    changeLowerTable();
+    currentPage = 1
     changeButtonsByPageNumber();
 }
 
 
-/*
-    This function is used to assign the correct value to the maxPageNumber variable
-    when the page is loaded
-*/
-function changeMaxPages(maxPages){
-    if(typeof maxPages === 'undefined'){
-        maxPageNumber = 1;
-    }else{
-        maxPageNumber = maxPages;
-    }
-}
 
 
 

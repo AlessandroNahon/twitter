@@ -12,10 +12,18 @@ var radioImage = '';
 var radioWord = '';
 
 var searchValue = '';
-var pageNumber = 1;
-var maxPageNumber = 1;
 
-var listOfUsers = ['Greenpeace','Peta','WWF']
+var maxPages = 1;
+var currentPage = 1;
+var buttonNext = '';
+var buttonPrevious = '';
+var pageDescriber = '';
+
+var organization = '';
+
+
+
+var listOfUsers = ['Greenpeace','peta','WWF']
 var listOfSentiments = ['Very Positive','Positive','Neutral','Negative','Very Negative'];
 var listOfImageType = ['Kistch','Grotesque']
 
@@ -40,9 +48,9 @@ function loadComponents(){
     searchButton.addEventListener("click", search);
     tableTitle = document.getElementById('tableTitle');
 
-    var buttonPrevious = document.getElementById('buttonPrevious');
-    var buttonNext = document.getElementById('buttonNext');
-    var pageDescriber = document.getElementById('pageDescriber');
+    buttonPrevious = document.getElementById('buttonPrevious');
+    buttonNext = document.getElementById('buttonNext');
+    pageDescriber = document.getElementById('pageDescriber');
     buttonPrevious.addEventListener('click', changePaginationPage);
     buttonNext.addEventListener('click', changePaginationPage);
     changeButtonsByPageNumber();
@@ -52,37 +60,38 @@ function loadComponents(){
 
 function changeMaxPages(maxPages){
     if(typeof maxPages === 'undefined'){
-        this.maxPageNumber = 1;
+        this.maxPages = 1;
     }else{
-        this.maxPageNumber = maxPages;
+        this.maxPages = maxPages;
     }
-    changeButtonsByPageNumber();
+   changeButtonsByPageNumber();
 }
 
 function changePaginationPage(){
-    if(this.id === buttonNext.id){
-        pageNumber++;
+    if(this.id === 'buttonNext'){
+    currentPage = currentPage + 1;
     }else{
-        pageNumber--;
+        currentPage = currentPage - 1;
     }
+    getNewTableContent();
     changeButtonsByPageNumber();
 }
 
 function changeButtonsByPageNumber(){
-    if(pageNumber === 1 && maxPageNumber === 1){
-        buttonPrevious.style.display = 'none';
-         buttonNext.style.display = 'none';
-    }else{
-        if(pageNumber === 1){
-                buttonPrevious.style.display = 'none';
-        }else if(pageNumber == maxPageNumber){
-                buttonNext.style.display = 'none';
+        pageDescriber.innerHTML = 'Page ' + currentPage + ' of ' + maxPages;
+        if(currentPage === 1 && maxPages === 1){
+            buttonPrevious.style=  'display: none;';
+            buttonNext.style = 'display: none;';
+        }else if(currentPage === 1 && maxPages > 1){
+            buttonPrevious.style = 'display: none;';
+            buttonNext.style = '';
+        }else if(currentPage === maxPages && maxPages > 1){
+            buttonNext.style = 'display: none;';
+            buttonPrevious.style = '';
         }else{
-            buttonPrevious.style.display = '';
-            buttonNext.style.display = '';
+           buttonNext.style = '';
+           buttonPrevious.style = '';
         }
-    }
-    pageDescriber.innerHTML = 'Page ' + pageNumber + ' of ' + maxPageNumber;
 }
 
 
@@ -102,10 +111,10 @@ function behaviorRadioButtons(){
         changeDropDown(listOfImageType);
         searchValue = 'Kistch'
         radioChecked = 'image'
-    disable(inputBox);
+        disable(inputBox);
     }else{
-        dropdownMenu.innerHTML = '';
-        disable(dropdownMenu);
+        changeDropDown(listOfUsers);
+        enable(dropdownMenu);
         enable(inputBox);
         searchValue = '';
         radioChecked = 'word'
@@ -126,9 +135,12 @@ function changeDropDown(list){
 
 function onChangeDropdown(){
     searchValue = this.value;
+    organization = this.value;
 }
 
 function search(){
+    currentPage = 1;
+    changeButtonsByPageNumber();
     if(radioChecked === 'word'){
         searchValue = inputBox.value;
         if(searchValue === ''){
@@ -141,6 +153,7 @@ function search(){
         getNewTableContent();
     }
     tableTitle.innerHTML = 'Search results for ' + radioChecked+ ': ' + searchValue;
+
 }
 
 function getNewTableContent(){
@@ -151,18 +164,19 @@ function getNewTableContent(){
             data: {
                 searchBy: radioChecked,
                 searchValue: searchValue,
-                pageNumber: pageNumber
+                currentPage: currentPage,
+                organization: organization
             },
             success: function (data) {
             console.log(data)
                 /*<![CDATA[*/
                 $(fragment).html(data);
 
+
                 /*]]>*/
             },
         })
-        pageNumber = 1;
-        changeButtonsByPageNumber();
+
     }
 
 

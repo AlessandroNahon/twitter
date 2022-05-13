@@ -244,15 +244,14 @@ public class TweetServiceImpl extends Thread implements TweetService {
      * @return List with all the Tweets that contains the "text", empty list if there's no tweets containing that text
      */
     @Override
-    public List<Tweet> findByText(String text) {
+    public List<Tweet> findByText(String text, String username) {
         try{
-            return tweetRepository.findAllByTextContaining(text);
+            return tweetRepository.findAllByTextContaining(text,username);
         }catch (IllegalArgumentException ex){
             ex.printStackTrace();
         }
         return new ArrayList<Tweet>();
     }
-
     /**
      * This metdhod uses the repository to get a list of all the present tweets in the database
      * @return

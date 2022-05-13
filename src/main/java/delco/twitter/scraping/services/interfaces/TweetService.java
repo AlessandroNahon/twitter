@@ -23,7 +23,9 @@ public interface TweetService {
 
     void changeSentiment(String sentiment, Long id);
 
-    List<Tweet> findByText(String text);
+
+    List<Tweet> findByText(String text, String username);
+
 
     List<Tweet> findAllTweets();
 

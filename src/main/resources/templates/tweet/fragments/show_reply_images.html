@@ -7,10 +7,10 @@
 </head>
 
 <body>
-  <div class="h-100 w-100 d-flex justify-content-center align-items-center" th:fragment="show_reply_images">
+  <div class="h-100 w-100 h-100 d-inline justify-content-center align-items-center" th:fragment="show_reply_images">
     <div th:each="img : ${pictures}">
-      <button type="button" class="btn" th:id="${img.id}" data-toggle="modal" data-target="#seeModal">
-        <img class="rounded img-fluid" th:src="'data:images/jpg;base64,' +
+      <button type="button" class="btn col-12 w-100 mb-5" th:id="${img.id}" data-toggle="modal" data-target="#seeModal">
+        <img class="rounded img-fluid " th:src="'data:images/jpg;base64,' +
                         ${imgUtil.getImgData(img.image)}" />
         <script type="text/javascript">
           addEventToButton('[[${img.id}]]');

@@ -14,6 +14,8 @@ public interface RepliesService {
 
     List<Reply> findAllReplies();
 
+    List<Reply> findByText(String text, String organization);
+
     List<Reply> getByOrganization(String organization);
 
     void deleteByTweetId(Long id);

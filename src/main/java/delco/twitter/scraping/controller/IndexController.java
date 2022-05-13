@@ -57,7 +57,8 @@ public class IndexController {
                 getImagesByListOfReplies(getRepliesByListOfTweets(tweetService.findByUsername(organization)))
                 : getImagesByListOfTweets(tweetService.findByUsername(organization));
         model.addAttribute("images", imagesList.subList(0,Math.min(imagesList.size(),10)));
-        model.addAttribute("words_dataset",wordService.getSortedByBelongsAndOrganization(belongsTo,organization,5));
+        model.addAttribute("words_dataset",wordService.getSortedByBelongsAndOrganization(belongsTo,organization,
+                true,5));
         model.addAttribute("belongsTo",belongsTo);
         model.addAttribute("textTitle",getTextTile(organization,belongsTo));
         model.addAttribute("totalCount",getCountOfTweetsReplies(organization,belongsTo));

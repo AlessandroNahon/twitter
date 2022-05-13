@@ -24,6 +24,9 @@ public interface WordRepository extends PagingAndSortingRepository<Word, Long>, 
     @Query(value = "select * from twitter.words w where w.belongs_to = ?1 and w.organization like ?2 order by w.count DESC", nativeQuery = true)
     List<Word> findSortedByBelongsAndOrganization(String belongs_to, String organization);
 
+    @Query(value = "select * from twitter.words w where w.belongs_to = ?1  and w.syntax not like '%EMOJI%' and w.organization like ?2 order by w.count DESC", nativeQuery = true)
+    List<Word> findSortedByBelongsAndOrganizationNoEmoji(String belongs_to, String organization);
+
     @Query(value = "select * from twitter.words w where w.belongs_to = ?1 and w.syntax = ?2 and w.organization = ?3 order by w.count DESC limit 1", nativeQuery = true)
     Word findTopByBelongsSyntaxAndOrganization(String belongs_to, String syntax, String organization);
 

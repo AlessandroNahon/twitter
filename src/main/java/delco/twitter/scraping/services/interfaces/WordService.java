@@ -44,7 +44,7 @@ public interface WordService {
 
     List<Word> getByBelongsToAndOrganizationBySyntax(String belongs_to, TypeEnum syntax, String organization);
 
-    List<Word> getSortedByBelongsAndOrganization(String belongs_to, String organization, int limit);
+    List<Word> getSortedByBelongsAndOrganization(String belongs_to, String organization,boolean wantEmoji, int limit);
 
     List<Word> getSortedByBelongsOrganizationAndSyntax(String belongs_to, String organization, TypeEnum syntax, int limit);
 

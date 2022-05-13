@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Controller
 @RequestMapping("/tweet")
@@ -26,31 +27,24 @@ public class SearchTweetController {
     @RequestMapping("/fragments/table_search_tweet")
     public String getSearch(Model model, @RequestParam("searchBy") String searchType,
                             @RequestParam("searchValue") String searchValue,
-                            @RequestParam("pageNumber") int pageNumber){
+                            @RequestParam("organization") String organization,
+                            @RequestParam("currentPage") int pageNumber){
+        int maxPages = 0;
+        int currentPage = pageNumber-1;
         List<Tweet> tweetList = new ArrayList<>();
-        pageNumber--;
         if(searchType.equals("username")){
-            tweetList = getPagination(tweetService.findByUsername(searchValue), pageNumber,model);
+            tweetList = tweetService.findByUsername(searchValue);
         }else if(searchType.equals("sentiment")){
-            tweetList = getPagination(tweetService.findBySentiment(searchValue),pageNumber,model);
+            tweetList = tweetService.findBySentiment(searchValue);
         }else if(searchType.equals("image")) {
-            tweetList = getPagination(tweetService.findByImageContent(searchValue),pageNumber,model);
+            tweetList = tweetService.findByImageContent(searchValue);
         }else{
-            tweetList = getPagination(tweetService.findByText(searchValue),pageNumber,model);
+            tweetList = tweetService.findByText(searchValue, organization);
         }
-        model.addAttribute("tweetList",tweetList);
+        maxPages = tweetList.size() % 10 == 0? tweetList.size() / 10 : tweetList.size() / 10 + 1;
+        model.addAttribute("tweetList",tweetList.subList(currentPage*10,Math.min(currentPage * 10 + 10, tweetList.size())));
+        model.addAttribute("maxPages",maxPages);
         return "tweet/fragments/table_search_tweet :: table_search_tweet";
-    }
-
-    public List<Tweet> getPagination(List<Tweet> listTweet, int pageNumber, Model model){
-        if(listTweet.size()>10) {
-            int maxPages = listTweet.size()%10 == 0 ? (listTweet.size()/10) : ((listTweet.size()/10)+1);
-            model.addAttribute("maxPages",maxPages);
-            return listTweet.subList(pageNumber * 10, Math.min(pageNumber * 10 + 10, listTweet.size()));
-        }else{
-            model.addAttribute("maxPages","1");
-            return listTweet.subList(0,Math.min(10,listTweet.size()));
-        }
     }
 
 

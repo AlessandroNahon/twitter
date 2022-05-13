@@ -368,9 +368,11 @@ public class WordServiceImpl extends Thread  implements WordService {
     }
 
     @Override
-    public List<Word> getSortedByBelongsAndOrganization(String belongs_to, String organization, int limit) {
-        List<Word> wordsList = wordRepository.findSortedByBelongsAndOrganization(belongs_to,organization);
-        return wordsList.subList(0,Math.min(wordsList.size(),limit));
+    public List<Word> getSortedByBelongsAndOrganization(String belongs_to, String organization,boolean wantEmoji, int limit) {
+        List<Word> wordList = wantEmoji ?
+                wordRepository.findSortedByBelongsAndOrganization(belongs_to,organization) :
+                wordRepository.findSortedByBelongsAndOrganizationNoEmoji(belongs_to,organization);
+        return limit == 0 ? wordList : wordList.subList(0,Math.min(limit,wordList.size()));
     }
 
     @Override

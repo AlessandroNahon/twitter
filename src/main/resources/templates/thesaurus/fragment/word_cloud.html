@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:fragment="word_cloud">
+  <div id="word-cloud" class="d-flex">
+  <script th:inline="javascript">
+        wrapFunctionality(/*[[${wordList}]]*/);
+    </script>
+  </div>
+</div>
+
+</body>
+</html>

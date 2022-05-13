@@ -192,5 +192,10 @@ public class RepliesServiceImpl extends Thread implements RepliesService {
         return new ArrayList<>(replySet);
     }
 
+    @Override
+    public List<Reply> findByText(String text, String organization) {
+        return repliesRepository.findAllByTextContaining(text, organization);
+    }
+
 
 }

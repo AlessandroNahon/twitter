@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <meta charset="UTF-8">
+  <title>Title</title>
 </head>
 <body>
 <div id="special_words" th:fragment="special_words">
@@ -16,7 +16,7 @@
           <div class="card-body">
             <canvas id="chart-line" width="300" height="175"></canvas>
             <script th:inline="javascript">
-                  printHorizontal(/*[[${kischWords}]]*/, 'chart-line', 'Quiche', '#9ACD32')
+                  printHorizontal(/*[[${topKicheWords}]]*/, 'chart-line', 'Quiche', '#9ACD32')
               </script>
           </div>
         </div>
@@ -29,12 +29,15 @@
           <div class="card-body">
             <canvas id="chart2-line" width="300" height="175"></canvas>
             <script th:inline="javascript">
-                printHorizontal(/*[[${grotesqueWords}]]*/, 'chart2-line', 'Grotesque', '#FF7F50');
+                printHorizontal(/*[[${topGrotesqueWords}]]*/, 'chart2-line', 'Grotesque', '#FF7F50');
             </script>
           </div>
         </div>
       </div>
     </div>
+    <script>
+            addEventToButtonsFromFragment();
+      </script>
   </div>
 </div>
 </body>

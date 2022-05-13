@@ -22,6 +22,9 @@ public interface RepliesRepository extends PagingAndSortingRepository<Reply, Lon
 
     List<Reply> findByOrganization(String organization);
 
+    @Query(value = "select * from twitter.responses r where r.text like %?1% and r.organization = ?2", nativeQuery = true)
+    List<Reply> findAllByTextContaining(String text, String organization);
+
     // =============================================
     //           FIND POSITIVE CONTENT
     // =============================================
@@ -31,15 +34,15 @@ public interface RepliesRepository extends PagingAndSortingRepository<Reply, Lon
      * @return List of tweets with positive sentiment and with an kistch image
      */
     @Query(value = "SELECT * FROM twitter.responses r where r.id in (select reply_id from image i where i.image_content" +
-            " = 'KITSCH') and r.organization = ?1 and r.text_sentiment = 'POSITIVE' OR r.text_sentiment = 'VERY_POSITIVE'", nativeQuery = true)
+            " = 'KITSCH') and r.organization = ?1 and (r.text_sentiment = 'POSITIVE' OR r.text_sentiment = 'VERY_POSITIVE')", nativeQuery = true)
     List<Reply> getTextImagePositive(String organization);
 
     /**
      * This method is used to find in the database all those tweets that has negative or very negative text
      * @return List of negative replies
      */
-    @Query(value = "Select * from twitter.responses r where r.text_sentiment = " +
-            "'POSITIVE' OR r.text_sentiment = 'VERY_POSITIVE' and r.organization = ?1", nativeQuery = true)
+    @Query(value = "Select * from twitter.responses r where (r.text_sentiment = " +
+            "'POSITIVE' OR r.text_sentiment = 'VERY_POSITIVE') and r.organization = ?1", nativeQuery = true)
     List<Reply> getTextPositive(String organization);
 
 
@@ -50,15 +53,15 @@ public interface RepliesRepository extends PagingAndSortingRepository<Reply, Lon
     // =============================================
 
     @Query(value = "SELECT * FROM twitter.responses r where r.id in (select reply_id from image i where i.image_content" +
-            " = 'GROTESQUE') and r.organization = ?1 and r.text_sentiment =  'NEGATIVE' OR r.text_sentiment = 'VERY_NEGATIVE'", nativeQuery = true)
+            " = 'GROTESQUE') and r.organization = ?1 and (r.text_sentiment =  'NEGATIVE' OR r.text_sentiment = 'VERY_NEGATIVE')", nativeQuery = true)
     List<Reply> getTextImageNegative(String organization);
 
     /**
      * This method is used to find in the database all those tweets that has negative or very negative text
      * @return List of negative replies
      */
-    @Query(value = "Select * from twitter.responses r where r.text_sentiment = " +
-            "'NEGATIVE' OR r.text_sentiment = 'VERY_NEGATIVE' and r.organization = ?1", nativeQuery = true)
+    @Query(value = "Select * from twitter.responses r where (r.text_sentiment = " +
+            "'NEGATIVE' OR r.text_sentiment = 'VERY_NEGATIVE') and r.organization = ?1", nativeQuery = true)
     List<Reply> getTextNegative(String organization);
 
 

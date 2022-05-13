@@ -9,60 +9,85 @@
   <script type="text/javascript" th:src="@{/JS/sentiment/sentiment.js}"></script>
   <script type="text/javascript" th:src="@{/JS/charts.js}"></script>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.11.0/mdb.min.css" rel="stylesheet" />
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.11.0/mdb.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-    crossorigin="anonymous"></script>
+          integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+          crossorigin="anonymous"></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js'></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-    crossorigin="anonymous"></script>
+          integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+          crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-    crossorigin="anonymous"></script>
+          integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+          crossorigin="anonymous"></script>
   <script src=https://code.jquery.com/jquery-3.6.0.min.js></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"
-    integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+          integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js'></script>
 
 </head>
-
-<body class="bg-light">
+<header>
   <div class="row" th:replace="~{/indexFragments/header :: header_row}"></div>
-  <div class="container-fluid col-11 mt-4 mb-4 d-flex justify-content-md-center">
-    <div class="row col-12">
-      <ul class="nav nav-tabs  card-header-tabs ">
-        <div class="card col-12 d-flex bg-light">
-          <div class="class-header col-12  d-flex pt-4">
-            <li class="nav-item bg-light w-50 d-flex justify-content-center" id="word_nav_button">
-              <button class="bg-transparent nav-link active " id="buttonSentimental">
-                <h6>Sentimental</h6>
-              </button>
-            <li class="nav-item bg-light w-50 d-flex justify-content-center " id="grey_nav_emoji">
-              <button class="bg-transparent nav-link" id="buttonGrey">
-                <h6>"Grey"</h6>
-              </button>
-            <li class="nav-item bg-light w-50 d-flex justify-content-center" id="disruptive_nav_button">
-              <button class="bg-transparent nav-link" id="buttonDisruptive" >
-                <h6>Disruptive</h6>
-              </button>
-            </li>
-          </div>
-          <div th:replace="~{/sentiment/fragments/full_fragment :: layers_card}"></div>
-        </div>
+</header>
+<body class="bg-light" >
+<div class="d-flex justify-content-center mt-4 ">
+  <div class="card text-center col-11 bg-light">
+    <div class="card-header d-flex justify-content-center">
+      <ul class="nav nav-tabs card-header-tabs mb-1">
+        <li class="nav-item bg-light" >
+          <button class="bg-transparent nav-link active" id="buttonSeeTweets">
+            <h6>Tweets</h6>
+          </button>
+        </li>
+        <li class="nav-item bg-light">
+          <button class="bg-transparent nav-link" id="buttonSeeReplies">
+            <h6>Replies</h6>
+          </button>
+        </li>
       </ul>
     </div>
+    <div class="card-body bg-transparent">
+      <div class="card d-flex bg-transparent">
+        <div class="card-header ">
+          <div class="class-header col-12 pt-4">
+            <ul class="nav nav-tabs card-header-tabs d-flex justify-content-around">
+              <li class="nav-item  w-25 d-flex justify-content-center">
+                <button class="bg-transparent nav-link active " id="buttonNavSentimental">
+                  <h6>Sentimental</h6>
+                </button>
+              <li class="nav-item  w-25 d-flex justify-content-center ">
+                <button class="bg-transparent nav-link" id="buttonNavGray">
+                  <h6>"Grey"</h6>
+                </button>
+              <li class="nav-item  w-25 d-flex justify-content-center">
+                <button class="bg-transparent nav-link" id="buttonNavDisruptive">
+                  <h6>Disruptive</h6>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!--         Replace with card fragment           -->
+        <div class="card-body" id="cards_fragment">
+          <div class="card-footer bg-transparent" >
+            <div id="table_footer">
+
+            </div>
+          </div>
+        </div>
+        <div id="table_fragment"></div>
+      </div>
+    </div>
   </div>
-  <script>
-    printOrientationCharts([[${sentimentAndImages}]],[[${sentimentAndEmojis}]],[[${fullSearch}]]);
+</div>
+<script>
     loadComponents();
-    addEventToInnerCars();
   </script>
 </body>
-
 </html>

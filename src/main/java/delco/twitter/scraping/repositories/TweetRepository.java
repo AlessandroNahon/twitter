@@ -19,7 +19,9 @@ public interface TweetRepository  extends PagingAndSortingRepository<Tweet, Long
 
     Tweet findTop1ByOrderByIdDesc();
 
-    List<Tweet> findAllByTextContaining(String text);
+    @Query(value = "select * from twitter.tweets t where t.text like %?1% and t.username = ?2",
+            nativeQuery = true)
+    List<Tweet> findAllByTextContaining(String text, String organization);
 
     List<Tweet> findAllByTextSentiment(SentimentEnum sentiment);
 
@@ -41,15 +43,15 @@ public interface TweetRepository  extends PagingAndSortingRepository<Tweet, Long
      * @return List of tweets with positive sentiment and with an kistch image
      */
     @Query(value = "SELECT * FROM twitter.tweets t where t.id in (select tweet_id from image i where i.image_content" +
-            " = 'KITSCH') and t.username = ?1 and t.text_sentiment = 'POSITIVE' OR t.text_sentiment = 'VERY_POSITIVE'", nativeQuery = true)
+            " = 'KITSCH') and t.username = ?1 and (t.text_sentiment = 'POSITIVE' OR t.text_sentiment = 'VERY_POSITIVE')", nativeQuery = true)
     List<Tweet> getTextImagePositive(String organization);
 
     /**
      * This method is used to find in the database all those tweets that has positive or very positive text
      * @return List of positive tweets
      */
-    @Query(value = "Select * from twitter.tweets t where t.text_sentiment = " +
-            "'POSITIVE' OR t.text_sentiment = 'VERY_POSITIVE' and t.username = ?1", nativeQuery = true)
+    @Query(value = "Select * from twitter.tweets t where (t.text_sentiment = " +
+            "'POSITIVE' OR t.text_sentiment = 'VERY_POSITIVE') and t.username = ?1", nativeQuery = true)
     List<Tweet> getTextPositive(String username);
 
 
@@ -62,15 +64,15 @@ public interface TweetRepository  extends PagingAndSortingRepository<Tweet, Long
      * negative sentiment
      */
     @Query(value = "SELECT * FROM twitter.tweets t where t.id in (select tweet_id from image i where i.image_content" +
-            " = 'GROTESQUE') and t.username = ?1 and t.text_sentiment =  'NEGATIVE' OR t.text_sentiment = 'VERY_NEGATIVE'", nativeQuery = true)
+            " = 'GROTESQUE') and t.username = ?1 and (t.text_sentiment =  'NEGATIVE' OR t.text_sentiment = 'VERY_NEGATIVE')", nativeQuery = true)
     List<Tweet> getTextImageNegative(String username);
 
     /**
      * This method is used to find in the database all those tweets that has positive or very positive text
      * @return List of positive tweets
      */
-    @Query(value = "Select * from twitter.tweets t where t.text_sentiment = " +
-            "'NEGATIVE' OR t.text_sentiment = 'VERY_NEGATIVE' and t.username = ?1", nativeQuery = true)
+    @Query(value = "Select * from twitter.tweets t where (t.text_sentiment = " +
+            "'NEGATIVE' OR t.text_sentiment = 'VERY_NEGATIVE') and t.username = ?1", nativeQuery = true)
     List<Tweet> getTextNegative(String username);
 
 
