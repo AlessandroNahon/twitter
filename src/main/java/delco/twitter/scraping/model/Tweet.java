@@ -4,6 +4,7 @@ import delco.twitter.scraping.model.enumerations.SentimentEnum;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.*;
 
 @Entity(name="tweet")
@@ -16,7 +17,7 @@ import java.util.*;
 @Setter
 @Getter
 @Table(name = "tweets")
-public class Tweet{
+public class Tweet implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

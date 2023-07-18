@@ -186,7 +186,8 @@ histrionic
 hot
 hot-blooded
 humbug
-hunky 
+hunky
+happy
 idolatry
 idolization
 impassioned
@@ -265,7 +266,6 @@ native
 natural
 naturalistic 
 nature
-near
 nonsense
 nonurban
 normal
@@ -294,7 +294,6 @@ photo-realistic
 photogenic 
 playful
 pleasant
-poor
 preference
 prepossessing
 presentable
@@ -321,7 +320,7 @@ roundabout
 rubbish
 rubbishy
 rural
-rustic  
+rustic
 rustical
 saccharine
 sappy
@@ -406,7 +405,6 @@ three-dimensional
 tinselly
 toothsome
 torrid
-trash
 trashy
 treacherous
 tripe

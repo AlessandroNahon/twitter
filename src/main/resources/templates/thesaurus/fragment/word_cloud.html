@@ -6,11 +6,12 @@
 </head>
 <body>
 <div th:fragment="word_cloud">
-  <div id="word-cloud" class="d-flex">
-  <script th:inline="javascript">
-        wrapFunctionality(/*[[${wordList}]]*/);
-    </script>
+  <div id="container" class="d-flex" style="height: 950px;">
+
   </div>
+    <script th:inline="javascript">
+       recollectData(/*[[${wordList}]]*/,/*[[${chartTitle}]]*/);
+    </script>
 </div>
 
 </body>

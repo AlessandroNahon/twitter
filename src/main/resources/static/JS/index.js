@@ -8,6 +8,11 @@ var belongsTo = 'Tweet';
 var navActive = 'bg-transparent nav-link active'
 var navInactive = 'bg-transparent nav-link'
 
+var nameClassActive = 'loader';
+var nameClassInactive = 'loader-inactive';
+var loading = '';
+var general_lookup_card = '';
+
 function loadComponentIndex(){
     comboboxHeader = document.getElementById('comboboxIndex');
     buttonNavTweet = document.getElementById('buttonNavTweet');
@@ -15,6 +20,8 @@ function loadComponentIndex(){
     comboboxHeader.addEventListener("change", changeIndex);
     buttonNavTweet.addEventListener("click", changeNavButtons);
     buttonNavReplies.addEventListener("click", changeNavButtons);
+    loading = document.getElementById('loaderDiv');
+    general_lookup_card = document.getElementById('general_lookup_card');
     callFragmentMain();
 }
 
@@ -29,15 +36,21 @@ function changeNavButtons(){
         belongsTo = 'Reply'
     }
     mainOrganization = comboboxHeader.value
+  loading.className = nameClassActive;
+  general_lookup_card.style = 'visibility: hidden;';
     callFragmentMain();
 }
 
 function changeIndex(){
     mainOrganization = comboboxHeader.value
     belongsTo = 'Tweet'
-    callFragmentMain();
     buttonNavTweet.className=navActive
     buttonNavReplies.className=navInactive
+      loading.className = nameClassActive;
+      general_lookup_card.style = 'visibility: hidden;';
+    callFragmentMain();
+
+
 }
 
 function callFragmentMain(){
@@ -53,6 +66,8 @@ function callFragmentMain(){
             console.log(data)
                 /*<![CDATA[*/
                 $(fragment).html(data);
+                  loading.className = nameClassInactive;
+                  general_lookup_card.style = 'visibility: visible;';
                 /*]]>*/
             },
         })

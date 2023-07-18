@@ -51,6 +51,8 @@ public interface TweetService {
 
     List<Tweet> findAllOthers(String username);
 
+    List<Tweet> getBySentiment(String username, boolean wantPositive);
+
     List<Tweet> getCountBySentiment(String username,boolean wantPositive);
 
 

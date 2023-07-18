@@ -34,6 +34,7 @@ public class SentimentController {
     public String getFullFragment(Model model, @RequestParam("organization") String organization,
                                   @RequestParam("belongsTo") String belongsTo,
                                   @RequestParam("classification") String classification){
+        System.out.println("LOS DATOS QUE LLEGAN SON " + organization + " " + belongsTo + " " + classification);
         if(belongsTo.equals("Tweet")){
             if(classification.equals("Grey")){
                 List<Tweet> tweetList = tweetService.findAllOthers(organization);
@@ -42,8 +43,10 @@ public class SentimentController {
                 return "sentiment/fragments/table_info :: table_info";
             }else{
                 model.addAttribute("sentimentAndImages",tweetService.findTextImage(organization, classification.equals("Sentimental")).size());
+                model.addAttribute("text",tweetService.findText(organization, classification.equals("Sentimental")).size());
                 model.addAttribute("sentimentAndEmojis",tweetService.findTextEmoji(organization, classification.equals("Sentimental")).size());
                 model.addAttribute("fullSearch",tweetService.findFullMatches(organization, classification.equals("Sentimental")).size());
+                model.addAttribute("fullcountpositive",tweetService.getBySentiment(organization, classification.equals("Sentimental")).size());
             }
         }else{
             if(classification.equals("Grey")){
@@ -54,7 +57,9 @@ public class SentimentController {
             }else{
                 model.addAttribute("sentimentAndImages",repliesService.findTextImage(organization, classification.equals("Sentimental")).size());
                 model.addAttribute("sentimentAndEmojis",repliesService.findTextEmoji(organization, classification.equals("Sentimental")).size());
+                model.addAttribute("text",repliesService.findText(organization, classification.equals("Sentimental")).size());
                 model.addAttribute("fullSearch",repliesService.findFullMatches(organization, classification.equals("Sentimental")).size());
+                model.addAttribute("fullcountpositive",repliesService.getBySentiment(organization, classification.equals("Sentimental")).size());
             }
         }
         return "sentiment/fragments/cards_fragment :: cards_fragment";
@@ -77,11 +82,15 @@ public class SentimentController {
                     case "Emoji & Sentiment":
                         tweetList = tweetService.findTextEmoji(organization, classification.equals("Sentimental"));
                         break;
+                    case "Text":
+                        tweetList = tweetService.findText(organization, classification.equals("Sentimental"));
+                        break;
                     default:
                         tweetList = tweetService.findFullMatches(organization, classification.equals("Sentimental"));
                         break;
                 }
             }
+            tweetList.forEach(System.out::println);
             model.addAttribute("tweets", tweetList.subList(page * 10, Math.min(page * 10 + 10, tweetList.size())));
             model.addAttribute("maxPages", tweetList.size() % 10 == 0 ? tweetList.size() / 10 : tweetList.size() / 10 + 1);
         } else {
@@ -95,6 +104,9 @@ public class SentimentController {
                         break;
                     case "Emoji & Sentiment":
                         replyList = repliesService.findTextEmoji(organization, classification.equals("Sentimental"));
+                        break;
+                    case "Text":
+                        replyList = repliesService.findText(organization, classification.equals("Sentimental"));
                         break;
                     default:
                         replyList = repliesService.findFullMatches(organization, classification.equals("Sentimental"));

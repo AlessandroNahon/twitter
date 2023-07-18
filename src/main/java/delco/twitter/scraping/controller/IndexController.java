@@ -95,23 +95,23 @@ public class IndexController {
 
     private int getCountOfTweetsReplies(String organization, String belongsTo){
         return belongsTo.equals("Reply") ?
-                getRepliesByListOfTweets(tweetService.findByUsername(organization)).size()
+                repliesService.getByOrganization(organization).size()
                 : tweetService.findByUsername(organization).size();
     }
 
 
     public void getSentimentAnlysis(Model model, String organization, String belongsTo){
-        int total, negative, neutral;
+        int positive, negative, neutral;
         if(belongsTo.equals("Tweet")){
-            total = tweetService.findByUsername(organization).size();
-            negative = tweetService.getCountBySentiment(organization, false).size();
-            neutral = tweetService.findAllOthers(organization).size();
+            positive = tweetService.findText(organization, true).size();
+            negative = tweetService.findText(organization, false).size();
+            neutral = tweetService.findByUsername(organization).size() - positive - negative;
         }else{
-            total = repliesService.getByOrganization(organization).size();
-            negative = repliesService.getCountBySentiment(organization, false).size();
-            neutral = repliesService.findAllOthers(organization).size();
+            negative = repliesService.findText(organization, false).size();
+            positive = repliesService.findText(organization, true).size();
+            neutral = repliesService.getByOrganization(organization).size() - positive - negative;
         }
-        model.addAttribute("positive_count", (total - neutral - negative));
+        model.addAttribute("positive_count", positive);
         model.addAttribute("negative_count", negative);
         model.addAttribute("gray_count", neutral);
 

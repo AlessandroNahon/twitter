@@ -7,6 +7,7 @@ var buttonSearch = '';
 
 var navSeeChart = '';
 var navSeeCloud = '';
+var navSeeRaw = '';
 
 var words = [];
 var freq = [];
@@ -15,6 +16,7 @@ var buttonNoun = '';
 var buttonAdverb = '';
 var buttonAdjective = '';
 var buttonEmoji = '';
+var lookingBySearchBar = false;
 
 var mainOrganization = 'Greenpeace';
 var belongsTo = 'Tweet';
@@ -32,6 +34,7 @@ var wholeFragmentUrl = '/thesaurus/fragment/whole_display_info';
 var kistchGrotesqueUrl = '/thesaurus/fragment/special_words';
 var lowerTableUrl = '/thesaurus/fragment/words_table_tweets';
 var cloudUrl = '/thesaurus/fragment/word_cloud';
+var rawUrl = '/thesaurus/fragment/raw_words_table';
 
 var maxPages = 1;
 var currentPage = 1;
@@ -55,9 +58,11 @@ function loadComponentIndex(){
     buttonNavReplies.addEventListener("click", changeNavButtons);
     navSeeChart = document.getElementById('buttonSeeCharts');
     navSeeCloud = document.getElementById('buttonSeeCloud');
+    navSeeRaw = document.getElementById('buttonSeeRaw');
 
     navSeeChart.addEventListener("click", changeCloudChart);
     navSeeCloud.addEventListener("click", changeCloudChart);
+    navSeeRaw.addEventListener("click", changeCloudChart);
     updateContent(wholeFragmentName, wholeFragmentUrl);
 
     loading = document.getElementById('loaderDiv');
@@ -101,14 +106,25 @@ var url = '';
       whole_display_info.style = 'visibility: hidden;';
       navSeeChart.className=navInactive
       navSeeCloud.className=navActive
+      navSeeRaw.className=navInactive
       url = cloudUrl;
+    }else if(this.id == 'buttonSeeRaw'){
+        navSeeRaw.className=navActive
+        loading.className = nameClassActive;
+        navSeeChart.className=navInactive
+        navSeeCloud.className=navInactive
+        url = rawUrl;
     }else{
       navSeeCloud.className=navInactive
       whole_display_info.style = 'visibility: visible;';
       navSeeChart.className=navActive
+      navSeeRaw.className=navInactive
       url = wholeFragmentUrl;
     }
+    lookingBySearchBar = false;
     updateContent(wholeFragmentName, url);
+    currentPage = 1;
+    updateTableTitle();
 
 }
 
@@ -149,7 +165,9 @@ function changePage(){
     }else{
         currentPage = currentPage - 1;
     }
-    searchWord = document.getElementById('textSearch').value;
+    if(lookingBySearchBar){
+        searchWord = document.getElementById('textSearch').value;
+    }
     updateLowerTable(lowerTable, lowerTableUrl);
 }
 
@@ -196,13 +214,16 @@ function changeIndex(){
 }
 
 function searchByCard(){
+    currentPage = 1;
     searchWord = this.textContent;
     updateLowerTable(lowerTable, lowerTableUrl);
+
 }
 
 
 function search(){
     searchWord = document.getElementById('textSearch').value;
+    lookingBySearchBar = true;
     if(searchWord.length > 0){
         updateLowerTable(lowerTable, lowerTableUrl);
         currentPage = 1;
@@ -246,6 +267,7 @@ function updateLowerTable(fragment, url, word){
             /*<![CDATA[*/
             $(fragment).html(data);
             updateTableTitle();
+                document.getElementById("words_table_tweets").scrollIntoView(false);
             /*]]>*/
         },
     });

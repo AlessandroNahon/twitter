@@ -106,10 +106,38 @@ public class ThesaurusController {
     public String getWordCloud(Model model, @RequestParam("organization") String organization,
                                @RequestParam("belongsTo") String belongsTo) {
         model.addAttribute("wordList", wordService
-                .getSortedByBelongsAndOrganization(belongsTo, organization, false, 100));
+                .getSortedByBelongsAndOrganization(belongsTo, organization, true, 100));
+        model.addAttribute("chartTitle",getCloudTitle(organization,belongsTo));
         return "thesaurus/fragment/word_cloud :: word_cloud";
     }
 
+    private String getCloudTitle(String organization, String belongs){
+        if(belongs.equals("Tweet")){
+            return "Most used words in tweets of " + organization;
+        }
+        return "Most used words in replies of " + organization;
+    }
+
+    @GetMapping("/fragment/raw_words_table")
+    public String getWordsTable(Model model, @RequestParam("organization") String organization,
+                               @RequestParam("belongsTo") String belongsTo) {
+        List<Word> wordList = wordService
+                .getSortedByBelongsAndOrganization(belongsTo, organization, true, 100);
+        List<Word> getSecondList = getOddWords(wordList);
+        model.addAttribute("wordListOdd", wordList);
+        model.addAttribute("wordListPair", getSecondList);
+
+        return "thesaurus/fragment/raw_words_table :: raw_words_table";
+    }
+
+    private List<Word> getOddWords(List<Word> wordList){
+        List<Word> oddWords = new ArrayList<>();
+        for(int i = 0 ; i < wordList.size() ; i+=2){
+            oddWords.add(wordList.get(i));
+        }
+        oddWords.forEach(wordList::remove);
+        return oddWords;
+    }
 }
 
 

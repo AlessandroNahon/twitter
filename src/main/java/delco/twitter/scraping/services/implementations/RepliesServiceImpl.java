@@ -1,6 +1,7 @@
 package delco.twitter.scraping.services.implementations;
 
 import delco.twitter.scraping.model.Word;
+import delco.twitter.scraping.model.enumerations.SentimentEnum;
 import delco.twitter.scraping.model.enumerations.TypeEnum;
 import delco.twitter.scraping.model.utils.DatumConverters;
 import delco.twitter.scraping.model.Images;
@@ -112,21 +113,39 @@ public class RepliesServiceImpl extends Thread implements RepliesService {
     }
 
     @Override
+    public List<Reply> getBySentiment(String organization, Boolean wantPositive) {
+        return repliesRepository.findByOrganizationAndTextSentiment(organization, wantPositive ? SentimentEnum.POSITIVE
+                : SentimentEnum.NEGATIVE);
+    }
+
+
+    @Override
     public List<Reply> findTextImage(String username, boolean wantPositive) {
-        if (wantPositive) {
-            return repliesRepository.getTextImagePositive(username);
-        }else{
-            return repliesRepository.getTextImageNegative(username);
+        List<Reply> repliesList = new ArrayList<>();
+        for(Reply r : (wantPositive ? repliesRepository.getTextImagePositive(username)
+                : repliesRepository.getTextImageNegative(username))){
+            if(compareWithThesaurus(r,wantPositive)){
+                repliesList.add(r);
+            }
         }
+        return repliesList;
+    }
+
+    private boolean compareWithThesaurus(Reply reply, boolean wantPositive){
+        return wantPositive ? wordService.textContainsKistch(reply.getText())
+                : wordService.textContainsGrotesque(reply.getText());
     }
 
     @Override
     public List<Reply> findText(String username, boolean wantPositive) {
-        if(wantPositive){
-            return repliesRepository.getTextPositive(username);
-        }else{
-            return repliesRepository.getTextNegative(username);
+        List<Reply> repliesList = new ArrayList<>();
+        for(Reply r : (wantPositive ? repliesRepository.getTextPositive(username)
+                    : repliesRepository.getTextNegative(username))){
+            if(compareWithThesaurus(r,wantPositive)){
+                repliesList.add(r);
+            }
         }
+        return repliesList;
     }
 
     @Override
@@ -180,6 +199,8 @@ public class RepliesServiceImpl extends Thread implements RepliesService {
         repliesList.removeAll(findTextImage(username,false));
         repliesList.removeAll(findTextEmoji(username,false));
         repliesList.removeAll(findFullMatches(username,false));
+        repliesList.removeAll(findText(username,true));
+        repliesList.removeAll(findText(username,false));
         return repliesList;
     }
 
@@ -189,6 +210,7 @@ public class RepliesServiceImpl extends Thread implements RepliesService {
         replySet.addAll(findTextEmoji(username,wantPositive));
         replySet.addAll(findTextImage(username, wantPositive));
         replySet.addAll(findFullMatches(username, wantPositive));
+        replySet.addAll(findText(username, wantPositive));
         return new ArrayList<>(replySet);
     }
 

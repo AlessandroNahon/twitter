@@ -16,7 +16,10 @@ import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 import java.io.*;
@@ -33,6 +36,7 @@ public class WordServiceImpl extends Thread  implements WordService {
     private Set<String> kischcWords;
     private Set<String> grotesqueWords;
     private Set<String> grotesqueEmoji;
+    private Set<String> kistchEmoji;
     private boolean loadedPipeline = false;
     private boolean loadedFiles = false;
     long idHelper = 0;
@@ -59,6 +63,8 @@ public class WordServiceImpl extends Thread  implements WordService {
                         +File.separator+"grotesqueWords");
                 grotesqueEmoji = readFiles("notAcceptedFilesDat"
                         +File.separator+"grotesqueEmoji");
+                kistchEmoji = readFiles("acceptedFilesDat"
+                                +File.separator+"kistchEmoji");
                 loadedFiles = true;
             }
         }).start();
@@ -73,8 +79,15 @@ public class WordServiceImpl extends Thread  implements WordService {
      */
     public HashSet<String> readFiles(String fileName) {
         try {
-            File fichero =  ResourceUtils.getFile("classpath:wordsList"+File.separator+fileName+".dat");
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fichero));
+            ClassPathResource classPathResource = new ClassPathResource("wordsList"+File.separator+fileName+".dat");
+            InputStream inputStream = classPathResource.getInputStream();
+            File somethingFile = File.createTempFile("test", ".txt");
+            try {
+                FileUtils.copyInputStreamToFile(inputStream, somethingFile);
+            } finally {
+                IOUtils.closeQuietly(inputStream);
+            }
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(somethingFile));
             return (HashSet<String>) ois.readObject();
         } catch (IOException e) {
             System.out.println("The file was not found");
@@ -100,8 +113,10 @@ public class WordServiceImpl extends Thread  implements WordService {
             for(String s : emojisList){
                 if(isGrotesqueEmoji(s)){
                     parseWord(s, TypeEnum.GROTESQUE_EMOJI, belongs_to, organization);
-                }else{
+                }else if(isKistchEmoji(s)){
                     parseWord(s, TypeEnum.KITSCH_EMOJI, belongs_to, organization);
+                }else{
+                    parseWord(s, TypeEnum.EMOJI, belongs_to, organization);
                 }
             }
         }
@@ -110,7 +125,7 @@ public class WordServiceImpl extends Thread  implements WordService {
         for (String word : words) {
             if (word.length() > 2 && !word.contains("@") && !word.contains("http") && !word.contains("#")) {
                 if(!word.equalsIgnoreCase("the")){
-                    word = word.replaceAll("\\p{Punct}","");
+                    word = word.replaceAll("\\p{Punct}","").trim();
                     if(isGrotesqueWord(word)){
                         parseWord(word, TypeEnum.GROTESQUE,belongs_to, organization);
                     } else if(isKischWord(word)) {
@@ -131,6 +146,11 @@ public class WordServiceImpl extends Thread  implements WordService {
     @Override
     public boolean isKischWord(String word) {
         return kischcWords.contains(word);
+    }
+
+    @Override
+    public boolean isKistchEmoji(String emoji) {
+        return kistchEmoji.contains(emoji);
     }
 
     /**
@@ -157,12 +177,12 @@ public class WordServiceImpl extends Thread  implements WordService {
     @Override
     public synchronized void parseWord(String text, TypeEnum syntax, String belongs_to, String organization){
         if(syntax != TypeEnum.GROTESQUE_EMOJI && syntax != TypeEnum.KITSCH_EMOJI
-                && syntax != TypeEnum.GROTESQUE && syntax != TypeEnum.KITSCH){
+                && syntax != TypeEnum.GROTESQUE && syntax != TypeEnum.KITSCH && syntax != TypeEnum.EMOJI){
             syntax = getTypeOfWord(text);
         }
         if (syntax != TypeEnum.NONE) {
             try {
-                Word newWord = getByWordAndBelongsTo(text,belongs_to);
+                Word newWord = getByWordAndBelongsToAndOrganization(text,belongs_to,organization);
                 if (newWord != null) {
                     newWord.setCount(newWord.getCount() + 1);
                 } else {
@@ -286,6 +306,41 @@ public class WordServiceImpl extends Thread  implements WordService {
         return TypeEnum.NONE;
     }
 
+    @Override
+    public boolean textContainsKistch(String text) {
+        List<String> emojisList = getAllEmojisFromText(text);
+        for(String word : emojisList){
+            if(kistchEmoji.contains(word)){
+                return true;
+            }
+        }
+        String textWithoutEmojis = EmojiParser.removeAllEmojis(text);
+        String[] words = textWithoutEmojis.split("\\s+");
+        for (String word : words) {
+            if(kischcWords.contains(word.toLowerCase())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean textContainsGrotesque(String text) {
+        List<String> emojisList = getAllEmojisFromText(text);
+        for(String word : emojisList){
+            if(grotesqueEmoji.contains(word)){
+                return true;
+            }
+        }
+        String textWithoutEmojis = EmojiParser.removeAllEmojis(text);
+        String[] words = textWithoutEmojis.split("\\s+");
+        for (String word : words) {
+            if(grotesqueWords.contains(word.toLowerCase())){
+                return true;
+            }
+        }
+        return false;
+    }
 
 
     /**
@@ -357,8 +412,8 @@ public class WordServiceImpl extends Thread  implements WordService {
 
 
     @Override
-    public Word getByWordAndBelongsTo(String word, String belongs_to) {
-        return wordRepository.findByWordAndBelongsTo(word,belongs_to);
+    public Word getByWordAndBelongsToAndOrganization(String word, String belongs_to, String organization) {
+        return wordRepository.findByWordAndBelongsToAndOrganization(word,belongs_to,organization);
     }
 
 

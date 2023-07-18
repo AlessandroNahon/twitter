@@ -9,6 +9,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import static java.lang.Thread.sleep;
 
 @SpringBootApplication
 @EnableConfigurationProperties(Configuration.class)
@@ -20,6 +24,15 @@ public class TwitterDemoApplication {
 		System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
 				"com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
 
+//		URI uri= null;
+//		try {
+//			uri = new URI("http://localhost:8083/index");
+//			java.awt.Desktop.getDesktop().browse(uri);
+//		} catch (URISyntaxException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 		SpringApplication. run(TwitterDemoApplication.class, args);
 
 	}

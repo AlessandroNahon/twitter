@@ -3,8 +3,11 @@ package delco.twitter.scraping.model;
 import delco.twitter.scraping.model.enumerations.TypeEnum;
 import delco.twitter.scraping.model.utils.StringListConverter;
 import lombok.*;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +21,7 @@ import java.util.List;
 @Setter
 @Getter
 @Table(name = "image")
-public class Images {
+public class Images implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +29,8 @@ public class Images {
     @Lob
     private byte[] image;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @NotFound(action = NotFoundAction.IGNORE)
     private Tweet tweet;
 
     @Enumerated(EnumType.STRING)
@@ -36,7 +40,8 @@ public class Images {
     @Convert(converter = StringListConverter.class)
     private List<String> imageObjects = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @NotFound(action = NotFoundAction.IGNORE)
     private Reply reply;
 
     public void addImageObject(String object){

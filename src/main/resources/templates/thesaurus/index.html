@@ -21,6 +21,8 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
             integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
             crossorigin="anonymous"></script>
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-base.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-tag-cloud.min.js"></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js'></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
             integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
@@ -37,7 +39,7 @@
 
 </head>
 <header>
-    <div class="row" th:replace="~{/indexFragments/header :: header_row}"></div>
+    <div class="row" th:replace="~{indexFragments/header :: header_row}"></div>
 </header>
 <body class="bg-light">
 
@@ -57,19 +59,26 @@
                 </li>
             </ul>
         </div>
-        <div class="pl-5 pt-3">
-            <ul class="nav nav-tabs card-header-tabs mb-1">
-                <li class="nav-item bg-light" >
-                    <button class="bg-transparent nav-link active" id="buttonSeeCharts">
-                        <h6>Charts</h6>
-                    </button>
-                </li>
-                <li class="nav-item bg-light">
-                    <button class="bg-transparent nav-link" id="buttonSeeCloud">
-                        <h6>Clouds</h6>
-                    </button>
-                </li>
-            </ul>
+        <div class="row d-flex justify-content-between">
+            <div class="pl-5 pt-3 d-inline-block col-5">
+                <ul class="nav nav-tabs card-header-tabs mb-1">
+                    <li class="nav-item bg-light" >
+                        <button class="bg-transparent nav-link active" id="buttonSeeCharts">
+                            <h6>Charts</h6>
+                        </button>
+                    </li>
+                    <li class="nav-item bg-light">
+                        <button class="bg-transparent nav-link" id="buttonSeeCloud">
+                            <h6>Clouds</h6>
+                        </button>
+                    </li>
+                    <li class="nav-item bg-light">
+                        <button class="bg-transparent nav-link" id="buttonSeeRaw">
+                            <h6>Raw</h6>
+                        </button>
+                    </li>
+                </ul>
+            </div>
         </div>
         <div class="d-flex col-12 justify-content-center">
             <div class="loader-inactive" style="display: hidden;" id="loaderDiv"></div>
@@ -113,7 +122,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <div th:replace="~{/thesaurus/fragment/words_table_tweets :: words_table_tweets}"></div>
+                <div th:replace="~{thesaurus/fragment/words_table_tweets :: words_table_tweets}"></div>
             </div>
         </div>
 

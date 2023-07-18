@@ -2,8 +2,11 @@ package delco.twitter.scraping.model;
 
 import delco.twitter.scraping.model.enumerations.SentimentEnum;
 import lombok.*;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.*;
 
 @Data
@@ -15,7 +18,7 @@ import java.util.*;
 @Getter
 @Entity
 @Table(name = "responses")
-public class Reply {
+public class Reply  implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -29,7 +32,8 @@ public class Reply {
     //private Set<String> images_urls = new HashSet<String>();
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "original_tweet_id")
     private Tweet originalTweet;
 

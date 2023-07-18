@@ -25,6 +25,8 @@ public interface TweetRepository  extends PagingAndSortingRepository<Tweet, Long
 
     List<Tweet> findAllByTextSentiment(SentimentEnum sentiment);
 
+    List<Tweet> findByUsernameAndTextSentiment(String username, SentimentEnum sentiment);
+
     List<Tweet> findByUsername(String username);
 
     @Query(value = "select * from twitter.tweets t where t.id in " +

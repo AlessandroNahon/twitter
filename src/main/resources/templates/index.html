@@ -9,6 +9,7 @@
   <link th:href="@{/css/commonStyle.css}" rel="stylesheet" />
   <script type="text/javascript" th:src="@{/JS/charts.js}"></script>
   <script type="text/javascript" th:src="@{/JS/index.js}"></script>
+  <link th:href="@{/css/loaderCss.css}" rel="stylesheet" />
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
@@ -33,7 +34,7 @@
 
 </head>
 <header>
-  <div class="row" th:replace="~{/indexFragments/header :: header_row}"></div>
+  <div class="row" th:replace="~{indexFragments/header :: header_row}"></div>
 </header>
 <body class="bg-light">
 
@@ -52,6 +53,9 @@
             </button>
           </li>
         </ul>
+      </div>
+      <div class="d-flex col-12 justify-content-center">
+        <div class="loader-inactive" style="display: hidden;" id="loaderDiv"></div>
       </div>
       <div id="general_lookup_card"></div>
     </div>

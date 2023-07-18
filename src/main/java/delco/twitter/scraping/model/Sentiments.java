@@ -4,6 +4,7 @@ import delco.twitter.scraping.model.enumerations.SentimentEnum;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Data
 @EqualsAndHashCode(exclude = {"originalTweet","image"})
@@ -14,7 +15,7 @@ import javax.persistence.*;
 @Getter
 @Entity
 @Table(name = "sentiments")
-public class Sentiments {
+public class Sentiments  implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

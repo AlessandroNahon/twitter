@@ -13,7 +13,7 @@ public interface WordRepository extends PagingAndSortingRepository<Word, Long>, 
 
     void deleteByWord(String text);
 
-    Word findByWordAndBelongsTo(String word, String belongs_to);
+    Word findByWordAndBelongsToAndOrganization(String word, String belongs_to, String organization);
 
     @Query(value = "select * from twitter.words w where w.belongs_to = ?1 and w.syntax like ?2 and w.organization = ?3", nativeQuery = true)
     List<Word> findAllByBelongsSyntaxOrganization(String belongs_to, String syntax, String organization);

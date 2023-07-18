@@ -41,15 +41,15 @@ var pageDescriber = '';
     This function calls the printTableMethod into the Charts.js so it prints the three different charts
     with different colors depending of the Sentimental/Disruptive/Grey classification
 */
-function printOrientationCharts(sentimentImg,sentimentEmo ,fullMatch){
-    var fullCount = sentimentEmo + sentimentImg + fullMatch;
-    if(fullCount == 0){
-        fullCount = 1;
-    }
-    printTables('sentimentImageChart',sentimentImg,fullCount, 'Img & Sentiment');
-    printTables('sentimentEmojiChart',sentimentEmo,fullCount, 'Emoji & Sentiment');
-    printTables('fullSearchChart',fullMatch,fullCount, 'Full matches');
+function printOrientationCharts(sentimentImg,sentimentEmo ,fullMatch,text, fullcountpositive){
+    printTables('sentimentImageChart',sentimentImg,fullcountpositive, 'Img & Sentiment');
+    printTables('sentimentEmojiChart',sentimentEmo,fullcountpositive, 'Emoji & Sentiment');
+    printTables('fullSearchChart',fullMatch,fullcountpositive, 'Full matches');
+    printTables('textChart',text,fullcountpositive, 'Full matches');
 }
+
+
+
 
 
 
@@ -90,6 +90,8 @@ function loadComponentTable(){
 function changeMaxPages(maxPages){
     if(typeof maxPages === 'undefined'){
         this.maxPages = 1;
+    }else if (maxPages === 0){
+        this.maxPages = 1;
     }else{
         this.maxPages = maxPages;
     }
@@ -103,7 +105,7 @@ function changePaginationPage(){
         currentPage = currentPage - 1;
     }
     changeButtonsByPageNumber();
-    changeOnlyTable();
+    changeFooterTable();
 }
 
 function changeButtonsByPageNumber(){
@@ -129,24 +131,6 @@ function changeButtonsByPageNumber(){
     This function is used to print all the charts that shows the sentiment analysis of the tweets with
     the three levels of analysis: Sentimental, Grey (Text, emojis or Images do not match) and Disruptive
 */
-function callCardFragment(){
-    var fragment = '#cards_fragment'
-    $.ajax({
-            type: 'get',
-            url: '/sentiment/fragments/cards_fragment',
-            data: {
-                organization: organization,
-                belongsTo: belongsTo,
-                classification: classification
-            },
-            success: function (data) {
-                /*<![CDATA[*/
-                $(fragment).html(data);
-                 $('#table_fragment').css('display', 'none');
-                /*]]>*/
-            },
-        })
-    }
 
 function changeOrganization(){
     belongsTo = 'Tweet';
@@ -209,9 +193,11 @@ function addEventToInnerCars(){
     var buttonSentimentImage = document.getElementById('SentimentImage');
     var buttonSentimentEmoji = document.getElementById('SentimentEmoji');
     var buttonFullSearch = document.getElementById('fullSearch');
+    var buttonText = document.getElementById('text');
     buttonSentimentImage.addEventListener('click', groupChangesListOfTweets);
     buttonSentimentEmoji.addEventListener('click', groupChangesListOfTweets);
     buttonFullSearch.addEventListener('click', groupChangesListOfTweets);
+    buttonText.addEventListener('click', groupChangesListOfTweets);
 
 }
 
@@ -231,14 +217,20 @@ function changeSearchType(id){
         searchType = 'Img & Sentiment';
     }else if(id === 'SentimentEmoji'){
         searchType = 'Emoji & Sentiment';
-    }else{
+    }else if(id === 'fullSearch'){
         searchType = 'Full';
+    }else{
+        searchType = 'Text';
     }
     changeFooterTable();
 }
 
 
 function changeFooterTable(){
+    var fragmentName = '#table_fragment';
+    if(classification === 'Grey'){
+        fragmentName = '#cards_fragment';
+    }
     $.ajax({
             type: 'get',
             url: '/sentiment/fragments/table_info',
@@ -252,13 +244,37 @@ function changeFooterTable(){
             success: function (data) {
                 /*<![CDATA[*/
                 console.log(data);
-                $('#table_fragment').html(data);
-                $('#table_fragment').css('display', '');
+                $(fragmentName).html(data);
+                $(fragmentName).css('display', '');
                 changeButtonsByPageNumber();
+                console.log(data);
                 /*]]>*/
             },
         })
     }
+
+    function callCardFragment(){
+        currentPage = 1;
+        var fragment = '#cards_fragment'
+        $.ajax({
+                type: 'get',
+                url: '/sentiment/fragments/cards_fragment',
+                data: {
+                    organization: organization,
+                    belongsTo: belongsTo,
+                    classification: classification
+                },
+                success: function (data) {
+                    /*<![CDATA[*/
+                    $(fragment).html(data);
+                     $('#table_fragment').css('display', 'none');
+                    changeButtonsByPageNumber();
+                    /*]]>*/
+                },
+            })
+        }
+
+
 
 
 
@@ -329,26 +345,7 @@ function changeTopNavigation(id){
     This function is used to make the call to the controller and change the table with the tweets
 */
 
-function changeOnlyTable(){
-    $.ajax({
-            type: 'get',
-            url: '/sentiment/fragments/table_info',
-            data: {
-                searchType: searchType,
-                classification: classification,
-                belongsTo: belongsTo,
-                organization: organization,
-                page: currentPage
-            },
-            success: function (data) {
-                /*<![CDATA[*/
-                console.log(data);
-                $('#cards_fragment').html(data);
-changeButtonsByPageNumber();
-                /*]]>*/
-            },
-        })
-    }
+
 
 /* ======================================================
     METHODS TO CHANGE THE LIST OF TWEETS/REPLIES

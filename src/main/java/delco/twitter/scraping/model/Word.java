@@ -4,6 +4,7 @@ import delco.twitter.scraping.model.enumerations.TypeEnum;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Data
 @Entity(name = "words")
@@ -13,7 +14,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Setter
 @Getter
-public class Word {
+public class Word  implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

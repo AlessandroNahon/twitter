@@ -158,20 +158,31 @@ public class TweetServiceImpl extends Thread implements TweetService {
 
     @Override
     public List<Tweet> findTextImage(String username, boolean wantPositive) {
-        if (wantPositive) {
-            return tweetRepository.getTextImagePositive(username);
-        }else{
-            return tweetRepository.getTextImageNegative(username);
+        List<Tweet> tweetList = new ArrayList<>();
+        for(Tweet t : (wantPositive ? tweetRepository.getTextImagePositive(username)
+                                    : tweetRepository.getTextImageNegative(username))){
+            if(compareWithThesaurus(t,wantPositive)){
+                tweetList.add(t);
+            }
         }
+        return tweetList;
+    }
+
+    private boolean compareWithThesaurus(Tweet tweet, boolean wantPositive){
+        return wantPositive ? wordService.textContainsKistch(tweet.getText())
+                            : wordService.textContainsGrotesque(tweet.getText());
     }
 
     @Override
     public List<Tweet> findText(String username, boolean wantPositive) {
-        if(wantPositive){
-            return tweetRepository.getTextPositive(username);
-        }else{
-            return tweetRepository.getTextNegative(username);
+        List<Tweet> tweetList = new ArrayList<>();
+        for(Tweet t : (wantPositive ? tweetRepository.getTextPositive(username)
+                    : tweetRepository.getTextNegative(username))){
+            if(compareWithThesaurus(t,wantPositive)){
+                tweetList.add(t);
+            }
         }
+        return tweetList;
     }
 
     @Override
@@ -221,9 +232,12 @@ public class TweetServiceImpl extends Thread implements TweetService {
         tweetList.removeAll(findTextImage(username,true));
         tweetList.removeAll(findTextEmoji(username,true));
         tweetList.removeAll(findFullMatches(username,true));
+        tweetList.removeAll(findText(username,true));
         tweetList.removeAll(findTextImage(username,false));
         tweetList.removeAll(findTextEmoji(username,false));
         tweetList.removeAll(findFullMatches(username,false));
+        tweetList.removeAll(findText(username,false));
+
         return tweetList;
     }
 
@@ -233,7 +247,14 @@ public class TweetServiceImpl extends Thread implements TweetService {
         tweetSet.addAll(findTextEmoji(username,wantPositive));
         tweetSet.addAll(findTextImage(username, wantPositive));
         tweetSet.addAll(findFullMatches(username, wantPositive));
+        tweetSet.addAll(findText(username, wantPositive));
         return new ArrayList<>(tweetSet);
+    }
+
+    @Override
+    public List<Tweet> getBySentiment(String username, boolean wantPositive){
+        return tweetRepository.findByUsernameAndTextSentiment(username, wantPositive ? SentimentEnum.POSITIVE
+                : SentimentEnum.NEGATIVE);
     }
 
 

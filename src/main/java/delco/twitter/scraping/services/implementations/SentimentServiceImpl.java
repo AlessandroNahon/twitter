@@ -1,10 +1,6 @@
 package delco.twitter.scraping.services.implementations;
 
-import com.google.cloud.language.v1.Document;
-import com.google.cloud.language.v1.LanguageServiceClient;
-import com.google.cloud.language.v1.Sentiment;
-import delco.twitter.scraping.model.Reply;
-import delco.twitter.scraping.model.Tweet;
+
 import delco.twitter.scraping.model.Sentiments;
 import delco.twitter.scraping.model.enumerations.SentimentEnum;
 import delco.twitter.scraping.repositories.SentimentRepository;
@@ -15,9 +11,8 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import javax.xml.XMLConstants;
-import javax.xml.transform.TransformerFactory;
-import java.util.ArrayList;
+
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -34,12 +29,12 @@ public class SentimentServiceImpl implements SentimentService {
     @Lazy
     private RepliesService repliesService;
 
-    private final LanguageServiceClient languageServiceClient;
+//    private final LanguageServiceClient languageServiceClient;
 
     @SneakyThrows
     public SentimentServiceImpl(){
-        this.languageServiceClient = LanguageServiceClient.create();
-        TransformerFactory.newInstance().setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+//        this.languageServiceClient = LanguageServiceClient.create();
+//        TransformerFactory.newInstance().setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
     }
 
     /**
@@ -51,27 +46,21 @@ public class SentimentServiceImpl implements SentimentService {
      */
     @Override
     public SentimentEnum getSentiment(String texto, String originalUsername, String belongsTo) {
-        Document doc = Document.newBuilder().setContent(texto).setType(Document.Type.PLAIN_TEXT).build();
-        Sentiment sentiment = null;
-        try{
-             sentiment = languageServiceClient.analyzeSentiment(doc).getDocumentSentiment();
-            SentimentEnum sentimentEnum = SentimentEnum.POSITIVE;
-            if(sentiment.getScore() > 0.1 && sentiment.getScore() <= 0.5) {
-                sentimentEnum = SentimentEnum.POSITIVE;
-            }else if (sentiment.getScore() > 0.5 && sentiment.getScore() < 0.9) {
-                sentimentEnum = SentimentEnum.VERY_POSITIVE;
-            }else if(sentiment.getScore() < -0.1 && sentiment.getScore() >= -0.5) {
-                sentimentEnum = SentimentEnum.NEGATIVE;
-            }else if(sentiment.getScore() > -0.5 && sentiment.getScore() < -0.9) {
-                sentimentEnum = SentimentEnum.VERY_NEGATIVE;
-            }else{
-                sentimentEnum = SentimentEnum.NEUTRAL;
-            }
-            addAppearance(sentimentEnum, originalUsername, belongsTo);
-            return sentimentEnum;
-        }catch (IllegalStateException ex){
-            System.out.println("Error: " + ex.getMessage());
-        }
+//        Document doc = Document.newBuilder().setContent(texto).setType(Document.Type.PLAIN_TEXT).build();
+//        Sentiment sentiment = null;
+//        try{
+//             sentiment = languageServiceClient.analyzeSentiment(doc).getDocumentSentiment();
+//            SentimentEnum sentimentEnum = SentimentEnum.POSITIVE;
+//            if(sentiment.getScore() >= -0.25 && sentiment.getScore() <= 0.25) {
+//                sentimentEnum = SentimentEnum.NEUTRAL;
+//            }else if(sentiment.getScore() < -0.25){
+//                sentimentEnum = SentimentEnum.NEGATIVE;
+//            }
+//            addAppearance(sentimentEnum, originalUsername, belongsTo);
+//            return sentimentEnum;
+//        }catch (Exception ex){
+//            System.out.println("Error: " + ex.getMessage());
+//        }
         return SentimentEnum.NEUTRAL;
     }
 
@@ -91,7 +80,9 @@ public class SentimentServiceImpl implements SentimentService {
 
     @Override
     public List<Sentiments> getSentimentsByOrganizationAndBelongs(String originalUsername, String belongsTo) {
-        return sentimentRepository.findAllSentimentsByOrganizationAndBelongsTo(belongsTo,originalUsername);
+        List<Sentiments> sentimentsList = sentimentRepository.findAllSentimentsByOrganizationAndBelongsTo(belongsTo,originalUsername);
+        sentimentsList.sort(Comparator.comparing(Sentiments::getSentiment));
+        return sentimentsList;
     }
 
 

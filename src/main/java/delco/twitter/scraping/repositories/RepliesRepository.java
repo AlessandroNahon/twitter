@@ -22,6 +22,8 @@ public interface RepliesRepository extends PagingAndSortingRepository<Reply, Lon
 
     List<Reply> findByOrganization(String organization);
 
+    List<Reply> findByOrganizationAndTextSentiment(String organization, SentimentEnum sentiment);
+
     @Query(value = "select * from twitter.responses r where r.text like %?1% and r.organization = ?2", nativeQuery = true)
     List<Reply> findAllByTextContaining(String text, String organization);
 

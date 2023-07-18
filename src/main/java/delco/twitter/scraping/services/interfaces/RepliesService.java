@@ -2,6 +2,7 @@ package delco.twitter.scraping.services.interfaces;
 
 import delco.twitter.scraping.model.Reply;
 import delco.twitter.scraping.model.Tweet;
+import delco.twitter.scraping.model.enumerations.SentimentEnum;
 import delco.twitter.scraping.model.twitterapi.model_content.Root;
 
 import java.util.List;
@@ -19,6 +20,8 @@ public interface RepliesService {
     List<Reply> getByOrganization(String organization);
 
     void deleteByTweetId(Long id);
+
+    List<Reply> getBySentiment(String organization, Boolean wantPositive);
 
     /*
     Methods that access directly to the repository, they do not contain bussiness logic, only works as intermediates

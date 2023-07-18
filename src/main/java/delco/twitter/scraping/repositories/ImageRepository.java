@@ -10,8 +10,6 @@ import java.util.List;
 public interface ImageRepository extends PagingAndSortingRepository<Images, Long> {
 
 
-    List<Images> findByReplyIsNull();
-
     List<Images> findByReplyId(Long id);
 
     @Query(value = "select * from images i where i.tweet_id in (select t.id from tweets t where t.username = ?1)", nativeQuery = true)

@@ -7,7 +7,7 @@ public interface TwitterAPIService {
 
     Root getTweets(String userName,String startDate, String endDate);
 
-    Root getNextTweets(String paginationToken, String startDate, String endDate);
+    Root getNextTweets(String paginationToken, String startDate, String endDate, String username);
 
     Root getReplies(String conversationId, String sinceId);
 

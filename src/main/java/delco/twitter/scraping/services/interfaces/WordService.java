@@ -14,7 +14,13 @@ public interface WordService {
 
     TypeEnum getTypeOfWord(String word);
 
+    boolean textContainsKistch(String text);
+
+    boolean textContainsGrotesque(String text);
+
     boolean isKischWord(String words);
+
+    boolean isKistchEmoji(String emoji);
 
     boolean isGrotesqueWord(String word);
 
@@ -40,7 +46,7 @@ public interface WordService {
 
     List<String> getAllEmojisFromText(String text);
 
-    Word getByWordAndBelongsTo(String word, String belongs_to);
+    Word getByWordAndBelongsToAndOrganization(String word, String belongs_to, String organization);
 
     List<Word> getByBelongsToAndOrganizationBySyntax(String belongs_to, TypeEnum syntax, String organization);
 
