@@ -1,0 +1,11 @@
+{
+  "groups": [
+    {
+      "name": "token",
+      "type": "delco.twitter.scraping.bootstrap.Configuration",
+      "sourceType": "delco.twitter.scraping.bootstrap.Configuration"
+    }
+  ],
+  "properties": [],
+  "hints": []
+}

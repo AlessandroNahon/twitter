@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:fragment="word_cloud">
+  <div id="container" class="d-flex" style="height: 950px;">
+
+  </div>
+    <script th:inline="javascript">
+       recollectData(/*[[${wordList}]]*/,/*[[${chartTitle}]]*/);
+    </script>
+</div>
+
+</body>
+</html>

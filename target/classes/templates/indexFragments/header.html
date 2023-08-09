@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="row" th:fragment="header_row">
+    <nav class="navbar navbar-expand-lg navbar-light bg-info p-3">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <i class='fab fa-twitter pr-2' style='font-size:32px; color:white;'></i>
+          <i class='fas fa-plus' style='font-size:12px; color:white;'></i>
+          <i class='fas fa-dog pr-3 pl-2' style='font-size:32px; color:white;'></i>
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a class="nav-link text-white fs-5 pl-4 pr-4 border-right " href="#" th:href="@{'/index'}">Overview</a>
+            </li>
+            <li class="nav-item active ">
+              <a class="nav-link text-white fs-5  pl-4 pr-4 border-right" href="#"
+                 th:href="@{'/tweet/searchIndex'}">Tweets</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white fs-5 pl-4 pr-4 border-right" href="#"
+                th:href="@{'/sentiment/index'}">Sentiment</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white fs-5 pl-4 pr-4" th:href="@{'/thesaurus/index'}" href="#">Thesaurus</a>
+            </li>
+          </ul>
+        </div>
+        <div class="d-flex h-100" id="organizationSelector">
+          <h5 class="d-inline-block d-flex text-white p-2 pt-3 mr-4">Select an organization:</h5>
+          <select class="dropdown-toggle p-3 btn-white rounded d-inline-block border-white text-white bg-transparent"
+          id="comboboxIndex">
+            <option value="Greenpeace" class="text-white bg-info">Greenpeace</option>
+            <option value="Peta" class="text-white bg-info">PETA</option>
+            <option value="WWF" class="text-white bg-info">WWF</option>
+          </select>
+        </div>
+      </div>
+    </nav>
+</div>
+</body>
+</html>

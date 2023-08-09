@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Search Tweet</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link th:href="@{/css/commonStyle.css}" rel="stylesheet" />
+    <script th:src="@{/JS/tweet/searchIndex.js}"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.11.0/mdb.min.css" rel="stylesheet" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.11.0/mdb.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+    <script src=https://code.jquery.com/jquery-3.6.0.min.js></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"
+            integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js'></script>
+
+</head>
+<header>
+    <div class="row" th:replace="~{indexFragments/header :: header_row}"></div>
+</header>
+<body class="bg-light">
+    <div class="card-deck d-flex justify-content-center mt-4">
+        <div class="row col-11 ">
+            <div class="col-12">
+                <div class="card bg-info">
+                    <div class="card-body align-content-center pb-2">
+                        <div class="row">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend d-flex col-12">
+                                    <button class="btn btn-outline-white rounded bg-white text-black font-weight-normal"
+                                            onclick="" type="button" id="searchButton">Search
+                                    </button>
+                                    <input type="text" class="form-control ml-3 rounded d-flex col-9"
+                                           placeholder="Search for specific tweets..." id="textSearch">
+                                    <div class="dropdown col-2">
+                                        <select class="dropdown-toggle h-100 w-100 btn-white rounded"  id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            <option class="dropdown-item text-dark" >Choose an option</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row col-12">
+                                <div class="input-group-prepend d-flex col-12 justify-content-center">
+                                    <div class="mr-5 d-flex">
+                                        <input class="form-check-input" type="radio" id="radioUsername" name="radio" value="username">
+                                        <label class="form-check-label" for="radioUsername">Search by username</label>
+                                    </div>
+                                    <div class="mr-5 d-flex">
+                                        <input class="form-check-input" type="radio" id="radioSentiment" name="radio" value="username">
+                                        <label class="form-check-label" for="radioSentiment">Search by sentiment</label>
+                                    </div>
+                                    <div class="mr-5 d-flex">
+                                        <input class="form-check-input" type="radio" id="radioWord" name="radio" value="username">
+                                        <label class="form-check-label" for="radioWord">Search by word</label>
+                                    </div>
+                                    <div>
+                                        <input class="form-check-input" type="radio" id="radioImage" name="radio" value="username">
+                                        <label class="form-check-label" for="radioImage">Search by image</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="row d-flex justify-content-around">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card- d-flex justify-content-center mt-4">
+        <div class="row col-11 ">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header pt-4 d-flex justify-content-between">
+                        <h5 class="float-left" id="tableTitle">Search for Tweets</h5>
+                        <nav aria-label="pagination" class="d-flex justify-content-center mr-2">
+                            <ul class="pagination">
+                                <li class="page-item">
+                                    <button id="buttonPrevious" class="border-0 bg-transparent mr-4 pr-4"><i class="fas fas fa-arrow-left"></i></button>
+                                </li>
+                                <li class="page-item">
+                                    <h6 id="pageDescriber">Page 1 of 3</h6>
+                                </li>
+                                <li class="page-item">
+                                    <button id="buttonNext" class="border-0 bg-transparent ml-4 pl-4"><i  class="fas fas fa-arrow-right"></i></button>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive border rounded">
+                            <table class="table table-striped table-hover" th:fragment="table_search_tweet"
+                                   id="table_search_tweet">
+                                <thead class="thead-inverse">
+                                <tr>
+                                    <th>Text</th>
+                                    <th>Sentiment</th>
+                                    <th>Type</th>
+                                    <th>See...</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        loadComponents();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,29 @@
+server:
+  port: 8083
+
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/twitter?allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: password
+    driverClassName: com.mysql.cj.jdbc.Driver
+  thymeleaf:
+    prefix: classpath:/templates/
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    naming:
+      physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    database-platform: org.hibernate.dialect.MySQL5Dialect
+    database: mysql
+    show-sql: true
+#    properties:
+#      javax:
+#        persistence.schema-generation:
+#          create-source: metadata
+#          scripts:
+#            action: create
+#            create-target: twitter_db.sql
+
+token.BEARER_TOKEN: AAAAAAAAAAAAAAAAAAAAAFelbAEAAAAA6BKWPBKmWTviEy2Pr1BPj1yhh3Q%3D8Kq8C7d0Vl9vOE0LwXroMtAiYriC5yq9FperLTjQBCNIXXndam
+
